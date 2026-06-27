@@ -1,0 +1,26 @@
+# Run locally with: uv run pre-commit run --all-files
+# Hooks mirror the CI gates (ruff, formatting, hygiene) plus a secret scanner.
+minimum_pre_commit_version: "3.5.0"
+
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.9.6
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-added-large-files
+        args: [--maxkb=512]
+
+  # Secret scanner — the backstop that keeps real credentials out of git.
+  # Also runs in CI (.github/workflows/ci.yml) as defense in depth.
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.23.3
+    hooks:
+      - id: gitleaks

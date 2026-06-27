@@ -1,0 +1,52 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+
+# Packaging / build artifacts
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Virtual environment (uv-managed)
+.venv/
+
+# Test & coverage
+.pytest_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+
+# Type checkers & linters
+.mypy_cache/
+.pyre/
+.pytype/
+.ruff_cache/
+
+# Editor / OS
+.idea/
+.vscode/
+.DS_Store
+
+# ---------------------------------------------------------------------------
+# Job Radar
+# ---------------------------------------------------------------------------
+# Local config — the committed contract is .env.example, never .env itself.
+.env
+.env.*
+!.env.example
+
+# Local data, scratch corpora, and SQLite/dev databases
+data/
+*.db
+
+# Local model weights (Ollama / GGUF) — never in git
+*.gguf
+*.bin
+*.safetensors
+models/
+
+# Local stack volumes (Postgres, langfuse-local, etc.)
+.volumes/
+langfuse/
