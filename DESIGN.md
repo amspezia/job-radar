@@ -519,12 +519,12 @@ Ingestion is idempotent and retried on transient failure. Containers expose heal
 
 ## 17. Roadmap / phased delivery
 
-The scope is larger than one month and is delivered in independently shippable phases.
+The scope spans multiple independently shippable phases.
 
-**Phase 1 — Discovery + reliability spine (v1, ~1 month).**
+**Phase 1 — Discovery + reliability spine (v1).**
 Ingestion, indexing, hybrid search, the MCP tool surface, the LangGraph search/fit graph, the evaluation harness, observability, cost panel, deployment, README. This phase is a complete, standalone deliverable.
 
-**Phase 2 — Assisted application + multi-agent (v2, ~2–4 additional weeks).**
+**Phase 2 — Assisted application + multi-agent (v2).**
 Requirements/drafting/critic agents, the HITL interrupt/resume approval flow, the submission handler with assisted (human-gated) submission, the guardrail and privacy enforcement, and draft-quality evaluation.
 
 **Phase 3 — Tracking + polish.**

@@ -13,6 +13,22 @@ jobs:
   lint-test:
     name: Lint, format & test
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: job_radar
+          POSTGRES_PASSWORD: job_radar
+          POSTGRES_DB: job_radar
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U job_radar"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql+psycopg://job_radar:job_radar@localhost:5432/job_radar
     steps:
       - uses: actions/checkout@v4
 
@@ -29,6 +45,9 @@ jobs:
 
       - name: Ruff (format check)
         run: uv run ruff format --check .
+
+      - name: Run migrations
+        run: uv run alembic upgrade head
 
       - name: Pytest
         run: uv run pytest
