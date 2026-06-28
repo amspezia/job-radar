@@ -2,11 +2,10 @@ from datetime import datetime
 
 import httpx
 
-from job_radar.ingest.base import NormalizedJob, SourceAdapter
+from job_radar.ingest.base import USER_AGENT, NormalizedJob, SourceAdapter
 from job_radar.ingest.normalize import html_to_text, parse_salary
 
 _API_URL = "https://remotive.com/api/remote-jobs"
-_USER_AGENT = "job-radar/0.1"
 
 
 class RemotiveAdapter(SourceAdapter):
@@ -15,7 +14,7 @@ class RemotiveAdapter(SourceAdapter):
 
     async def fetch(self) -> list[dict]:
         async with httpx.AsyncClient(timeout=30) as client:
-            resp = await client.get(_API_URL, headers={"User-Agent": _USER_AGENT})
+            resp = await client.get(_API_URL, headers={"User-Agent": USER_AGENT})
             resp.raise_for_status()
         return resp.json()["jobs"]
 

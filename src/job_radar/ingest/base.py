@@ -2,6 +2,9 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import datetime
 
+# Sent on every outbound adapter request so sources can identify the client.
+USER_AGENT = "job-radar/0.1"
+
 
 @dataclass
 class NormalizedJob:

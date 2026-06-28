@@ -4,7 +4,7 @@ from datetime import UTC, datetime
 
 import httpx
 from sqlalchemy import select
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from job_radar.db.models import Job
@@ -52,7 +52,7 @@ async def run_ingestion(adapter: SourceAdapter, session: AsyncSession, ingested_
                     )
                 )
                 await session.flush()
-        except (httpx.HTTPError, IntegrityError) as exc:
+        except (httpx.HTTPError, SQLAlchemyError) as exc:
             logger.warning("Skipping job %s (hash %s): %s", r.url, h, exc)
             continue
 

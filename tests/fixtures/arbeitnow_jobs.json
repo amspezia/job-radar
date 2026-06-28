@@ -1,0 +1,26 @@
+[
+  {
+    "slug": "senior-python-engineer-acme-279000",
+    "company_name": "Acme GmbH",
+    "title": "Senior Python Engineer",
+    "description": "<p>Join our <strong>backend</strong> team.</p><ul><li>Python</li><li>Django</li></ul>",
+    "remote": true,
+    "url": "https://www.arbeitnow.com/jobs/senior-python-engineer-acme-279000",
+    "tags": ["python", "backend"],
+    "job_types": ["Full Time", "berufserfahren"],
+    "location": "Berlin",
+    "created_at": 1782601232
+  },
+  {
+    "slug": "office-assistant-globex-279001",
+    "company_name": "Globex",
+    "title": "Office Assistant",
+    "description": "<p>On-site role in Munich.</p>",
+    "remote": false,
+    "url": "https://www.arbeitnow.com/jobs/office-assistant-globex-279001",
+    "tags": [],
+    "job_types": [],
+    "location": "",
+    "created_at": 1782500000
+  }
+]
