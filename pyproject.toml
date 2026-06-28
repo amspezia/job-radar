@@ -47,6 +47,7 @@ dev = [
 [project.scripts]
 job-radar-ingest = "job_radar.ingest.cli:main"
 job-radar-scheduler = "job_radar.ingest.scheduler:main"
+job-radar-assess = "job_radar.quality.cli:main"
 
 [build-system]
 requires = ["hatchling"]
