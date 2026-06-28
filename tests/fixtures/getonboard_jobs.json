@@ -1,0 +1,35 @@
+[
+  {
+    "id": "senior-java-developer-acme-santiago",
+    "type": "job",
+    "links": {"public_url": "https://www.getonbrd.com/jobs/senior-java-developer-acme-santiago"},
+    "attributes": {
+      "title": "Senior Java Developer",
+      "description": "<p>Build <strong>backend</strong> services.</p>",
+      "remote": true,
+      "remote_modality": "remote_local",
+      "remote_zone": null,
+      "countries": ["Remote"],
+      "min_salary": 2700,
+      "max_salary": 2900,
+      "published_at": 1782511711,
+      "company": {"data": {"id": "acme-cl", "type": "company", "attributes": {"name": "Acme"}}}
+    }
+  },
+  {
+    "id": "backend-developer-globex",
+    "type": "job",
+    "links": {"public_url": "https://www.getonbrd.com/jobs/backend-developer-globex"},
+    "attributes": {
+      "title": "Backend Developer",
+      "description": "<p>Own the API.</p>",
+      "remote": true,
+      "remote_zone": null,
+      "countries": [],
+      "min_salary": null,
+      "max_salary": null,
+      "published_at": 1782500000,
+      "company": {"data": {"id": "globex-cl", "type": "company", "attributes": {"name": "Globex"}}}
+    }
+  }
+]

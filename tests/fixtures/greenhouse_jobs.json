@@ -1,0 +1,20 @@
+[
+  {
+    "id": 8503792002,
+    "absolute_url": "https://job-boards.greenhouse.io/acme/jobs/8503792002",
+    "title": "Senior Backend Engineer",
+    "company_name": "Acme",
+    "first_published": "2026-04-17T05:58:03-04:00",
+    "location": {"name": "Remote, US"},
+    "content": "&lt;div class=&quot;pay-range&quot;&gt;&lt;span&gt;$108,400&lt;/span&gt;&lt;span&gt;&amp;mdash;&lt;/span&gt;&lt;span&gt;$129,600&lt;/span&gt;&lt;/div&gt;&lt;p&gt;Build &lt;strong&gt;backend&lt;/strong&gt; services.&lt;/p&gt;"
+  },
+  {
+    "id": 8503792003,
+    "absolute_url": "https://job-boards.greenhouse.io/acme/jobs/8503792003",
+    "title": "Product Manager",
+    "company_name": "Acme",
+    "first_published": "2026-04-10T09:00:00-04:00",
+    "location": {"name": "Remote, Worldwide"},
+    "content": "&lt;p&gt;Own the &lt;em&gt;roadmap&lt;/em&gt;.&lt;/p&gt;"
+  }
+]

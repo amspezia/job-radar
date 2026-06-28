@@ -15,19 +15,19 @@ class ArbeitnowAdapter(SourceAdapter):
     source_type = "aggregator"
 
     async def fetch(self) -> list[dict]:
+        # Paginate by explicit page number rather than following the API's
+        # `links.next`: Arbeitnow bakes a random featured search into each next
+        # link (e.g. ?search=...&location=spain), which makes pagination
+        # non-deterministic and biases pages toward narrow filtered slices.
         jobs: list[dict] = []
-        url: str | None = _API_URL
         async with httpx.AsyncClient(timeout=30, headers={"User-Agent": USER_AGENT}) as client:
-            for _ in range(_MAX_PAGES):
-                if not url:
-                    break
-                resp = await client.get(url)
+            for page in range(1, _MAX_PAGES + 1):
+                resp = await client.get(_API_URL, params={"page": page})
                 resp.raise_for_status()
-                payload = resp.json()
-                jobs.extend(payload["data"])
-                url = payload.get("links", {}).get("next")
-        # The API's ?remote=true filter is unreliable, so filter client-side:
-        # this is a remote-roles system, non-remote postings are noise.
+                data = resp.json()["data"]
+                if not data:
+                    break
+                jobs.extend(data)
         return [job for job in jobs if job.get("remote")]
 
     def map(self, raw: dict) -> NormalizedJob:

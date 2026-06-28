@@ -2,14 +2,22 @@ import logging
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from job_radar.ingest.arbeitnow import ArbeitnowAdapter
-from job_radar.ingest.himalayas import HimalayasAdapter
+from job_radar.ingest.adapters.arbeitnow import ArbeitnowAdapter
+from job_radar.ingest.adapters.getonboard import GetOnBoardAdapter
+from job_radar.ingest.adapters.greenhouse import GreenHouseAdapter
+from job_radar.ingest.adapters.himalayas import HimalayasAdapter
+from job_radar.ingest.adapters.remotive import RemotiveAdapter
 from job_radar.ingest.pipeline import run_ingestion
-from job_radar.ingest.remotive import RemotiveAdapter
 
 logger = logging.getLogger(__name__)
 
-ENABLED_ADAPTERS = [RemotiveAdapter(), ArbeitnowAdapter(), HimalayasAdapter()]
+ENABLED_ADAPTERS = [
+    RemotiveAdapter(),
+    ArbeitnowAdapter(),
+    HimalayasAdapter(),
+    GreenHouseAdapter(),
+    GetOnBoardAdapter(),
+]
 
 
 async def run_all_ingestion(session: AsyncSession, ingested_via: str) -> None:

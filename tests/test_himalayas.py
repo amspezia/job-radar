@@ -5,7 +5,7 @@ from pathlib import Path
 import httpx
 import pytest
 
-from job_radar.ingest.himalayas import HimalayasAdapter
+from job_radar.ingest.adapters.himalayas import HimalayasAdapter
 
 _FIXTURE = Path(__file__).parent / "fixtures" / "himalayas_jobs.json"
 
@@ -76,7 +76,7 @@ class _FakeClient:
 
 async def test_get_page_retries_on_rate_limit(monkeypatch: pytest.MonkeyPatch) -> None:
     # Don't actually sleep through the backoff during the test.
-    monkeypatch.setattr("job_radar.ingest.himalayas.asyncio.sleep", _noop_sleep)
+    monkeypatch.setattr("job_radar.ingest.adapters.himalayas.asyncio.sleep", _noop_sleep)
 
     client = _FakeClient([_FakeResponse(429), _FakeResponse(200, {"jobs": [], "totalCount": 0})])
     payload = await HimalayasAdapter._get_page(client, "engineer", 1)

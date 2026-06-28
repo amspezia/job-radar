@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from job_radar.ingest.arbeitnow import ArbeitnowAdapter
+from job_radar.ingest.adapters.arbeitnow import ArbeitnowAdapter
 
 _FIXTURE = Path(__file__).parent / "fixtures" / "arbeitnow_jobs.json"
 

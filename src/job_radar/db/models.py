@@ -24,7 +24,7 @@ class Job(Base):
     salary_min: Mapped[int | None] = mapped_column(Integer)
     salary_max: Mapped[int | None] = mapped_column(Integer)
     currency: Mapped[str | None] = mapped_column(String(10))
-    location: Mapped[str | None] = mapped_column(String(255))
+    location: Mapped[str | None] = mapped_column(Text)
     remote: Mapped[bool] = mapped_column(Boolean)
     job_type: Mapped[str | None] = mapped_column(String(255))
     published_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

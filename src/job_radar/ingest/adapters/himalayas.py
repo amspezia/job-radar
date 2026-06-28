@@ -7,7 +7,7 @@ from job_radar.ingest.base import USER_AGENT, NormalizedJob, SourceAdapter
 from job_radar.ingest.normalize import html_to_text
 
 _SEARCH_URL = "https://himalayas.app/jobs/api/search"
-_MAX_PAGES_PER_QUERY = 6  # ~120 most-recent results per query (6 pages x 20).
+_MAX_PAGES_PER_QUERY = 6  # 120 most-recent results per query (6 pages x 20).
 _RATE_LIMIT_RETRIES = 3
 _RATE_LIMIT_BACKOFF = 5.0  # seconds, multiplied by the attempt number.
 
@@ -68,18 +68,6 @@ class HimalayasAdapter(SourceAdapter):
         raise RuntimeError("unreachable")  # loop either returns or raises
 
     @staticmethod
-    def _location(locations: list[str]) -> str | None:
-        if not locations:
-            return None
-        joined = ", ".join(locations)
-        # Some postings list dozens of countries (effectively "anywhere"); the
-        # joined string can exceed the location column's width. Rather than
-        # truncate mid-name, collapse a long list to its honest meaning.
-        if len(joined) > 255:
-            return "Worldwide"
-        return joined
-
-    @staticmethod
     def _salary(raw: dict) -> tuple[int | None, int | None, str | None]:
         # Only keep annual figures; hourly/monthly aren't comparable in our
         # period-less salary columns, so they're stored as unknown.
@@ -105,7 +93,7 @@ class HimalayasAdapter(SourceAdapter):
             salary_min=salary_min,
             salary_max=salary_max,
             currency=currency,
-            location=self._location(locations),
+            location=", ".join(locations) or None,
             job_type=raw.get("employmentType") or None,
             remote=True,  # Himalayas is a remote-only board.
             published_at=datetime.fromtimestamp(published, tz=UTC) if published else None,

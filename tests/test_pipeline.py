@@ -147,6 +147,46 @@ async def test_run_ingestion_skips_url_conflicts_without_aborting_batch(
     assert new_result.scalar_one().title == "Other Role"
 
 
+async def test_run_ingestion_skips_existing_url_without_reembedding(
+    db_session: AsyncSession, _cleanup_urls, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    url = _url("changed")
+    _cleanup_urls.append(url)
+
+    existing = Job(
+        source="fake",
+        source_type="board",
+        ingested_via="scheduler",
+        url=url,
+        title="Old title",
+        company="Old Co",
+        description="desc",
+        remote=True,
+        location="Worldwide",
+        collected_at=datetime.now(UTC),
+        embedding=[0.0] * 768,
+        content_hash="old-hash",
+    )
+    db_session.add(existing)
+    await db_session.flush()
+
+    embed_calls: list[str] = []
+
+    async def counting_embed(text: str) -> list[float]:
+        embed_calls.append(text)
+        return [0.0] * 768
+
+    monkeypatch.setattr("job_radar.ingest.pipeline.embed", counting_embed)
+
+    # Same URL, changed content (new hash): must be skipped *before* embedding.
+    changed = _raw(url=url, title="New title", company="New Co")
+    await run_ingestion(_FakeAdapter([changed]), db_session, ingested_via="scheduler")
+
+    assert embed_calls == []  # not re-embedded
+    row = (await db_session.execute(select(Job).where(Job.url == url))).scalar_one()
+    assert row.title == "Old title"  # original row untouched
+
+
 async def test_run_ingestion_collapses_duplicate_hashes_within_same_batch(
     db_session: AsyncSession, _cleanup_urls
 ) -> None:
