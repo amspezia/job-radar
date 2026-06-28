@@ -6,6 +6,7 @@ from job_radar.ingest.adapters.arbeitnow import ArbeitnowAdapter
 from job_radar.ingest.adapters.getonboard import GetOnBoardAdapter
 from job_radar.ingest.adapters.greenhouse import GreenHouseAdapter
 from job_radar.ingest.adapters.himalayas import HimalayasAdapter
+from job_radar.ingest.adapters.lever import LeverAdapter
 from job_radar.ingest.adapters.remotive import RemotiveAdapter
 from job_radar.ingest.pipeline import run_ingestion
 
@@ -17,6 +18,7 @@ ENABLED_ADAPTERS = [
     HimalayasAdapter(),
     GreenHouseAdapter(),
     GetOnBoardAdapter(),
+    LeverAdapter(),
 ]
 
 

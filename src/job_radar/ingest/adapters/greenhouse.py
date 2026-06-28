@@ -18,6 +18,11 @@ _TOKENS_CACHE = Path("data/greenhouse_tokens.json")
 logger = logging.getLogger(__name__)
 
 
+def _has_jobs(payload: dict) -> bool:
+    # Greenhouse nests postings under a "jobs" key.
+    return bool(payload.get("jobs"))
+
+
 class GreenHouseAdapter(SourceAdapter):
     source = "greenhouse"
     source_type = "board"
@@ -26,7 +31,11 @@ class GreenHouseAdapter(SourceAdapter):
         jobs: list[dict] = []
         async with httpx.AsyncClient(timeout=30, headers={"User-Agent": USER_AGENT}) as client:
             tokens = await get_tokens(
-                client, link_regex=_LINK_RE, board_url=_BOARD_URL, cache_path=_TOKENS_CACHE
+                client,
+                link_regex=_LINK_RE,
+                board_url=_BOARD_URL,
+                cache_path=_TOKENS_CACHE,
+                has_jobs=_has_jobs,
             )
             if not tokens:
                 logger.warning("No Greenhouse tokens available; skipping source.")

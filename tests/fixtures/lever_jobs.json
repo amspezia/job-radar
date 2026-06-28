@@ -1,0 +1,36 @@
+[
+  {
+    "id": "a1b2c3d4-0000-0000-0000-000000000001",
+    "text": "Senior Backend Engineer",
+    "hostedUrl": "https://jobs.lever.co/acme-corp/a1b2c3d4-0000-0000-0000-000000000001",
+    "createdAt": 1745000000000,
+    "workplaceType": "remote",
+    "country": "US",
+    "categories": {
+      "commitment": "Full-Time",
+      "department": "Engineering",
+      "team": "Platform",
+      "location": "Remote",
+      "allLocations": ["Remote - Americas", "Remote - EU"]
+    },
+    "salaryRange": {"min": 120000, "max": 160000, "currency": "USD", "interval": "per-year-salary"},
+    "description": "<p>Build <strong>backend</strong> services.</p>",
+    "_token": "acme-corp"
+  },
+  {
+    "id": "a1b2c3d4-0000-0000-0000-000000000002",
+    "text": "Contract Frontend Developer",
+    "hostedUrl": "https://jobs.lever.co/acme-corp/a1b2c3d4-0000-0000-0000-000000000002",
+    "createdAt": 1744000000000,
+    "workplaceType": "remote",
+    "country": "US",
+    "categories": {
+      "commitment": "Contract",
+      "department": "Engineering",
+      "location": "Remote"
+    },
+    "salaryRange": {"min": 80, "max": 100, "currency": "USD", "interval": "per-hour-salary"},
+    "description": "<p>Own the <em>UI</em>.</p>",
+    "_token": "acme-corp"
+  }
+]
