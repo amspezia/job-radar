@@ -26,8 +26,9 @@ dependencies = [
     "alembic>=1.14",
     "psycopg[binary]>=3.2",
     "pgvector>=0.3.6",
-    # Ingestion scheduler
+    # Ingestion (scheduler + HTML parsing for adapters)
     "apscheduler>=3.11",
+    "beautifulsoup4>=4.15",
     # Observability
     "langfuse>=2.57",
     "opentelemetry-sdk>=1.29",
@@ -42,6 +43,10 @@ dev = [
     "mypy>=1.14",
     "pre-commit>=4.0",
 ]
+
+[project.scripts]
+job-radar-ingest = "job_radar.ingest.cli:main"
+job-radar-scheduler = "job_radar.ingest.scheduler:main"
 
 [build-system]
 requires = ["hatchling"]
