@@ -2,7 +2,8 @@ from datetime import datetime
 from uuid import UUID, uuid4
 
 from pgvector.sqlalchemy import Vector
-from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy import JSON, Boolean, Computed, DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy.dialects.postgresql import TSVECTOR
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -31,6 +32,20 @@ class Job(Base):
     collected_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     embedding: Mapped[list[float] | None] = mapped_column(Vector(768))
     content_hash: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    # Mirrors the GENERATED ALWAYS AS clause from the migration. Computed()
+    # tells the ORM this column is database-maintained, so it's excluded from
+    # every INSERT/UPDATE the unit-of-work issues — without it, SQLAlchemy
+    # sends an explicit NULL for any unset attribute, which Postgres rejects
+    # outright for a generated column.
+    search_vector: Mapped[str] = mapped_column(
+        TSVECTOR,
+        Computed(
+            "setweight(to_tsvector('simple', coalesce(title, '')), 'A') || "
+            "setweight(to_tsvector('simple', coalesce(description, '')), 'B')",
+            persisted=True,
+        ),
+        deferred=True,
+    )
 
 
 class Profile(Base):
