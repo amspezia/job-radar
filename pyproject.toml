@@ -33,6 +33,8 @@ dependencies = [
     "langfuse>=2.57",
     "opentelemetry-sdk>=1.29",
     "opentelemetry-exporter-otlp>=1.29",
+    # Profile / CV parsing (PDF text extraction)
+    "pdfplumber>=0.11.10",
 ]
 
 [dependency-groups]
@@ -48,6 +50,7 @@ dev = [
 job-radar-ingest = "job_radar.ingest.cli:main"
 job-radar-scheduler = "job_radar.ingest.scheduler:main"
 job-radar-assess = "job_radar.quality.cli:main"
+job-radar-profile = "job_radar.profile.cli:main"
 
 [build-system]
 requires = ["hatchling"]

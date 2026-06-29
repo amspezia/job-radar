@@ -7,6 +7,6 @@ class Settings(BaseSettings):
     database_url: str
     ollama_base_url: str
     embedding_model: str
-
+    generation_model: str
 
 settings = Settings()

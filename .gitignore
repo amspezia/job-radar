@@ -50,3 +50,6 @@ models/
 # Local stack volumes (Postgres, langfuse-local, etc.)
 .volumes/
 langfuse/
+
+# Local cv for dev testing
+cv.pdf
