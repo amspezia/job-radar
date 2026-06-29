@@ -5,9 +5,9 @@ from pathlib import Path
 
 import httpx
 
-from job_radar.ingest.base import USER_AGENT, NormalizedJob, SourceAdapter
-from job_radar.ingest.discovery import get_tokens
-from job_radar.ingest.normalize import html_to_text
+from job_radar.adapters.sources.base import USER_AGENT, NormalizedJob, SourceAdapter
+from job_radar.adapters.sources.discovery import get_tokens
+from job_radar.adapters.sources.normalize import html_to_text
 
 # mode=json returns the full postings list as a bare JSON array (not nested).
 _BOARD_URL = "https://api.lever.co/v0/postings/{token}?mode=json"

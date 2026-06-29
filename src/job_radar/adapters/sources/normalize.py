@@ -1,10 +1,7 @@
-import hashlib
 import re
 from typing import NamedTuple
 
 from bs4 import BeautifulSoup
-
-from job_radar.ingest.base import NormalizedJob
 
 _CURRENCY_SYMBOLS = {"$": "USD", "€": "EUR", "£": "GBP"}
 
@@ -64,9 +61,3 @@ def parse_salary(raw: str) -> ParsedSalary:
     if len(numbers) == 1:
         return ParsedSalary(numbers[0], None, currency)
     return ParsedSalary(numbers[0], numbers[1], currency)
-
-
-def content_hash(job: NormalizedJob) -> str:
-    location = "none" if not job.location else job.location
-    normalized_fields = [" ".join(s.split()).lower() for s in [job.company, job.title, location]]
-    return hashlib.sha256("|".join(normalized_fields).encode("utf-8")).hexdigest()

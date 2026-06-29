@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from job_radar.ingest.adapters.greenhouse import GreenHouseAdapter
+from job_radar.adapters.sources.greenhouse import GreenHouseAdapter
 
 _FIXTURE = Path(__file__).parent / "fixtures" / "greenhouse_jobs.json"
 

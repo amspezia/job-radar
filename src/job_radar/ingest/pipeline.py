@@ -7,10 +7,10 @@ from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from job_radar.adapters.embeddings import embed
+from job_radar.adapters.sources.base import SourceAdapter
 from job_radar.db.models import Job
-from job_radar.ingest.base import SourceAdapter
-from job_radar.ingest.embed import embed
-from job_radar.ingest.normalize import content_hash
+from job_radar.ingest.dedup import content_hash
 
 logger = logging.getLogger(__name__)
 

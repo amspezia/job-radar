@@ -8,9 +8,9 @@ from pathlib import Path
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from job_radar.adapters.embeddings import embed
 from job_radar.db.base import async_session_factory
 from job_radar.db.models import Job
-from job_radar.ingest.embed import embed
 from job_radar.quality import metrics, relevance
 
 _JSON_DIR = Path("data/quality")

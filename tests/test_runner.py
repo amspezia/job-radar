@@ -1,7 +1,7 @@
 import pytest
 
+from job_radar.adapters.sources.base import NormalizedJob, SourceAdapter
 from job_radar.ingest import runner
-from job_radar.ingest.base import NormalizedJob, SourceAdapter
 
 
 class _NamedAdapter(SourceAdapter):

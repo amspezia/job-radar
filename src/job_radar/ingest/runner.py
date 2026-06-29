@@ -2,12 +2,12 @@ import logging
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from job_radar.ingest.adapters.arbeitnow import ArbeitnowAdapter
-from job_radar.ingest.adapters.getonboard import GetOnBoardAdapter
-from job_radar.ingest.adapters.greenhouse import GreenHouseAdapter
-from job_radar.ingest.adapters.himalayas import HimalayasAdapter
-from job_radar.ingest.adapters.lever import LeverAdapter
-from job_radar.ingest.adapters.remotive import RemotiveAdapter
+from job_radar.adapters.sources.arbeitnow import ArbeitnowAdapter
+from job_radar.adapters.sources.getonboard import GetOnBoardAdapter
+from job_radar.adapters.sources.greenhouse import GreenHouseAdapter
+from job_radar.adapters.sources.himalayas import HimalayasAdapter
+from job_radar.adapters.sources.lever import LeverAdapter
+from job_radar.adapters.sources.remotive import RemotiveAdapter
 from job_radar.ingest.pipeline import run_ingestion
 
 logger = logging.getLogger(__name__)

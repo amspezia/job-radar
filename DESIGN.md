@@ -539,18 +539,30 @@ Within each phase, the protected core is the working path plus its evaluation an
 ## 18. Repository layout
 
 ```
-app/            FastAPI app, web UI, MCP server entrypoint
-src/
-  agents/       supervisor + worker agents (LangGraph)
-  retrieval/    hybrid search, RRF, embeddings
-  fit/          RAG fit analysis
-  application/  requirements, drafting, critic, submission handler
-  guardrails/   injection screen, grounding check, PII redaction
-eval/           labeled sets, metrics, golden queries, CI eval runner
-infra/          Docker, deployment, scheduler
+app/              FastAPI app, web UI, MCP server entrypoint
+src/job_radar/
+  config.py       settings (foundation)
+  db/             SQLAlchemy models + engine/session (foundation)
+  adapters/       ALL outbound external I/O (foundation); depends only on config
+    sources/      per-board source adapters, OpenJobs discovery, text normalization
+    embeddings.py Ollama text→vector client
+  ingest/         feature: orchestrate adapters → db (pipeline, dedup, runner, scheduler)
+  retrieval/      feature: hybrid search, RRF
+  quality/        feature: per-source data-quality assessment
+  agents/         supervisor + worker agents (LangGraph)
+  fit/            RAG fit analysis
+  application/    requirements, drafting, critic, submission handler
+  guardrails/     injection screen, grounding check, PII redaction
+eval/             labeled sets, metrics, golden queries, CI eval runner
+infra/            Docker, deployment, scheduler
 docs/
-  diagrams/     Mermaid sources
+  diagrams/       Mermaid sources
 ```
+
+Layering: feature packages (`ingest`, `retrieval`, `quality`, …) depend *downward*
+on the foundations (`config`, `db`, `adapters`) and never on each other. All code
+that talks to an external service lives under `adapters/`, giving a single seam to
+instrument (tracing, retries, cost) when observability lands.
 
 Version control from the first commit.
 

@@ -6,7 +6,7 @@ from pathlib import Path
 import httpx
 import pytest
 
-from job_radar.ingest import discovery
+from job_radar.adapters.sources import discovery
 
 _GREENHOUSE_RE = re.compile(r"(?:boards|job-boards)\.greenhouse\.io/([a-zA-Z0-9_-]+)")
 

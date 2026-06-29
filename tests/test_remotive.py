@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from job_radar.ingest.adapters.remotive import RemotiveAdapter
+from job_radar.adapters.sources.remotive import RemotiveAdapter
 
 _FIXTURE = Path(__file__).parent / "fixtures" / "remotive_jobs.json"
 

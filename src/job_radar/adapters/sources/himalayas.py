@@ -3,8 +3,8 @@ from datetime import UTC, datetime
 
 import httpx
 
-from job_radar.ingest.base import USER_AGENT, NormalizedJob, SourceAdapter
-from job_radar.ingest.normalize import html_to_text
+from job_radar.adapters.sources.base import USER_AGENT, NormalizedJob, SourceAdapter
+from job_radar.adapters.sources.normalize import html_to_text
 
 _SEARCH_URL = "https://himalayas.app/jobs/api/search"
 _MAX_PAGES_PER_QUERY = 6  # 120 most-recent results per query (6 pages x 20).

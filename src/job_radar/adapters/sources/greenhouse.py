@@ -7,9 +7,9 @@ from pathlib import Path
 import httpx
 from bs4 import BeautifulSoup
 
-from job_radar.ingest.base import USER_AGENT, NormalizedJob, SourceAdapter
-from job_radar.ingest.discovery import get_tokens
-from job_radar.ingest.normalize import ParsedSalary, html_to_text, parse_salary
+from job_radar.adapters.sources.base import USER_AGENT, NormalizedJob, SourceAdapter
+from job_radar.adapters.sources.discovery import get_tokens
+from job_radar.adapters.sources.normalize import ParsedSalary, html_to_text, parse_salary
 
 _BOARD_URL = "https://boards-api.greenhouse.io/v1/boards/{token}/jobs"
 _LINK_RE = re.compile(r"(?:boards|job-boards)\.greenhouse\.io/([a-zA-Z0-9_-]+)")

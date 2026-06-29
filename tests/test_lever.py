@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from job_radar.ingest.adapters.lever import LeverAdapter
+from job_radar.adapters.sources.lever import LeverAdapter
 
 _FIXTURE = Path(__file__).parent / "fixtures" / "lever_jobs.json"
 

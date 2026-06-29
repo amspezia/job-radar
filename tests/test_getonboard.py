@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from job_radar.ingest.adapters.getonboard import GetOnBoardAdapter
+from job_radar.adapters.sources.getonboard import GetOnBoardAdapter
 
 _FIXTURE = Path(__file__).parent / "fixtures" / "getonboard_jobs.json"
 

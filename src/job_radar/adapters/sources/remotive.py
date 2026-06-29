@@ -2,8 +2,8 @@ from datetime import datetime
 
 import httpx
 
-from job_radar.ingest.base import USER_AGENT, NormalizedJob, SourceAdapter
-from job_radar.ingest.normalize import html_to_text, parse_salary
+from job_radar.adapters.sources.base import USER_AGENT, NormalizedJob, SourceAdapter
+from job_radar.adapters.sources.normalize import html_to_text, parse_salary
 
 _API_URL = "https://remotive.com/api/remote-jobs"
 

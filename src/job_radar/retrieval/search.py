@@ -1,8 +1,8 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from job_radar.adapters.embeddings import embed
 from job_radar.db.models import Job
-from job_radar.ingest.embed import embed
 from job_radar.retrieval.fts import search_fts
 from job_radar.retrieval.fusion import reciprocal_rank_fusion
 from job_radar.retrieval.vector import search_vector

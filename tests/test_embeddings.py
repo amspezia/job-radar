@@ -1,6 +1,6 @@
 import pytest
 
-from job_radar.ingest.embed import embed
+from job_radar.adapters.embeddings import embed
 
 
 class _FakeResponse:
@@ -35,7 +35,7 @@ async def test_embed_returns_first_vector(monkeypatch: pytest.MonkeyPatch) -> No
         captured["client"] = client
         return client
 
-    monkeypatch.setattr("job_radar.ingest.embed.httpx.AsyncClient", make_client)
+    monkeypatch.setattr("job_radar.adapters.embeddings.httpx.AsyncClient", make_client)
 
     vector = await embed("senior backend engineer")
 

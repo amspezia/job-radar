@@ -6,9 +6,9 @@ import pytest
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from job_radar.adapters.sources.base import NormalizedJob, SourceAdapter
 from job_radar.db.models import Job
-from job_radar.ingest.base import NormalizedJob, SourceAdapter
-from job_radar.ingest.normalize import content_hash
+from job_radar.ingest.dedup import content_hash
 from job_radar.ingest.pipeline import run_ingestion
 
 

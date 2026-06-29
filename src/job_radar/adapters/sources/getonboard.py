@@ -3,8 +3,8 @@ from datetime import UTC, datetime
 
 import httpx
 
-from job_radar.ingest.base import USER_AGENT, NormalizedJob, SourceAdapter
-from job_radar.ingest.normalize import html_to_text
+from job_radar.adapters.sources.base import USER_AGENT, NormalizedJob, SourceAdapter
+from job_radar.adapters.sources.normalize import html_to_text
 
 _API = "https://www.getonbrd.com/api/v0"
 _PER_PAGE = 50
