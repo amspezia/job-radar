@@ -29,6 +29,8 @@ jobs:
           --health-retries 5
     env:
       DATABASE_URL: postgresql+psycopg://job_radar:job_radar@localhost:5432/job_radar
+      OLLAMA_BASE_URL: http://localhost:11434
+      EMBEDDING_MODEL: nomic-embed-text
     steps:
       - uses: actions/checkout@v4
 
