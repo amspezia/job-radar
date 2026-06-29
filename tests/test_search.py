@@ -79,10 +79,14 @@ async def test_search_hydrates_in_fused_order(
     # in that order can only come from honouring fused order, not DB order.
     ranking = [(c.id, 1.0), (b.id, 0.9), (a.id, 0.8)]
 
-    async def fake_fts(session: object, query: object, limit: int) -> list:
+    async def fake_fts(
+        session: object, query: object, limit: int, extra_filter: object = None
+    ) -> list:
         return ranking
 
-    async def fake_vector(session: object, embedding: object, limit: int) -> list:
+    async def fake_vector(
+        session: object, embedding: object, limit: int, extra_filter: object = None
+    ) -> list:
         return ranking
 
     monkeypatch.setattr(search_mod, "search_fts", fake_fts)
@@ -105,7 +109,9 @@ async def test_search_respects_limit(
 
     ranking = [(a.id, 1.0), (b.id, 0.9), (c.id, 0.8)]
 
-    async def fake_ranker(session: object, second: object, limit: int) -> list:
+    async def fake_ranker(
+        session: object, second: object, limit: int, extra_filter: object = None
+    ) -> list:
         return ranking
 
     monkeypatch.setattr(search_mod, "search_fts", fake_ranker)

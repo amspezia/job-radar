@@ -46,6 +46,7 @@ async def load_profile(session: AsyncSession, path: Path) -> Profile:
     profile.full_name = structured.full_name or ""
     profile.email = structured.email or ""
     profile.seniority = structured.seniority
+    profile.years_experience = structured.years_experience
     profile.target_titles = structured.target_titles
     profile.domains_keywords = {
         "tech_stack": structured.tech_stack,

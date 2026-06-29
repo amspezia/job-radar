@@ -17,7 +17,6 @@ class Evidence(BaseModel):
 class Requirement(BaseModel):
     text: str
     kind: Literal["required", "preferred"]
-    is_gate: bool  # a knockout dealbreaker (work authorization, location, ...)
     satisfaction: Literal["met", "partial", "unmet"]
     evidence: list[Evidence]
 

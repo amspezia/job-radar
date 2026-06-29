@@ -9,4 +9,5 @@ class Settings(BaseSettings):
     embedding_model: str
     generation_model: str
 
+
 settings = Settings()

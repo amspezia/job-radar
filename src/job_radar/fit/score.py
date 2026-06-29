@@ -1,4 +1,6 @@
+from job_radar.db.models import Job, Profile
 from job_radar.fit.schema import FitAssessment, FitJudgment, Requirement
+from job_radar.retrieval.geo import region_allowed
 
 # Per-judgment numeric values. Partial credit keeps the score smooth rather than
 # all-or-nothing.
@@ -12,7 +14,8 @@ _DOMAIN = {"strong": 1.0, "partial": 0.6, "weak": 0.2}
 _WEIGHTS = {"required": 0.50, "preferred": 0.15, "seniority": 0.25, "domain": 0.10}
 
 # A failed knockout is non-compensatory: strengths elsewhere cannot offset it, so
-# the score is capped low and the verdict forced to "none".
+# the score is capped low and the verdict forced to "none". The only knockout is
+# region eligibility, which is determined deterministically (never by the LLM).
 _GATE_CAP = 20
 
 # Score -> verdict bands.
@@ -30,12 +33,21 @@ def _verdict(score: int) -> str:
     return "none"
 
 
-def score_fit(judgment: FitJudgment) -> FitAssessment:
+def score_fit(judgment: FitJudgment, job: Job, profile: Profile) -> FitAssessment:
     """Compute a 0-100 fit score and verdict from grounded judgments.
 
-    Deterministic: identical judgments always yield the identical score. The LLM
-    supplies the classifications; all arithmetic happens here.
+    Deterministic: identical inputs always yield the identical score. The LLM
+    supplies the requirement/seniority/domain classifications; all arithmetic —
+    and the region knockout — happens here.
     """
+    keywords = (profile.location_rules or {}).get("allowed_keywords") or []
+    region_ok = region_allowed(job, keywords)
+
+    # Domain only scores against a real candidate signal — with no declared
+    # domains the LLM's relevance call is ungrounded, so drop the dimension.
+    domains = (profile.domains_keywords or {}).get("domains") or []
+    score_domain = bool(domains)
+
     required = [r for r in judgment.requirements if r.kind == "required"]
     preferred = [r for r in judgment.requirements if r.kind == "preferred"]
 
@@ -46,14 +58,14 @@ def score_fit(judgment: FitJudgment) -> FitAssessment:
     if preferred:
         dimensions.append(("preferred", _coverage(preferred)))
     dimensions.append(("seniority", _SENIORITY[judgment.seniority.alignment]))
-    dimensions.append(("domain", _DOMAIN[judgment.domain.relevance]))
+    if score_domain:
+        dimensions.append(("domain", _DOMAIN[judgment.domain.relevance]))
 
     total_weight = sum(_WEIGHTS[key] for key, _ in dimensions)
     weighted = sum(_WEIGHTS[key] * subscore for key, subscore in dimensions)
     score = round(100 * weighted / total_weight)
 
-    gate_failed = any(r.is_gate and r.satisfaction == "unmet" for r in judgment.requirements)
-    if gate_failed:
+    if not region_ok:
         score = min(score, _GATE_CAP)
         verdict = "none"
     else:
@@ -62,7 +74,7 @@ def score_fit(judgment: FitJudgment) -> FitAssessment:
     return FitAssessment(
         score=score,
         verdict=verdict,
-        gate_failed=gate_failed,
+        gate_failed=not region_ok,
         judgment=judgment,
         summary=judgment.summary,
     )

@@ -22,7 +22,11 @@ def extract_text(path: Path) -> str:
     elif suffix == ".pdf":
         with pdfplumber.open(path) as pdf:
             logger.debug("Extracting text from %d-page PDF %s", len(pdf.pages), path.name)
-            text = "\n".join(page.extract_text() or "" for page in pdf.pages)
+            # x_tolerance=1: pdfplumber's default merges adjacent glyphs that
+            # have no explicit space between them ("Python,Kotlin" -> garbage),
+            # which wrecks both LLM parsing and the embedding. A tighter
+            # tolerance restores word boundaries from the glyph spacing.
+            text = "\n".join(page.extract_text(x_tolerance=1) or "" for page in pdf.pages)
     else:
         raise ValueError(f"unsupported CV file type: {suffix or '(none)'}")
 

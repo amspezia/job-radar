@@ -2,7 +2,7 @@ from datetime import datetime
 from uuid import UUID, uuid4
 
 from pgvector.sqlalchemy import Vector
-from sqlalchemy import JSON, Boolean, Computed, DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy import JSON, Boolean, Computed, DateTime, Float, ForeignKey, Integer, String, Text
 from sqlalchemy.dialects.postgresql import TSVECTOR
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column
@@ -60,6 +60,7 @@ class Profile(Base):
     cv_embedding: Mapped[list[float] | None] = mapped_column(Vector(768))
     target_titles: Mapped[dict] = mapped_column(JSON)
     seniority: Mapped[str] = mapped_column(String(255))
+    years_experience: Mapped[float | None] = mapped_column(Float)
     domains_keywords: Mapped[dict] = mapped_column(JSON)
     salary_floor: Mapped[int | None] = mapped_column(Integer)
     currency: Mapped[str | None] = mapped_column(String(10))

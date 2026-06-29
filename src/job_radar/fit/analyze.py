@@ -17,13 +17,13 @@ facts given below — do not assume anything not stated.
 
 For every requirement you identify in the posting:
 - classify it as "required" or "preferred"
-- set is_gate=true only for genuine dealbreakers (work authorization, visa,
-  language fluency, on-site/location mandates, security clearance) — NOT for
-  ordinary skill requirements
 - classify satisfaction as "met", "partial", or "unmet" based on the candidate's
-  profile
+  profile and CV
 - attach at least one verbatim quote (source "profile" or "posting") backing
   the classification
+
+Do NOT judge the candidate's location, work authorization, or region eligibility
+— those are checked separately and deterministically.
 
 Also judge:
 - seniority: the posting's required level, the candidate's level, and whether
@@ -40,11 +40,12 @@ tech_stack: {tech_stack}
 domains: {domains}
 work_history: {work_history}
 
+# Candidate CV
+{cv_text}
+
 # Job posting
 title: {title}
 company: {company}
-location: {location}
-remote: {remote}
 description:
 {description}
 """
@@ -58,10 +59,9 @@ def _build_prompt(profile: Profile, posting: Job) -> str:
         tech_stack=", ".join(keywords.get("tech_stack", [])),
         domains=", ".join(keywords.get("domains", [])),
         work_history=profile.work_history or [],
+        cv_text=profile.cv_text or "(none provided)",
         title=posting.title,
         company=posting.company,
-        location=posting.location or "unspecified",
-        remote=posting.remote,
         description=posting.description,
     )
 
@@ -86,7 +86,7 @@ async def analyze_fit(profile: Profile, posting: Job) -> FitAssessment:
     logger.info("Analyzing fit for job %s", posting.id)
     prompt = _build_prompt(profile, posting)
     judgment = await generate(prompt, FitJudgment)
-    assessment = score_fit(judgment)
+    assessment = score_fit(judgment, posting, profile)
     logger.info(
         "Fit analysis for job %s: score=%s verdict=%s gate_failed=%s",
         posting.id,

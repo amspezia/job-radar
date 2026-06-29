@@ -14,6 +14,15 @@ def test_extracts_text_from_pdf() -> None:
     assert "Python, PostgreSQL, Kubernetes" in text
 
 
+def test_tight_kerning_pdf_keeps_word_boundaries() -> None:
+    # Words separated by a sub-default-tolerance gap would otherwise be merged
+    # ("SeniorBackendEngineer", "Python,Kotlin"), wrecking parsing and the
+    # embedding. The tighter x_tolerance must preserve the spaces.
+    text = extract_text(_FIXTURES / "cv_tight_kerning.pdf")
+    assert "Senior Backend Engineer" in text
+    assert "Python, Kotlin, Kafka" in text
+
+
 def test_passes_through_text_files(tmp_path: Path) -> None:
     cv = tmp_path / "cv.txt"
     cv.write_text("Senior Backend Engineer\nPython, Postgres", encoding="utf-8")

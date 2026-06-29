@@ -2,6 +2,7 @@ from uuid import UUID
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.sql.elements import ColumnElement
 
 from job_radar.db.models import Job
 
@@ -9,7 +10,10 @@ _FTS_CONFIG = "simple"
 
 
 async def search_fts(
-    session: AsyncSession, query_text: str, limit: int
+    session: AsyncSession,
+    query_text: str,
+    limit: int,
+    extra_filter: ColumnElement[bool] | None = None,
 ) -> list[tuple[UUID, float]]:
     """Full-text search over jobs, ranked by ts_rank descending.
 
@@ -26,5 +30,7 @@ async def search_fts(
         .order_by(rank.desc())
         .limit(limit)
     )
+    if extra_filter is not None:
+        stmt = stmt.where(extra_filter)
     rows = (await session.execute(stmt)).all()
     return [(job_id, float(score)) for job_id, score in rows]
