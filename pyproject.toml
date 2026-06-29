@@ -51,6 +51,7 @@ job-radar-ingest = "job_radar.ingest.cli:main"
 job-radar-scheduler = "job_radar.ingest.scheduler:main"
 job-radar-assess = "job_radar.quality.cli:main"
 job-radar-profile = "job_radar.profile.cli:main"
+job-radar-fit = "job_radar.fit.cli:main"
 
 [build-system]
 requires = ["hatchling"]
