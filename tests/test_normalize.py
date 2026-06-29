@@ -65,6 +65,13 @@ class TestParseSalary:
             ("Competitive", None, None, None),
             ("", None, None, None),
             ("50000", 50000, None, None),
+            # European thousands-grouping with a period, not a comma.
+            ("€68.000 — €91.000 EUR", 68000, 91000, "EUR"),
+            # Decimal comma before a k suffix.
+            ("$31,2k- $52k", 31200, 52000, "USD"),
+            # Bare decimal with no k suffix and no period marker: too small
+            # to be a real annual salary, dropped rather than fabricated.
+            ("$55.12 — $68.89 USD", None, None, "USD"),
         ],
     )
     def test_parses_common_forms(
