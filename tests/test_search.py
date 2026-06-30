@@ -132,3 +132,47 @@ async def test_search_returns_empty_when_nothing_matches(
     monkeypatch.setattr(search_mod, "search_vector", empty)
 
     assert await search(db_session, "anything") == []
+
+
+async def test_blank_query_without_embedding_returns_empty_without_calling_arms(
+    db_session: AsyncSession, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # With no query text and no profile embedding there is no signal — return
+    # empty rather than scanning the whole corpus, and don't touch the rankers.
+    async def boom(*args: object, **kwargs: object) -> list:
+        raise AssertionError("ranker/embed must not be called for a blank query")
+
+    monkeypatch.setattr(search_mod, "search_fts", boom)
+    monkeypatch.setattr(search_mod, "search_vector", boom)
+    monkeypatch.setattr(search_mod, "embed", boom)
+
+    assert await search(db_session, "   ") == []
+
+
+async def test_cv_embedding_arm_is_used_when_query_is_blank(
+    db_session: AsyncSession, _cleanup_jobs: list[Job], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    a = _job(title="Zzyqx A")
+    db_session.add(a)
+    await db_session.commit()
+    _cleanup_jobs.append(a)
+
+    calls: list[object] = []
+
+    async def fake_vector(
+        session: object, embedding: object, limit: int, extra_filter: object = None
+    ) -> list:
+        calls.append(embedding)
+        return [(a.id, 1.0)]
+
+    async def fts_must_not_run(*args: object, **kwargs: object) -> list:
+        raise AssertionError("FTS arm must be skipped for a blank query")
+
+    monkeypatch.setattr(search_mod, "search_vector", fake_vector)
+    monkeypatch.setattr(search_mod, "search_fts", fts_must_not_run)
+
+    cv_vec = [0.2] * 768
+    results = await search(db_session, "", profile_embedding=cv_vec)
+
+    assert [job.id for job in results] == [a.id]
+    assert calls == [cv_vec]  # only the CV arm ran, with the profile embedding

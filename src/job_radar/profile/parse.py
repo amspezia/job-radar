@@ -15,6 +15,10 @@ For each work_history entry capture role, company, start, end, the duration in
 years, and the notable achievements/responsibilities as `highlights` (quote them
 from the CV).
 
+For `seniority`, return exactly one of: intern / junior / mid / senior / staff /
+principal — inferred from years of experience and the most recent job title.
+Return null if you cannot confidently determine the level.
+
 For `domains`, name the business/problem areas the candidate has worked in
 (e.g. "fintech", "proptech", "telecom", "LLM/agent infrastructure"). These may
 be inferred from the employers and project descriptions even when not stated as

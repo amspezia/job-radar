@@ -22,6 +22,10 @@ class Job(Base):
     title: Mapped[str] = mapped_column(String(255))
     company: Mapped[str] = mapped_column(String(255))
     description: Mapped[str] = mapped_column(Text)
+    # Canonical seniority level normalized from the title at ingest; NULL when
+    # the posting states no recognizable level ("unknown"). The single source of
+    # truth for level — both retrieval filtering and fit scoring read it.
+    seniority: Mapped[str | None] = mapped_column(String(50))
     salary_min: Mapped[int | None] = mapped_column(Integer)
     salary_max: Mapped[int | None] = mapped_column(Integer)
     currency: Mapped[str | None] = mapped_column(String(10))
@@ -65,6 +69,7 @@ class Profile(Base):
     salary_floor: Mapped[int | None] = mapped_column(Integer)
     currency: Mapped[str | None] = mapped_column(String(10))
     location_rules: Mapped[dict] = mapped_column(JSON)
+    seniority_rules: Mapped[dict | None] = mapped_column(JSON)
     remote_required: Mapped[bool] = mapped_column(Boolean)
 
 

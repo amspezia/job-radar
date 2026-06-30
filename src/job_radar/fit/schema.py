@@ -21,13 +21,6 @@ class Requirement(BaseModel):
     evidence: list[Evidence]
 
 
-class SeniorityJudgment(BaseModel):
-    posting_level: str
-    candidate_level: str
-    alignment: Literal["exact", "adjacent", "mismatch"]
-    evidence: list[Evidence]
-
-
 class DomainJudgment(BaseModel):
     relevance: Literal["strong", "partial", "weak"]
     evidence: list[Evidence]
@@ -37,11 +30,11 @@ class FitJudgment(BaseModel):
     """The grounded classifications the LLM returns — deliberately no score.
 
     The score is computed deterministically from this by fit.score, so the
-    model can never hand us an unverifiable number.
+    model can never hand us an unverifiable number. Seniority is not judged here
+    — it is structured metadata on the posting (Job.seniority).
     """
 
     requirements: list[Requirement]
-    seniority: SeniorityJudgment
     domain: DomainJudgment
     summary: str
 

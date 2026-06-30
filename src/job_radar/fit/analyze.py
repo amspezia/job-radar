@@ -10,6 +10,9 @@ logger = logging.getLogger(__name__)
 _INSUFFICIENT_INPUT = FitAssessment(
     score=None, verdict="none", gate_failed=False, judgment=None, summary="insufficient input"
 )
+_GENERATION_FAILED = FitAssessment(
+    score=None, verdict="none", gate_failed=False, judgment=None, summary="fit analysis failed"
+)
 
 _PROMPT = """\
 You are assessing how well a candidate fits a job posting. Judge ONLY from the
@@ -26,10 +29,10 @@ Do NOT judge the candidate's location, work authorization, or region eligibility
 — those are checked separately and deterministically.
 
 Also judge:
-- seniority: the posting's required level, the candidate's level, and whether
-  they are "exact", "adjacent", or "mismatch"
 - domain: how relevant the candidate's background is to the posting's domain
   ("strong", "partial", or "weak")
+
+Do NOT judge seniority/level — it is handled separately from posting metadata.
 
 Do not include a numeric score anywhere — it is computed separately.
 
@@ -73,11 +76,14 @@ def _has_sufficient_input(profile: Profile, posting: Job) -> bool:
     return has_profile_signal and has_posting_signal
 
 
-async def analyze_fit(profile: Profile, posting: Job) -> FitAssessment:
+async def analyze_fit(
+    profile: Profile, posting: Job, *, levels: list[str] | None = None
+) -> FitAssessment:
     """Judge a profile against a posting with the local LLM, then score it.
 
     The LLM only ever produces grounded classifications (FitJudgment); the
-    numeric score is computed deterministically by score_fit.
+    numeric score is computed deterministically by score_fit. `levels` overrides
+    the profile's accepted seniority levels for this call.
     """
     if not _has_sufficient_input(profile, posting):
         logger.info("Skipping fit analysis for job %s: insufficient input", posting.id)
@@ -85,8 +91,14 @@ async def analyze_fit(profile: Profile, posting: Job) -> FitAssessment:
 
     logger.info("Analyzing fit for job %s", posting.id)
     prompt = _build_prompt(profile, posting)
-    judgment = await generate(prompt, FitJudgment)
-    assessment = score_fit(judgment, posting, profile)
+    try:
+        judgment = await generate(prompt, FitJudgment)
+    except Exception:
+        # A malformed/truncated LLM response or a transient model error must not
+        # abort the whole batch — degrade this one job and keep scoring the rest.
+        logger.exception("Fit analysis failed for job %s", posting.id)
+        return _GENERATION_FAILED
+    assessment = score_fit(judgment, posting, profile, levels=levels)
     logger.info(
         "Fit analysis for job %s: score=%s verdict=%s gate_failed=%s",
         posting.id,

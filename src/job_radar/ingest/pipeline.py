@@ -11,6 +11,7 @@ from job_radar.adapters.embeddings import embed
 from job_radar.adapters.sources.base import SourceAdapter
 from job_radar.db.models import Job
 from job_radar.ingest.dedup import content_hash
+from job_radar.retrieval.seniority import normalize_level
 
 logger = logging.getLogger(__name__)
 
@@ -66,6 +67,7 @@ async def run_ingestion(adapter: SourceAdapter, session: AsyncSession, ingested_
                         collected_at=datetime.now(UTC),
                         content_hash=h,
                         embedding=embedding,
+                        seniority=normalize_level(r.title),
                     )
                 )
                 await session.flush()

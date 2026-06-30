@@ -1,12 +1,26 @@
 from job_radar.db.models import Job, Profile
 from job_radar.fit.schema import FitAssessment, FitJudgment, Requirement
 from job_radar.retrieval.geo import region_allowed
+from job_radar.retrieval.seniority import allowed_levels, normalize_level, rank
 
 # Per-judgment numeric values. Partial credit keeps the score smooth rather than
 # all-or-nothing.
 _SATISFACTION = {"met": 1.0, "partial": 0.5, "unmet": 0.0}
-_SENIORITY = {"exact": 1.0, "adjacent": 0.6, "mismatch": 0.2}
 _DOMAIN = {"strong": 1.0, "partial": 0.6, "weak": 0.2}
+
+# Seniority subscore for a posting within the accepted range, by signed distance
+# from the candidate's level (posting_rank - candidate_rank). Asymmetric: being
+# under-qualified (posting above you) bites harder than being over-qualified.
+_SENIORITY_UNKNOWN = 0.7  # posting states no level — neutral, never gated
+
+
+def _seniority_subscore(delta: int) -> float:
+    if delta == 0:
+        return 1.0
+    if delta < 0:  # over-qualified: gentle, floored
+        return max(0.55, 1.0 + 0.15 * delta)
+    return 0.25 if delta == 1 else 0.1  # under-qualified
+
 
 # Dimension weights (tunable; calibrated against human labels in M6). A dimension
 # with no items is dropped and the remaining weights are renormalized, so a
@@ -33,15 +47,34 @@ def _verdict(score: int) -> str:
     return "none"
 
 
-def score_fit(judgment: FitJudgment, job: Job, profile: Profile) -> FitAssessment:
+def score_fit(
+    judgment: FitJudgment, job: Job, profile: Profile, *, levels: list[str] | None = None
+) -> FitAssessment:
     """Compute a 0-100 fit score and verdict from grounded judgments.
 
     Deterministic: identical inputs always yield the identical score. The LLM
     supplies the requirement/seniority/domain classifications; all arithmetic —
-    and the region knockout — happens here.
+    and the region/seniority knockouts — happen here. `levels` overrides the
+    profile's accepted seniority levels for this call.
     """
     keywords = (profile.location_rules or {}).get("allowed_keywords") or []
     region_ok = region_allowed(job, keywords)
+
+    # Seniority is structured metadata on the posting (set at ingest). A known
+    # level outside the accepted range is a knockout; NULL is "unknown" — neutral
+    # and never gated; in-range scores by distance from the candidate.
+    posting_level = job.seniority
+    allowed = levels or allowed_levels(profile)
+    candidate_rank = rank(normalize_level(profile.seniority))
+    if posting_level is None:
+        seniority_ok, seniority_subscore = True, _SENIORITY_UNKNOWN
+    elif posting_level not in allowed:
+        seniority_ok, seniority_subscore = False, 0.0
+    elif candidate_rank is None:
+        seniority_ok, seniority_subscore = True, _SENIORITY_UNKNOWN
+    else:
+        seniority_ok = True
+        seniority_subscore = _seniority_subscore(rank(posting_level) - candidate_rank)
 
     # Domain only scores against a real candidate signal — with no declared
     # domains the LLM's relevance call is ungrounded, so drop the dimension.
@@ -57,7 +90,7 @@ def score_fit(judgment: FitJudgment, job: Job, profile: Profile) -> FitAssessmen
         dimensions.append(("required", _coverage(required)))
     if preferred:
         dimensions.append(("preferred", _coverage(preferred)))
-    dimensions.append(("seniority", _SENIORITY[judgment.seniority.alignment]))
+    dimensions.append(("seniority", seniority_subscore))
     if score_domain:
         dimensions.append(("domain", _DOMAIN[judgment.domain.relevance]))
 
@@ -65,7 +98,8 @@ def score_fit(judgment: FitJudgment, job: Job, profile: Profile) -> FitAssessmen
     weighted = sum(_WEIGHTS[key] * subscore for key, subscore in dimensions)
     score = round(100 * weighted / total_weight)
 
-    if not region_ok:
+    gate_failed = not region_ok or not seniority_ok
+    if gate_failed:
         score = min(score, _GATE_CAP)
         verdict = "none"
     else:
@@ -74,7 +108,7 @@ def score_fit(judgment: FitJudgment, job: Job, profile: Profile) -> FitAssessmen
     return FitAssessment(
         score=score,
         verdict=verdict,
-        gate_failed=not region_ok,
+        gate_failed=gate_failed,
         judgment=judgment,
         summary=judgment.summary,
     )

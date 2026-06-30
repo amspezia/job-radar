@@ -8,6 +8,7 @@ from job_radar.adapters.embeddings import embed
 from job_radar.db.models import Profile
 from job_radar.profile.extract import extract_text
 from job_radar.profile.parse import parse_cv
+from job_radar.retrieval.seniority import normalize_level
 
 logger = logging.getLogger(__name__)
 
@@ -40,12 +41,12 @@ async def load_profile(session: AsyncSession, path: Path) -> Profile:
     profile = (await session.execute(select(Profile))).scalars().first()
     created = profile is None
     if profile is None:
-        profile = Profile(links={}, location_rules={}, remote_required=False)
+        profile = Profile(links={}, location_rules={}, seniority_rules={}, remote_required=False)
         session.add(profile)
 
     profile.full_name = structured.full_name or ""
     profile.email = structured.email or ""
-    profile.seniority = structured.seniority
+    profile.seniority = normalize_level(structured.seniority)
     profile.years_experience = structured.years_experience
     profile.target_titles = structured.target_titles
     profile.domains_keywords = {

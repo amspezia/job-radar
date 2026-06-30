@@ -17,6 +17,11 @@ async def _run(path: Path) -> None:
     print(f"  target titles: {', '.join(profile.target_titles) or '(none)'}")
     print(f"  skills ({len(skills)}): {', '.join(skills) or '(none)'}")
     print(f"  work history entries: {len(profile.work_history or [])}")
+    for work_history in profile.work_history:
+        for key, value in work_history.items():
+            print(f"    {key}: {value}")
+
+    print()
 
 
 def main() -> None:

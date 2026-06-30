@@ -13,7 +13,7 @@ class WorkItem(BaseModel):
 class StructuredProfile(BaseModel):
     full_name: str | None  # PII — stored locally only
     email: str | None  # PII — stored locally only
-    seniority: str
+    seniority: str | None
     target_titles: list[str]
     tech_stack: list[str]
     domains: list[str]
