@@ -123,7 +123,7 @@ async def _run(threshold: float) -> None:
             print("No jobs in the database — run job-radar-ingest first.")
             return
         quals = metrics.compute(rows, now=now)
-        centroid = await relevance.build_centroid(embed)
+        centroid = await relevance.build_centroid(lambda t: embed(t, task="query"))
         rel = await relevance.relevance_by_source(session, centroid, threshold)
 
     columns = _merge(quals, rel)

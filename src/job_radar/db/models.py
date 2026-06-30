@@ -2,8 +2,7 @@ from datetime import datetime
 from uuid import UUID, uuid4
 
 from pgvector.sqlalchemy import Vector
-from sqlalchemy import JSON, Boolean, Computed, DateTime, Float, ForeignKey, Integer, String, Text
-from sqlalchemy.dialects.postgresql import TSVECTOR
+from sqlalchemy import JSON, Boolean, DateTime, Float, ForeignKey, Integer, String, Text
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -22,6 +21,12 @@ class Job(Base):
     title: Mapped[str] = mapped_column(String(255))
     company: Mapped[str] = mapped_column(String(255))
     description: Mapped[str] = mapped_column(Text)
+    # Structured fields extracted from description at ingest by an LLM pass.
+    # These are what the BM25 index covers — not the raw description — so each
+    # field has its own length normalization and company boilerplate is excluded.
+    # NULL when extraction fails; those postings still reach the vector arms.
+    requirements: Mapped[str | None] = mapped_column(Text)
+    responsibilities: Mapped[str | None] = mapped_column(Text)
     # Canonical seniority level normalized from the title at ingest; NULL when
     # the posting states no recognizable level ("unknown"). The single source of
     # truth for level — both retrieval filtering and fit scoring read it.
@@ -36,20 +41,6 @@ class Job(Base):
     collected_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     embedding: Mapped[list[float] | None] = mapped_column(Vector(768))
     content_hash: Mapped[str] = mapped_column(String(64), unique=True, index=True)
-    # Mirrors the GENERATED ALWAYS AS clause from the migration. Computed()
-    # tells the ORM this column is database-maintained, so it's excluded from
-    # every INSERT/UPDATE the unit-of-work issues — without it, SQLAlchemy
-    # sends an explicit NULL for any unset attribute, which Postgres rejects
-    # outright for a generated column.
-    search_vector: Mapped[str] = mapped_column(
-        TSVECTOR,
-        Computed(
-            "setweight(to_tsvector('simple', coalesce(title, '')), 'A') || "
-            "setweight(to_tsvector('simple', coalesce(description, '')), 'B')",
-            persisted=True,
-        ),
-        deferred=True,
-    )
 
 
 class Profile(Base):
@@ -71,12 +62,16 @@ class Profile(Base):
     location_rules: Mapped[dict] = mapped_column(JSON)
     seniority_rules: Mapped[dict | None] = mapped_column(JSON)
     remote_required: Mapped[bool] = mapped_column(Boolean)
+    dense_query_cache: Mapped[str | None] = mapped_column(Text)
 
 
 class EvalLabel(Base):
     __tablename__ = "eval_labels"
 
     id: Mapped[UUID] = mapped_column(PG_UUID(as_uuid=True), primary_key=True, default=uuid4)
+    profile_id: Mapped[UUID] = mapped_column(
+        PG_UUID(as_uuid=True), ForeignKey("profile.id"), index=True
+    )
     job_id: Mapped[UUID] = mapped_column(PG_UUID(as_uuid=True), ForeignKey("jobs.id"), index=True)
     label: Mapped[str] = mapped_column(String(50))
     labeled_by: Mapped[str] = mapped_column(String(255))

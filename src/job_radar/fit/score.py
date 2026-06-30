@@ -1,7 +1,7 @@
 from job_radar.db.models import Job, Profile
 from job_radar.fit.schema import FitAssessment, FitJudgment, Requirement
 from job_radar.retrieval.geo import region_allowed
-from job_radar.retrieval.seniority import allowed_levels, normalize_level, rank
+from job_radar.retrieval.seniority import allowed_levels, rank
 
 # Per-judgment numeric values. Partial credit keeps the score smooth rather than
 # all-or-nothing.
@@ -65,7 +65,7 @@ def score_fit(
     # and never gated; in-range scores by distance from the candidate.
     posting_level = job.seniority
     allowed = levels or allowed_levels(profile)
-    candidate_rank = rank(normalize_level(profile.seniority))
+    candidate_rank = rank(profile.seniority)
     if posting_level is None:
         seniority_ok, seniority_subscore = True, _SENIORITY_UNKNOWN
     elif posting_level not in allowed:

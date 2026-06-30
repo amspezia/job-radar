@@ -39,24 +39,23 @@ async def _cleanup_jobs(db_session: AsyncSession):
         await db_session.commit()
 
 
-@pytest.fixture(autouse=True)
-def _stub_embed(monkeypatch: pytest.MonkeyPatch) -> None:
-    # Keep tests off Ollama; the returned vector matches the seeded jobs'.
-    async def _fake_embed(text: str) -> list[float]:
-        return [0.1] * 768
-
-    monkeypatch.setattr(search_mod, "embed", _fake_embed)
-
-
 async def test_search_returns_hydrated_jobs_for_a_match(
-    db_session: AsyncSession, _cleanup_jobs: list[Job]
+    db_session: AsyncSession, _cleanup_jobs: list[Job], monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    # Nonce token isolates these from the real corpus on the FTS side.
     a = _job(title="Zzyqx Platform Engineer")
     b = _job(title="Zzyqx Data Engineer")
     db_session.add_all([a, b])
     await db_session.commit()
     _cleanup_jobs.extend([a, b])
+
+    # BM25 mechanics are tested in test_bm25.py. Here we only verify that
+    # search() hydrates the returned ids into Job ORM objects in fused order.
+    async def fake_bm25(
+        session: object, query: object, limit: int, extra_filter: object = None
+    ) -> list:
+        return [(a.id, 2.0), (b.id, 1.5)]
+
+    monkeypatch.setattr(search_mod, "search_bm25", fake_bm25)
 
     results = await search(db_session, "zzyqx", limit=20, pool=50)
 
@@ -89,7 +88,7 @@ async def test_search_hydrates_in_fused_order(
     ) -> list:
         return ranking
 
-    monkeypatch.setattr(search_mod, "search_fts", fake_fts)
+    monkeypatch.setattr(search_mod, "search_bm25", fake_fts)
     monkeypatch.setattr(search_mod, "search_vector", fake_vector)
 
     results = await search(db_session, "anything")
@@ -114,7 +113,7 @@ async def test_search_respects_limit(
     ) -> list:
         return ranking
 
-    monkeypatch.setattr(search_mod, "search_fts", fake_ranker)
+    monkeypatch.setattr(search_mod, "search_bm25", fake_ranker)
     monkeypatch.setattr(search_mod, "search_vector", fake_ranker)
 
     results = await search(db_session, "anything", limit=2)
@@ -128,7 +127,7 @@ async def test_search_returns_empty_when_nothing_matches(
     async def empty(*args: object, **kwargs: object) -> list:
         return []
 
-    monkeypatch.setattr(search_mod, "search_fts", empty)
+    monkeypatch.setattr(search_mod, "search_bm25", empty)
     monkeypatch.setattr(search_mod, "search_vector", empty)
 
     assert await search(db_session, "anything") == []
@@ -137,14 +136,13 @@ async def test_search_returns_empty_when_nothing_matches(
 async def test_blank_query_without_embedding_returns_empty_without_calling_arms(
     db_session: AsyncSession, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    # With no query text and no profile embedding there is no signal — return
-    # empty rather than scanning the whole corpus, and don't touch the rankers.
+    # With no query text and no embeddings there is no signal — return empty
+    # rather than scanning the whole corpus, and don't touch the rankers.
     async def boom(*args: object, **kwargs: object) -> list:
-        raise AssertionError("ranker/embed must not be called for a blank query")
+        raise AssertionError("rankers must not be called when there is no signal")
 
-    monkeypatch.setattr(search_mod, "search_fts", boom)
+    monkeypatch.setattr(search_mod, "search_bm25", boom)
     monkeypatch.setattr(search_mod, "search_vector", boom)
-    monkeypatch.setattr(search_mod, "embed", boom)
 
     assert await search(db_session, "   ") == []
 
@@ -165,11 +163,11 @@ async def test_cv_embedding_arm_is_used_when_query_is_blank(
         calls.append(embedding)
         return [(a.id, 1.0)]
 
-    async def fts_must_not_run(*args: object, **kwargs: object) -> list:
-        raise AssertionError("FTS arm must be skipped for a blank query")
+    async def bm25_must_not_run(*args: object, **kwargs: object) -> list:
+        raise AssertionError("BM25 arm must be skipped for a blank query")
 
     monkeypatch.setattr(search_mod, "search_vector", fake_vector)
-    monkeypatch.setattr(search_mod, "search_fts", fts_must_not_run)
+    monkeypatch.setattr(search_mod, "search_bm25", bm25_must_not_run)
 
     cv_vec = [0.2] * 768
     results = await search(db_session, "", profile_embedding=cv_vec)

@@ -1,5 +1,5 @@
 from job_radar.db.models import Profile
-from job_radar.fit.pipeline import build_query
+from job_radar.fit.pipeline import build_lexical_query
 from job_radar.retrieval.filters import build_profile_filter
 
 
@@ -44,6 +44,13 @@ def test_salary_floor_keeps_null_salary_rows() -> None:
     assert "currency" in sql
 
 
+def test_salary_floor_without_currency_adds_no_filter() -> None:
+    # Cannot compare numbers across unknown currencies — no filter is safer than
+    # silently excluding foreign-currency postings.
+    result = build_profile_filter(_profile(salary_floor=120000, currency=None))
+    assert result is None
+
+
 def test_seniority_filters_on_allowed_levels_keeping_null() -> None:
     # Senior candidate: keep NULL (unknown) or any in-range level; Principal
     # (out of range by default) is absent from the IN-list.
@@ -73,14 +80,14 @@ def test_levels_override_narrows_what_the_profile_would_allow() -> None:
     assert "'staff'" not in _sql(build_profile_filter(profile, levels=["senior"])).lower()
 
 
-def test_build_query_merges_titles_stack_and_domains() -> None:
+def test_build_lexical_query_merges_titles_stack_and_domains() -> None:
     profile = _profile(
         target_titles=["Backend Engineer"],
         domains_keywords={"tech_stack": ["Python", "Kafka"], "domains": ["fintech"]},
     )
-    query = build_query(profile)
+    query = build_lexical_query(profile)
     assert query == "Backend Engineer Python Kafka fintech"
 
 
-def test_build_query_handles_empty_profile() -> None:
-    assert build_query(_profile()) == ""
+def test_build_lexical_query_handles_empty_profile() -> None:
+    assert build_lexical_query(_profile()) == ""

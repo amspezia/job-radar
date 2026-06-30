@@ -78,3 +78,23 @@ def test_larger_k_flattens_rank_one_dominance() -> None:
 def test_empty_input_returns_empty() -> None:
     assert reciprocal_rank_fusion([]) == []
     assert reciprocal_rank_fusion([[], []]) == []
+
+
+def test_weights_scale_arm_contribution() -> None:
+    # A appears only in fts (rank 1). B appears only in vector (rank 1).
+    # With weight 2.0 on fts, A should win; default (1.0) produces a tie.
+    fts = [(A, 1.0)]
+    vector = [(B, 1.0)]
+
+    tied = dict(reciprocal_rank_fusion([fts, vector]))
+    assert tied[A] == tied[B]  # equal weight -> tie
+
+    weighted = dict(reciprocal_rank_fusion([fts, vector], weights=[2.0, 1.0]))
+    assert weighted[A] > weighted[B]  # fts arm up-weighted -> A wins
+
+
+def test_weights_mismatched_length_raises() -> None:
+    import pytest
+
+    with pytest.raises(ValueError, match="weights length"):
+        reciprocal_rank_fusion([[(A, 1.0)], [(B, 1.0)]], weights=[1.0])

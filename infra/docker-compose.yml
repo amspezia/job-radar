@@ -1,6 +1,7 @@
 services:
   postgres:
-    image: pgvector/pgvector:pg16
+    image: paradedb/paradedb:pg16
+    command: postgres -c shared_preload_libraries='pg_search,pg_cron'
     environment:
       POSTGRES_USER: job_radar
       POSTGRES_PASSWORD: job_radar

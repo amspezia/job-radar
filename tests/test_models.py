@@ -54,6 +54,22 @@ async def test_profile_round_trip(db_session: AsyncSession) -> None:
 
 
 async def test_eval_label_round_trip(db_session: AsyncSession) -> None:
+    profile = Profile(
+        full_name="Test User",
+        email="test@example.com",
+        links={},
+        work_history=[],
+        cv_text="Backend engineer.",
+        cv_embedding=[0.0] * 768,
+        target_titles=["Backend Engineer"],
+        seniority="senior",
+        domains_keywords={},
+        location_rules={},
+        remote_required=False,
+    )
+    db_session.add(profile)
+    await db_session.flush()
+
     job = Job(
         source="example-board",
         source_type="board",
@@ -71,6 +87,7 @@ async def test_eval_label_round_trip(db_session: AsyncSession) -> None:
     await db_session.flush()
 
     label = EvalLabel(
+        profile_id=profile.id,
         job_id=job.id,
         label="good",
         labeled_by="afonso",
@@ -83,3 +100,4 @@ async def test_eval_label_round_trip(db_session: AsyncSession) -> None:
     fetched = result.scalar_one()
     assert fetched.label == "good"
     assert fetched.labeled_by == "afonso"
+    assert fetched.profile_id == profile.id

@@ -51,7 +51,7 @@ def _url(name: str) -> str:
 
 @pytest.fixture(autouse=True)
 def _stub_embed(monkeypatch: pytest.MonkeyPatch) -> None:
-    async def _fake_embed(text: str) -> list[float]:
+    async def _fake_embed(text: str, *, task: str) -> list[float]:
         return [0.0] * 768
 
     monkeypatch.setattr("job_radar.ingest.pipeline.embed", _fake_embed)
@@ -172,7 +172,7 @@ async def test_run_ingestion_skips_existing_url_without_reembedding(
 
     embed_calls: list[str] = []
 
-    async def counting_embed(text: str) -> list[float]:
+    async def counting_embed(text: str, *, task: str) -> list[float]:
         embed_calls.append(text)
         return [0.0] * 768
 
@@ -226,7 +226,7 @@ async def test_run_ingestion_skips_job_whose_embedding_call_fails(
     ok_url = _url("embed-ok")
     _cleanup_urls.extend([failing_url, ok_url])
 
-    async def _flaky_embed(text: str) -> list[float]:
+    async def _flaky_embed(text: str, *, task: str) -> list[float]:
         if "Flaky Role" in text:
             raise httpx.ConnectError("ollama unreachable")
         return [0.0] * 768

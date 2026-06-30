@@ -35,7 +35,7 @@ async def load_profile(session: AsyncSession, path: Path) -> Profile:
         len(structured.work_history),
     )
 
-    embedding = await embed(text)
+    embedding = await embed(text, task="document")
     logger.debug("Computed CV embedding (%d dims)", len(embedding))
 
     profile = (await session.execute(select(Profile))).scalars().first()
@@ -56,6 +56,7 @@ async def load_profile(session: AsyncSession, path: Path) -> Profile:
     profile.work_history = [item.model_dump() for item in structured.work_history]
     profile.cv_text = text
     profile.cv_embedding = embedding
+    profile.dense_query_cache = None  # invalidate on every CV reload
 
     await session.commit()
     logger.info("Profile %s", "created" if created else "updated")

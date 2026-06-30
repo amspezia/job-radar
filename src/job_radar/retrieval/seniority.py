@@ -29,7 +29,7 @@ _SYNONYMS: dict[str, str] = {
 
 
 def rank(level: str | None) -> int | None:
-    return _RANK.get(level) if level else None
+    return _RANK.get(level) if level is not None else None
 
 
 def normalize_level(text: str | None) -> str | None:

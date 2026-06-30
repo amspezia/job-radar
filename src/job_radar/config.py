@@ -8,6 +8,10 @@ class Settings(BaseSettings):
     ollama_base_url: str
     embedding_model: str
     generation_model: str
+    # Optional smaller/faster model for ingest-time field extraction.
+    # Defaults to generation_model when unset — extraction is a simple
+    # classification task that a 3B model handles as well as a 7B one.
+    extraction_model: str | None = None
 
 
 settings = Settings()

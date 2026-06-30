@@ -49,9 +49,26 @@ work_history: {work_history}
 # Job posting
 title: {title}
 company: {company}
-description:
-{description}
+{posting_body}
 """
+
+
+def _posting_body(posting: Job) -> str:
+    """Build the posting section of the fit prompt from the richest available content.
+
+    Structured fields (pre-extracted at ingest) are preferred: they exclude company
+    boilerplate, benefits, and culture copy that the LLM would otherwise have to
+    filter out manually, and they fit comfortably within num_ctx. Raw description is
+    used only when both extracted fields are absent (extraction failed or skipped).
+    """
+    if posting.requirements or posting.responsibilities:
+        parts: list[str] = []
+        if posting.requirements:
+            parts.append(f"requirements:\n{posting.requirements}")
+        if posting.responsibilities:
+            parts.append(f"responsibilities:\n{posting.responsibilities}")
+        return "\n\n".join(parts)
+    return f"description:\n{posting.description}"
 
 
 def _build_prompt(profile: Profile, posting: Job) -> str:
@@ -65,7 +82,7 @@ def _build_prompt(profile: Profile, posting: Job) -> str:
         cv_text=profile.cv_text or "(none provided)",
         title=posting.title,
         company=posting.company,
-        description=posting.description,
+        posting_body=_posting_body(posting),
     )
 
 

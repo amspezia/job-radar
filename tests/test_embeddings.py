@@ -27,17 +27,49 @@ class _FakeClient:
         return _FakeResponse()
 
 
-async def test_embed_returns_first_vector(monkeypatch: pytest.MonkeyPatch) -> None:
-    captured = {}
-
-    def make_client(*args: object, **kwargs: object) -> _FakeClient:
+def _make_client(captured: dict):
+    def factory(*args: object, **kwargs: object) -> _FakeClient:
         client = _FakeClient()
         captured["client"] = client
         return client
 
-    monkeypatch.setattr("job_radar.adapters.embeddings.httpx.AsyncClient", make_client)
+    return factory
 
-    vector = await embed("senior backend engineer")
+
+async def test_embed_returns_first_vector(monkeypatch: pytest.MonkeyPatch) -> None:
+    captured: dict = {}
+    monkeypatch.setattr("job_radar.adapters.embeddings.httpx.AsyncClient", _make_client(captured))
+
+    vector = await embed("senior backend engineer", task="query")
 
     assert vector == [0.1, 0.2, 0.3]  # unwraps embeddings[0], not the whole list
-    assert captured["client"].posted["json"]["input"] == "senior backend engineer"
+
+
+async def test_embed_prepends_query_prefix(monkeypatch: pytest.MonkeyPatch) -> None:
+    captured: dict = {}
+    monkeypatch.setattr("job_radar.adapters.embeddings.httpx.AsyncClient", _make_client(captured))
+
+    await embed("senior backend engineer", task="query")
+
+    assert captured["client"].posted["json"]["input"] == "search_query: senior backend engineer"
+
+
+async def test_embed_prepends_document_prefix(monkeypatch: pytest.MonkeyPatch) -> None:
+    captured: dict = {}
+    monkeypatch.setattr("job_radar.adapters.embeddings.httpx.AsyncClient", _make_client(captured))
+
+    await embed("Backend Engineer\nBuild scalable APIs.", task="document")
+
+    assert (
+        captured["client"].posted["json"]["input"]
+        == "search_document: Backend Engineer\nBuild scalable APIs."
+    )
+
+
+async def test_embed_sets_num_ctx(monkeypatch: pytest.MonkeyPatch) -> None:
+    captured: dict = {}
+    monkeypatch.setattr("job_radar.adapters.embeddings.httpx.AsyncClient", _make_client(captured))
+
+    await embed("text", task="document")
+
+    assert captured["client"].posted["json"]["options"]["num_ctx"] == 8192
