@@ -7,7 +7,7 @@ from sqlalchemy.sql.elements import ColumnElement
 from job_radar.db.models import Job
 
 
-def _boosted_query(query_text: str) -> str:
+def _boosted_query(query_text: str, field_boosts: dict[str, int] | None = None) -> str:
     # Three indexed fields, each with its own BM25 length normalization:
     #   title       5x — highest discriminative signal; short, so it never
     #               gets length-penalised relative to the description blob.
@@ -15,7 +15,8 @@ def _boosted_query(query_text: str) -> str:
     #               responsibilities because stack keywords are more specific.
     #   responsibilities 1x — baseline; provides recall for role verbs.
     # lenient=true silences parse errors from special chars (C++, .NET, etc.)
-    return f"title:({query_text})^5 requirements:({query_text})^2 responsibilities:({query_text})"
+    boosts = field_boosts or {"title": 5, "requirements": 3, "responsibilities": 1}
+    return " ".join(f"{field}:({query_text})^{weight}" for field, weight in boosts.items())
 
 
 async def search_bm25(
@@ -23,6 +24,8 @@ async def search_bm25(
     query_text: str,
     limit: int,
     extra_filter: ColumnElement[bool] | None = None,
+    *,
+    field_boosts: dict[str, int] | None = None,
 ) -> list[tuple[UUID, float]]:
     """BM25 search over jobs via ParadeDB pg_search.
 
@@ -38,7 +41,7 @@ async def search_bm25(
         select(Job.id, score)
         .where(
             text("jobs @@@ paradedb.parse(:q, lenient => true)").bindparams(
-                q=_boosted_query(query_text)
+                q=_boosted_query(query_text, field_boosts)
             )
         )
         .order_by(score.desc())

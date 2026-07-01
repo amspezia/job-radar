@@ -16,3 +16,78 @@ fmt:
 # Run the test suite
 test:
     uv run pytest
+
+# ---------------------------------------------------------------------------
+# Eval Ollama — dedicated instance on :11435 so eval never blocks ingest
+# ---------------------------------------------------------------------------
+
+_EVAL_OLLAMA_PORT := "11435"
+_EVAL_OLLAMA_URL  := "http://localhost:" + _EVAL_OLLAMA_PORT
+_EVAL_OLLAMA_PID  := "/tmp/ollama-eval.pid"
+
+# Apply performance settings to the main Ollama (port 11434) and restart it
+ollama-configure:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    echo "Applying Ollama performance settings via launchctl…"
+    launchctl setenv OLLAMA_NUM_PARALLEL 8
+    launchctl setenv OLLAMA_FLASH_ATTENTION 1
+    launchctl setenv OLLAMA_MAX_LOADED_MODELS 2
+    echo "Restarting Ollama…"
+    pkill -x ollama 2>/dev/null || true
+    sleep 1
+    OLLAMA_NUM_PARALLEL=8 OLLAMA_FLASH_ATTENTION=1 OLLAMA_MAX_LOADED_MODELS=2 ollama serve &>/tmp/ollama-main.log &
+    echo "Waiting for Ollama to be ready…"
+    for i in $(seq 1 20); do
+        curl -sf http://localhost:11434/ >/dev/null 2>&1 && break
+        sleep 1
+    done
+    echo "Main Ollama ready with NUM_PARALLEL=6 FLASH_ATTENTION=1 MAX_LOADED_MODELS=2"
+
+# Start the eval Ollama instance (port 11435) and pre-warm both models
+eval-ollama-start:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [ -f {{_EVAL_OLLAMA_PID}} ] && kill -0 "$(cat {{_EVAL_OLLAMA_PID}})" 2>/dev/null; then
+        echo "eval Ollama already running (pid $(cat {{_EVAL_OLLAMA_PID}}))"
+        exit 0
+    fi
+    OLLAMA_HOST=127.0.0.1:{{_EVAL_OLLAMA_PORT}} OLLAMA_NUM_PARALLEL=8 OLLAMA_FLASH_ATTENTION=1 OLLAMA_MAX_LOADED_MODELS=2 ollama serve &>/tmp/ollama-eval.log &
+    echo $! > {{_EVAL_OLLAMA_PID}}
+    echo "started eval Ollama (pid $!) on port {{_EVAL_OLLAMA_PORT}}, waiting for ready…"
+    for i in $(seq 1 20); do
+        curl -sf {{_EVAL_OLLAMA_URL}}/ >/dev/null 2>&1 && break
+        sleep 1
+    done
+    echo "warming up nomic-embed-text…"
+    curl -sf -X POST {{_EVAL_OLLAMA_URL}}/api/embed \
+        -H "Content-Type: application/json" \
+        -d '{"model":"nomic-embed-text","input":"warmup","keep_alive":-1}' >/dev/null
+    echo "warming up generation model…"
+    curl -sf -X POST {{_EVAL_OLLAMA_URL}}/api/generate \
+        -H "Content-Type: application/json" \
+        -d "{\"model\":\"$(grep GENERATION_MODEL .env | cut -d= -f2 | tr -d '\"' || echo qwen2.5:3b)\",\"prompt\":\"hi\",\"keep_alive\":-1}" >/dev/null
+    echo "eval Ollama ready — both models loaded"
+
+# Stop the eval Ollama instance
+eval-ollama-stop:
+    #!/usr/bin/env bash
+    if [ -f {{_EVAL_OLLAMA_PID}} ]; then
+        pid=$(cat {{_EVAL_OLLAMA_PID}})
+        kill "$pid" 2>/dev/null && echo "stopped eval Ollama (pid $pid)" || echo "process already gone"
+        rm -f {{_EVAL_OLLAMA_PID}}
+    else
+        echo "no eval Ollama pid file found"
+    fi
+
+# Interactive labeling session (uses eval Ollama on :11435)
+eval-label *args:
+    OLLAMA_BASE_URL={{_EVAL_OLLAMA_URL}} uv run job-radar-eval-label {{args}}
+
+# Run eval metrics for all configs (uses eval Ollama on :11435)
+eval-run *args:
+    OLLAMA_BASE_URL={{_EVAL_OLLAMA_URL}} uv run job-radar-eval-run {{args}}
+
+# OAT parameter sweep (uses eval Ollama on :11435)
+eval-sweep *args:
+    OLLAMA_BASE_URL={{_EVAL_OLLAMA_URL}} uv run job-radar-eval-sweep {{args}}

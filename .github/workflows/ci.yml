@@ -15,7 +15,9 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: pgvector/pgvector:pg16
+        # ParadeDB image: ships both pgvector and pg_search (ParadeDB BM25).
+        # Needed for hybrid search tests that exercise the BM25 arm.
+        image: paradedb/paradedb:pg16
         env:
           POSTGRES_USER: job_radar
           POSTGRES_PASSWORD: job_radar
@@ -31,6 +33,7 @@ jobs:
       DATABASE_URL: postgresql+psycopg://job_radar:job_radar@localhost:5432/job_radar
       OLLAMA_BASE_URL: http://localhost:11434
       EMBEDDING_MODEL: nomic-embed-text
+      GENERATION_MODEL: qwen2.5
     steps:
       - uses: actions/checkout@v4
 

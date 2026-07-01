@@ -1,0 +1,5 @@
+{
+  "_comment": "Golden qrels — committed after labeling (M6 build step 7). Format: profile_id + list of {job_id, grade} pairs (grades 0–3). No job text or PII.",
+  "profile_id": null,
+  "labels": []
+}

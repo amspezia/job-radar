@@ -28,7 +28,7 @@ async def embed(text: str, *, task: Literal["query", "document"]) -> list[float]
         # truncates long job descriptions, dropping the tech-stack list at the end.
         "options": {"num_ctx": 8192},
     }
-    async with httpx.AsyncClient(timeout=30) as client:
+    async with httpx.AsyncClient(timeout=120) as client:
         resp = await client.post(url=f"{settings.ollama_base_url}/api/embed", json=payload)
     resp.raise_for_status()
     return resp.json()["embeddings"][0]

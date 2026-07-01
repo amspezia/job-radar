@@ -53,3 +53,6 @@ langfuse/
 
 # Local cv for dev testing
 cv.pdf
+
+# Eval harness — run artifacts are ephemeral; only goldens are committed.
+eval/results/

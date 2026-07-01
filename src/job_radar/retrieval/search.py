@@ -1,3 +1,4 @@
+import asyncio
 from uuid import UUID
 
 from sqlalchemy import select
@@ -16,7 +17,7 @@ async def search(
     *,
     hyde_embedding: list[float] | None = None,
     limit: int = 20,
-    pool: int = 50,
+    pool: int = 100,
     extra_filter: ColumnElement[bool] | None = None,
     profile_embedding: list[float] | None = None,
     weights: list[float] | None = None,
@@ -35,17 +36,18 @@ async def search(
     `weights` must have the same length as the number of active arms when provided;
     defaults to equal weights (standard RRF). Values are tuned by the eval phase.
     """
-    arms: list[list[tuple[UUID, float]]] = []
-
+    coros = []
     if query and query.strip():
-        arms.append(await search_bm25(session, query, pool, extra_filter))
-
+        coros.append(search_bm25(session, query, pool, extra_filter))
     if hyde_embedding is not None:
-        arms.append(await search_vector(session, hyde_embedding, pool, extra_filter))
-
+        coros.append(search_vector(session, hyde_embedding, pool, extra_filter))
     if profile_embedding is not None:
-        arms.append(await search_vector(session, profile_embedding, pool, extra_filter))
+        coros.append(search_vector(session, profile_embedding, pool, extra_filter))
 
+    if not coros:
+        return []
+
+    arms: list[list[tuple[UUID, float]]] = list(await asyncio.gather(*coros))
     fused = reciprocal_rank_fusion(arms, limit=limit, weights=weights)
     if not fused:
         return []

@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 # Caps how many analyze_fit calls run at once. Matches Ollama's typical default
 # OLLAMA_NUM_PARALLEL; unbounded concurrency would just queue identically to
 # sequential (or exhaust GPU VRAM) instead of actually overlapping.
-_MAX_CONCURRENT_ANALYSES = 2
+_MAX_CONCURRENT_ANALYSES = 8
 
 
 class _HyDEPosting(BaseModel):
