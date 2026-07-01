@@ -32,7 +32,7 @@ def main() -> None:
     parser.add_argument(
         "query", nargs="?", default=None, help="search query (default: profile target_titles)"
     )
-    parser.add_argument("--limit", type=int, default=20, help="max jobs to retrieve and score")
+    parser.add_argument("--limit", type=int, default=100, help="max jobs to retrieve and score")
     parser.add_argument(
         "--level",
         action="append",

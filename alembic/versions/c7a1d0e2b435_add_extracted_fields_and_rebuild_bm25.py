@@ -17,6 +17,7 @@ indexed for BM25 (it is still stored for fit analysis and display).
 from collections.abc import Sequence
 
 import sqlalchemy as sa
+
 from alembic import op
 
 revision: str = "c7a1d0e2b435"

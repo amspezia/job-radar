@@ -1,7 +1,7 @@
 """Unit tests for eval/metrics.py — the auditable pure-Python metric reference.
 
 All expected values are hand-computed from the DCG formula:
-  DCG@k = Σ_{i=1..k} (2^grade_i − 1) / log2(i + 1)
+  DCG@k = sum_{i=1..k} (2^grade_i - 1) / log2(i + 1)
 
 No database, no I/O.
 """

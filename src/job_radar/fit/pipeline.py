@@ -159,7 +159,7 @@ async def run_fit_pipeline(
     session: AsyncSession,
     query: str | None = None,
     *,
-    limit: int = 50,
+    limit: int = 100,
     levels: list[str] | None = None,
     field_boosts: dict[str, int] | None = None,
 ) -> list[tuple[Job, FitAssessment]]:
@@ -189,6 +189,7 @@ async def run_fit_pipeline(
         limit=limit,
         extra_filter=profile_filter,
         field_boosts=field_boosts,
+        weights=[2.0, 1.0],
     )
     logger.info("Retrieved %d candidate jobs", len(jobs))
 

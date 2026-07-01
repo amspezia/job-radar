@@ -92,10 +92,15 @@ async def _main(run_path: Path) -> None:
 
     # Write golden qrels — job IDs + grades only, no job text or PII.
     qrels_out = {
-        "_comment": "Golden qrels — committed after labeling (M6 build step 7). Format: profile_id + list of {job_id, grade} pairs (grades 0–3). No job text or PII.",
+        "_comment": (
+            "Golden qrels — committed after labeling (M6 build step 7)."
+            " Format: profile_id + list of {job_id, grade} pairs (grades 0-3)."
+            " No job text or PII."
+        ),
         "profile_id": profile_id_str,
         "labels": [
-            {"job_id": str(jid), "grade": grade} for jid, grade in sorted(qrels.items(), key=lambda x: str(x[0]))
+            {"job_id": str(jid), "grade": grade}
+            for jid, grade in sorted(qrels.items(), key=lambda x: str(x[0]))
         ],
     }
     _GOLDEN_QRELS.write_text(json.dumps(qrels_out, indent=2) + "\n")
@@ -103,7 +108,10 @@ async def _main(run_path: Path) -> None:
 
     # Write golden result — config + nDCG@10 only.
     result_out = {
-        "_comment": "Golden result — committed after sweep identifies the best config (M6 build step 7). The CI gate asserts nDCG@10 >= ndcg_at_10 - 0.02.",
+        "_comment": (
+            "Golden result — committed after sweep identifies the best config (M6 build step 7)."
+            " The CI gate asserts nDCG@10 >= ndcg_at_10 - 0.02."
+        ),
         "profile_id": profile_id_str,
         "run_at": run_data.get("run_at"),
         "git_sha": run_data.get("git_sha"),

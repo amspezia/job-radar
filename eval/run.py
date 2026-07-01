@@ -261,9 +261,12 @@ async def _run(args: argparse.Namespace) -> None:
             for name, config in configs
         ])
         all_results: dict[str, dict] = {}
-        for (name, _), result in zip(configs, results):
+        for (name, _), result in zip(configs, results, strict=True):
             all_results[name] = result
-            print(f"  {name}: nDCG@10={result['ndcg_at_10']:.4f}  Recall@50={result['recall_at_50']:.4f}")
+            print(
+                f"  {name}: nDCG@10={result['ndcg_at_10']:.4f}"
+                f"  Recall@50={result['recall_at_50']:.4f}"
+            )
 
     _print_table(all_results)
 

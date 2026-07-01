@@ -50,7 +50,9 @@ async def search(
     coros = []
     if query and query.strip():
         active.append(0)
-        coros.append(search_bm25(session, query, _bm25_pool, extra_filter, field_boosts=field_boosts))
+        coros.append(
+            search_bm25(session, query, _bm25_pool, extra_filter, field_boosts=field_boosts)
+        )
     if hyde_embedding is not None:
         active.append(1)
         coros.append(search_vector(session, hyde_embedding, pool, extra_filter))

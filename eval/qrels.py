@@ -23,7 +23,7 @@ from job_radar.retrieval.filters import build_profile_filter
 from job_radar.retrieval.fusion import reciprocal_rank_fusion
 from job_radar.retrieval.vector import search_vector
 
-# Integer strings "0"–"3" are the canonical stored form (written by label.py).
+# Integer strings "0"-"3" are the canonical stored form (written by label.py).
 # Verdict aliases are accepted for labels written by other tools.
 _LABEL_TO_GRADE: dict[str, int] = {
     "0": 0,
@@ -78,7 +78,7 @@ async def load_qrels(session: AsyncSession, profile_id: UUID) -> dict[UUID, int]
 
     Rows with unrecognised label strings are silently dropped rather than
     crashing — they represent labels written by a future version or by hand
-    that don't map to the 0–3 scale yet.
+    that don't map to the 0-3 scale yet.
     """
     rows = (
         await session.execute(

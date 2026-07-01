@@ -9,12 +9,13 @@ Dimensions:
   2. Arm weights   — lexical vs HyDE relative importance
   3. Pool size     — per-arm candidate count before fusion
   4. BM25 field boosts — title/requirements/responsibilities weights
+  5. Query construction — which profile fields compose the BM25 query token bag
 
 Results are printed as a table and written to eval/results/sweep-<timestamp>.json.
 
 Usage
 -----
-    uv run job-radar-eval-sweep [--dimension k|weights|pool|boosts|all] [options]
+    uv run job-radar-eval-sweep [--dimension k|weights|pool|boosts|query|all] [options]
 
 Options
 -------
@@ -62,6 +63,49 @@ _WEIGHT_CONFIGS: list[tuple[str, list[float]]] = [
 ]
 
 _POOL_VALUES = [20, 50, 100, 150, 200]
+
+def _build_query_variant(profile: Profile, variant: str) -> str:
+    """Build a BM25 token bag for the given query construction variant.
+
+    All variants deduplicate tokens (same logic as production build_lexical_query)
+    so repeated words don't accumulate artificial IDF weight.
+    """
+    keywords = profile.domains_keywords or {}
+    tech_stack = keywords.get("tech_stack", [])
+    domains = keywords.get("domains", [])
+    titles = profile.target_titles or []
+
+    parts: list[str]
+    if variant == "baseline":
+        parts = [*titles, *tech_stack]
+    elif variant == "+domains":
+        parts = [*titles, *tech_stack, *domains]
+    elif variant == "titles_only":
+        parts = list(titles)
+    elif variant == "stack_only":
+        parts = list(tech_stack)
+    elif variant == "+domains_no_stack":
+        parts = [*titles, *domains]
+    else:
+        raise ValueError(f"unknown query variant: {variant!r}")
+
+    seen: set[str] = set()
+    tokens: list[str] = []
+    for part in parts:
+        for tok in part.split():
+            if tok.lower() not in seen:
+                seen.add(tok.lower())
+                tokens.append(tok)
+    return " ".join(tokens)
+
+
+_QUERY_VARIANTS: list[str] = [
+    "baseline",
+    "+domains",
+    "titles_only",
+    "stack_only",
+    "+domains_no_stack",
+]
 
 _BOOST_CONFIGS: list[tuple[str, dict[str, int]]] = [
     ("title^3 req^1 resp^1", {"title": 3, "requirements": 1, "responsibilities": 1}),
@@ -185,6 +229,26 @@ async def _sweep_pool(
     return rows
 
 
+async def _sweep_query(
+    session: AsyncSession,
+    profile: Profile,
+    qrels: dict[UUID, int],
+    hyde_embedding: list[float] | None,
+) -> list[dict]:
+    rows: list[dict] = []
+    raw_runs: list[tuple[str, dict[UUID, float]]] = []
+    for variant in _QUERY_VARIANTS:
+        query = _build_query_variant(profile, variant)
+        config = SearchConfig(arms=["lexical", "hyde"], k=60, pool=100, limit=100)
+        run = await build_run(session, profile, config, query=query, hyde_embedding=hyde_embedding)
+        scores = _score(run, qrels)
+        rows.append({"label": variant, **scores})
+        raw_runs.append((variant, run))
+    _print_sweep_table("Query construction", rows)
+    _ranx_compare(qrels, raw_runs)
+    return rows
+
+
 async def _sweep_boosts(
     session: AsyncSession,
     profile: Profile,
@@ -243,7 +307,7 @@ async def _run(args: argparse.Namespace) -> None:
         hyde_embedding = await build_hyde_embedding(profile, session)
 
         sweep_results: dict[str, list[dict]] = {}
-        all_dims = ["k", "weights", "pool", "boosts"]
+        all_dims = ["k", "weights", "pool", "boosts", "query"]
         dims = args.dimension if args.dimension != "all" else all_dims
         dims_set = set(dims)
 
@@ -262,6 +326,10 @@ async def _run(args: argparse.Namespace) -> None:
         if "boosts" in dims_set:
             sweep_results["boosts"] = await _sweep_boosts(
                 session, profile, qrels, lexical_q, hyde_embedding
+            )
+        if "query" in dims_set:
+            sweep_results["query"] = await _sweep_query(
+                session, profile, qrels, hyde_embedding
             )
 
     artifact = {
@@ -286,7 +354,7 @@ def main() -> None:
         "--dimension",
         nargs="+",
         default=["all"],
-        choices=["k", "weights", "pool", "boosts", "all"],
+        choices=["k", "weights", "pool", "boosts", "query", "all"],
         help="Dimension(s) to sweep (default: all)",
     )
     parser.add_argument("--profile-id", default=None, help="Profile UUID to evaluate")
@@ -300,7 +368,6 @@ def main() -> None:
         help="Minimum labeled pairs required (default: 10)",
     )
     args = parser.parse_args()
-    # Normalize "all" in the list.
     if "all" in args.dimension:
         args.dimension = "all"
     asyncio.run(_run(args))

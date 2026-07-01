@@ -1,4 +1,4 @@
-"""CI regression gate — nDCG@10 must not drop below golden − 0.02.
+"""CI regression gate — nDCG@10 must not drop below golden - 0.02.
 
 The gate has two parts:
 
@@ -88,7 +88,7 @@ def _golden_ready() -> bool:
     reason="no golden data committed yet — run eval/label.py then commit eval/golden/",
 )
 async def test_ndcg_meets_golden_threshold(db_session: AsyncSession) -> None:
-    """Run the golden config and assert nDCG@10 >= golden.ndcg_at_10 − 0.02.
+    """Run the golden config and assert nDCG@10 >= golden.ndcg_at_10 - 0.02.
 
     This test is the retrieval regression gate: a meaningful drop in nDCG
     before a merge is caught here, not in production.
@@ -122,18 +122,22 @@ async def test_ndcg_meets_golden_threshold(db_session: AsyncSession) -> None:
     # Embeddings are taken from the stored profile (cv_embedding + dense_query_cache).
     hyde_embedding = None
     if profile.dense_query_cache:
+        import contextlib
+
         from job_radar.adapters.embeddings import embed
 
-        try:
+        with contextlib.suppress(Exception):
             hyde_embedding = await embed(profile.dense_query_cache, task="document")
-        except Exception:
-            pass  # Skip HyDE arm if embedding service is unavailable.
 
     from job_radar.fit.pipeline import build_lexical_query
 
     lexical_q = build_lexical_query(profile)
 
-    golden_config = SearchConfig(**golden_result.get("config", {})) if golden_result.get("config") else HYBRID
+    golden_config = (
+        SearchConfig(**golden_result.get("config", {}))
+        if golden_result.get("config")
+        else HYBRID
+    )
 
     run = await build_run(
         db_session,
@@ -149,6 +153,6 @@ async def test_ndcg_meets_golden_threshold(db_session: AsyncSession) -> None:
 
     assert current_ndcg >= threshold, (
         f"Retrieval regression detected: current nDCG@10={current_ndcg:.4f} "
-        f"< golden {golden_ndcg:.4f} − {_NOISE_BAND} = {threshold:.4f}. "
+        f"< golden {golden_ndcg:.4f} - {_NOISE_BAND} = {threshold:.4f}. "
         "Investigate before merging: check fusion weights, pool size, or BM25 boosts."
     )

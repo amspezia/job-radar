@@ -80,13 +80,14 @@ def test_levels_override_narrows_what_the_profile_would_allow() -> None:
     assert "'staff'" not in _sql(build_profile_filter(profile, levels=["senior"])).lower()
 
 
-def test_build_lexical_query_merges_titles_stack_and_domains() -> None:
+def test_build_lexical_query_merges_titles_and_stack_only() -> None:
+    # Domains are intentionally excluded — sweep showed they hurt recall@100.
     profile = _profile(
         target_titles=["Backend Engineer"],
         domains_keywords={"tech_stack": ["Python", "Kafka"], "domains": ["fintech"]},
     )
     query = build_lexical_query(profile)
-    assert query == "Backend Engineer Python Kafka fintech"
+    assert query == "Backend Engineer Python Kafka"
 
 
 def test_build_lexical_query_handles_empty_profile() -> None:

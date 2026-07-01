@@ -27,7 +27,7 @@ async def generate[ModelT: BaseModel](
         "messages": [{"role": "user", "content": prompt}],
         "stream": False,
         "format": schema.model_json_schema(),
-        "options": {"temperature": 0, "num_ctx": 16384},
+        "options": {"temperature": 0, "num_ctx": 4096},
     }
 
     async with httpx.AsyncClient(timeout=600) as client:

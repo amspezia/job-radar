@@ -6,7 +6,7 @@ this module is what the unit tests pin both against.
 
 All functions take:
   ranking : list[UUID]  — retrieved docs, best-first
-  labels  : dict[UUID, int]  — relevance grades 0–3 for the query
+  labels  : dict[UUID, int]  — relevance grades 0-3 for the query
 """
 
 from math import log2
@@ -14,7 +14,7 @@ from uuid import UUID
 
 
 def dcg(ranking: list[UUID], labels: dict[UUID, int], k: int) -> float:
-    """DCG@k with exponential gain: Σ_{i=1..k} (2^grade_i − 1) / log2(i + 1)."""
+    """DCG@k with exponential gain: sum_{i=1..k} (2^grade_i - 1) / log2(i + 1)."""
     score = 0.0
     for i, doc_id in enumerate(ranking[:k], start=1):
         grade = labels.get(doc_id, 0)

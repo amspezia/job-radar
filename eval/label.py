@@ -1,6 +1,6 @@
 """LLM-seeded, human-confirmed labeling CLI.
 
-Produces EVAL_LABEL rows (profile_id, job_id, grade 0–3) that become the
+Produces EVAL_LABEL rows (profile_id, job_id, grade 0-3) that become the
 qrels ground truth for the eval harness.  The human is the authority; the
 LLM's analyze_fit verdict is an optional pre-label that makes grading ~3-4x
 faster by surfacing a suggested grade.
@@ -24,7 +24,7 @@ Label grades
   1 — Marginal: adjacent domain / off-by-one level / one key skill missing
   0 — Not relevant: wrong stack/domain, or gated by region/seniority
 
-Target: 50–80 graded pairs per profile, ≥ 15 at grade ≥ 2.
+Target: 50-80 graded pairs per profile, >= 15 at grade >= 2.
 """
 
 import argparse
@@ -177,7 +177,10 @@ async def _label_jobs(
     count = 0
 
     if fully_auto:
-        print(f"Running analyze_fit on {len(pending)} jobs (concurrency={_MAX_CONCURRENT_ANALYSIS})…")
+        print(
+            f"Running analyze_fit on {len(pending)} jobs"
+            f" (concurrency={_MAX_CONCURRENT_ANALYSIS})..."
+        )
         semaphore = asyncio.Semaphore(_MAX_CONCURRENT_ANALYSIS)
         tasks = [asyncio.ensure_future(_analyze_one(profile, j, semaphore)) for j in pending]
         for coro in asyncio.as_completed(tasks):
@@ -239,9 +242,14 @@ async def _review_labels(
             await session.execute(select(Job).where(Job.id.in_(job_ids)))
         ).scalars().all()
     }
-    grade_by_job: dict[UUID, int] = {lbl.job_id: int(lbl.label) for lbl in labels if lbl.label.isdigit()}
+    grade_by_job: dict[UUID, int] = {
+        lbl.job_id: int(lbl.label) for lbl in labels if lbl.label.isdigit()
+    }
 
-    print(f"\nReviewing {len(labels)} labeled jobs. Enter to keep current grade, or type a new one.\n")
+    print(
+        f"\nReviewing {len(labels)} labeled jobs."
+        " Enter to keep current grade, or type a new one.\n"
+    )
     changed = 0
     for lbl in labels:
         job = jobs_by_id.get(lbl.job_id)
@@ -362,7 +370,7 @@ async def _run(args: argparse.Namespace) -> None:
         total = len(await _already_labeled_ids(session, profile.id))
         print(f"Total labeled pairs for this profile: {total}")
         if total < 50:
-            print(f"Target: 50–80 pairs (≥15 at grade ≥2). Need {50 - total} more.")
+            print(f"Target: 50-80 pairs (>=15 at grade >=2). Need {50 - total} more.")
 
 
 def main() -> None:
