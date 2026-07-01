@@ -19,6 +19,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from job_radar.db.models import EvalLabel, Profile
 from job_radar.retrieval.bm25 import search_bm25
+from job_radar.retrieval.filters import build_profile_filter
 from job_radar.retrieval.fusion import reciprocal_rank_fusion
 from job_radar.retrieval.vector import search_vector
 
@@ -44,24 +45,31 @@ class SearchConfig:
 
     arms      — which rankers contribute; any subset of {"lexical", "hyde", "cv"}.
     k         — RRF smoothing constant (Cormack et al. default: 60).
-    pool      — top-N each arm retrieves before fusion.
-    limit     — final result count; must be ≥ the largest Recall@k measured.
+    pool      — top-N each vector arm retrieves before fusion.
+    bm25_pool — top-N the BM25 arm retrieves; defaults to pool when None.
+                Set higher than pool to give BM25 more candidates without
+                expanding the (GPU-bound) vector arm pools symmetrically.
+    limit     — final result count after fusion.
     weights   — per-arm RRF weight multipliers; None → equal weights.
-    field_boosts — BM25 per-field boost overrides; None → current defaults (5/2/1).
+    field_boosts — BM25 per-field boost overrides; None → current defaults.
     """
 
     arms: list[str] = field(default_factory=lambda: ["lexical", "hyde", "cv"])
     k: int = 60
     pool: int = 50
+    bm25_pool: int | None = None
     limit: int = 50
     weights: list[float] | None = None
     field_boosts: dict[str, int] | None = None
 
 
-# Standard §12 "reported honestly" configurations.
-# pool=100 matches the production search() default locked in after the OAT sweep.
-HYBRID = SearchConfig(arms=["lexical", "hyde", "cv"], pool=100, limit=100)
-VECTOR_ONLY = SearchConfig(arms=["hyde", "cv"], pool=100, limit=100)
+# Standard configurations matching production search (2-arm: lexical + HyDE).
+# CV arm removed after ablation showed it consistently degrades all metrics
+# (backward-looking resume embedding conflicts with forward-looking HyDE).
+# pool=100 matches the production search() default.
+HYBRID = SearchConfig(arms=["lexical", "hyde"], pool=100, limit=100)
+HYBRID_PROD = SearchConfig(arms=["lexical", "hyde"], pool=100, limit=50)
+HYDE_ONLY = SearchConfig(arms=["hyde"], pool=100, limit=100)
 KEYWORD_ONLY = SearchConfig(arms=["lexical"], pool=100, limit=100)
 
 
@@ -108,21 +116,26 @@ async def build_run(
       - "cv"      skipped when profile.cv_embedding is None
     With no active arms the result is an empty dict (no corpus dump).
     """
+    # Apply the same hard filters as production search so the eval corpus matches
+    # what the system actually serves (geo, seniority, remote, salary floor).
+    _filter = build_profile_filter(profile)
+
     # Determine which arms are active and build coroutines for each.
     active_indices: list[int] = []
     coros = []
+    bm25_pool = config.bm25_pool if config.bm25_pool is not None else config.pool
     for idx, arm in enumerate(config.arms):
         if arm == "lexical" and query.strip():
             active_indices.append(idx)
             coros.append(
-                search_bm25(session, query, config.pool, field_boosts=config.field_boosts)
+                search_bm25(session, query, bm25_pool, _filter, field_boosts=config.field_boosts)
             )
         elif arm == "hyde" and hyde_embedding is not None:
             active_indices.append(idx)
-            coros.append(search_vector(session, hyde_embedding, config.pool))
+            coros.append(search_vector(session, hyde_embedding, config.pool, _filter))
         elif arm == "cv" and profile.cv_embedding is not None:
             active_indices.append(idx)
-            coros.append(search_vector(session, list(profile.cv_embedding), config.pool))
+            coros.append(search_vector(session, list(profile.cv_embedding), config.pool, _filter))
 
     if not coros:
         return {}

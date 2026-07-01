@@ -1,5 +1,494 @@
 {
-  "_comment": "Golden qrels — committed after labeling (M6 build step 7). Format: profile_id + list of {job_id, grade} pairs (grades 0–3). No job text or PII.",
-  "profile_id": null,
-  "labels": []
+  "_comment": "Golden qrels \u2014 committed after labeling (M6 build step 7). Format: profile_id + list of {job_id, grade} pairs (grades 0\u20133). No job text or PII.",
+  "profile_id": "1b9a839f-f3a9-479e-a1f7-b1b8a3d489bc",
+  "labels": [
+    {
+      "job_id": "02832fbe-7e34-4001-8029-ad3ac52eee5f",
+      "grade": 1
+    },
+    {
+      "job_id": "09269b13-8310-40e5-9ffb-0184d288100b",
+      "grade": 2
+    },
+    {
+      "job_id": "0a992826-b193-4185-b168-db48e16fb2e8",
+      "grade": 3
+    },
+    {
+      "job_id": "0c2567a0-0acf-4905-b69f-37ef55c552ad",
+      "grade": 0
+    },
+    {
+      "job_id": "0e61d6b0-ec43-4efd-84fa-32a496827f5e",
+      "grade": 3
+    },
+    {
+      "job_id": "14670d1a-7de5-446f-8bb6-8b9800b4296d",
+      "grade": 2
+    },
+    {
+      "job_id": "14704343-ab4f-4ddd-9c10-445094387f34",
+      "grade": 0
+    },
+    {
+      "job_id": "14c86e92-9fda-4369-95ad-13405de88aa9",
+      "grade": 0
+    },
+    {
+      "job_id": "14f0dfb6-1146-41eb-8dad-4001ebd92aed",
+      "grade": 0
+    },
+    {
+      "job_id": "162684aa-e4d7-4b16-8f1b-8744f8f04d3f",
+      "grade": 0
+    },
+    {
+      "job_id": "1941d7c6-f8d3-4a46-a26f-d070ce657091",
+      "grade": 1
+    },
+    {
+      "job_id": "19dd6864-ed4a-4e2e-93bc-aeafea195c57",
+      "grade": 3
+    },
+    {
+      "job_id": "1bf702c9-75c0-43ae-bc8f-ca72397ee474",
+      "grade": 0
+    },
+    {
+      "job_id": "1c020207-0906-49f0-9818-3f2b09fd3da5",
+      "grade": 2
+    },
+    {
+      "job_id": "1c7e2658-6313-42ce-8494-0bba37fa20f2",
+      "grade": 0
+    },
+    {
+      "job_id": "1d2f5e91-5790-4396-a918-7b14c2bf16a4",
+      "grade": 1
+    },
+    {
+      "job_id": "1dd767b6-2233-4287-b46f-859f631730f5",
+      "grade": 2
+    },
+    {
+      "job_id": "225816e2-ae97-4d13-b1ae-00a2583e4aa3",
+      "grade": 3
+    },
+    {
+      "job_id": "24779549-8ca5-4635-a4e6-90be38d21248",
+      "grade": 2
+    },
+    {
+      "job_id": "272cb6cb-d8e7-42c5-a040-862d4153e845",
+      "grade": 0
+    },
+    {
+      "job_id": "28d09efe-f116-4f69-b666-24c3f6f779eb",
+      "grade": 2
+    },
+    {
+      "job_id": "294b193a-debe-44db-8fef-26151f9e3f02",
+      "grade": 1
+    },
+    {
+      "job_id": "2cb8d39e-dc04-403d-9dc9-ab89debec394",
+      "grade": 2
+    },
+    {
+      "job_id": "3271c5b1-6e6b-48f7-aebe-c1f4037d710c",
+      "grade": 0
+    },
+    {
+      "job_id": "37be6177-9930-4495-8e99-dd05e625e3d6",
+      "grade": 1
+    },
+    {
+      "job_id": "390b0c7f-4b2e-4719-a7a3-3050cd85ad5c",
+      "grade": 0
+    },
+    {
+      "job_id": "3cb5fcac-3fab-4b79-ae7f-4c6045cfb8d7",
+      "grade": 0
+    },
+    {
+      "job_id": "3cc551fa-2479-4623-a0f5-a695dc90f3a0",
+      "grade": 1
+    },
+    {
+      "job_id": "3e284572-8e03-489e-b684-b4e7cbc1deca",
+      "grade": 3
+    },
+    {
+      "job_id": "4245d14c-3fd3-403b-8014-baf81a73ae39",
+      "grade": 3
+    },
+    {
+      "job_id": "436484a1-b667-4106-b4f0-6ac16dae9900",
+      "grade": 1
+    },
+    {
+      "job_id": "43a2cc46-89f4-4286-ad4d-9eaaec7e3188",
+      "grade": 2
+    },
+    {
+      "job_id": "4421c59b-8097-495b-86ae-9f105caf7cf5",
+      "grade": 0
+    },
+    {
+      "job_id": "47d3fed2-ed49-4088-882c-4bd1031fb6b5",
+      "grade": 1
+    },
+    {
+      "job_id": "4c1e7c10-8747-48f8-946d-d7b29f2b9b00",
+      "grade": 2
+    },
+    {
+      "job_id": "51560fe4-3564-4a7f-a50a-f74c7e83b49f",
+      "grade": 2
+    },
+    {
+      "job_id": "53755d3b-65eb-4e56-8f9d-cbca16d3d708",
+      "grade": 0
+    },
+    {
+      "job_id": "53e41cd6-dcee-4837-9a6d-52533aa9cff8",
+      "grade": 0
+    },
+    {
+      "job_id": "545dbfa4-f90f-4d62-bf69-7bc1cd7ae221",
+      "grade": 1
+    },
+    {
+      "job_id": "54abf533-b4cf-4be4-af77-3d1ec309d77d",
+      "grade": 2
+    },
+    {
+      "job_id": "56600c37-b392-433c-ba52-5c40d7462843",
+      "grade": 3
+    },
+    {
+      "job_id": "5a07295d-8ef5-41b0-a6d7-28050d919545",
+      "grade": 3
+    },
+    {
+      "job_id": "5b8bf6b6-4bce-47cc-842b-d1da9bdfda7c",
+      "grade": 2
+    },
+    {
+      "job_id": "5d29dc08-eef5-445b-bc67-b45b0504427e",
+      "grade": 2
+    },
+    {
+      "job_id": "5dd0ad93-b4b9-4f23-933c-5a360b6ae150",
+      "grade": 0
+    },
+    {
+      "job_id": "6068570f-1f03-4014-84ce-e71f8b1803d5",
+      "grade": 2
+    },
+    {
+      "job_id": "62d99bc4-b9c9-4b0c-8ceb-3102155c035a",
+      "grade": 0
+    },
+    {
+      "job_id": "65545577-3c95-4eb2-8142-09c2cf62c17e",
+      "grade": 1
+    },
+    {
+      "job_id": "69fba1e5-c934-42ae-a683-848da5d085d0",
+      "grade": 0
+    },
+    {
+      "job_id": "6c5f6a84-eb84-45c5-bd95-0bd298e7b608",
+      "grade": 0
+    },
+    {
+      "job_id": "6d0a64f5-a3fe-4eec-b13d-3ec87e265a6c",
+      "grade": 2
+    },
+    {
+      "job_id": "6d6d4d09-f72b-4810-b3af-62cd2963782e",
+      "grade": 1
+    },
+    {
+      "job_id": "6f848e85-3db6-4cf2-bbaf-2ba01e585a9e",
+      "grade": 0
+    },
+    {
+      "job_id": "6ff537eb-bd9a-462a-96f1-7999a45a4bf8",
+      "grade": 0
+    },
+    {
+      "job_id": "705c393f-7a36-44a6-9824-cc859cb6c811",
+      "grade": 0
+    },
+    {
+      "job_id": "7072f14a-8ac6-4bf7-ab97-9d7ab9f69d21",
+      "grade": 3
+    },
+    {
+      "job_id": "72ac4ad8-6070-4848-bc9f-a2791e00eb37",
+      "grade": 1
+    },
+    {
+      "job_id": "7351992c-b7ed-4890-8913-b9f924986537",
+      "grade": 3
+    },
+    {
+      "job_id": "750bae1c-7c0f-475e-b75d-ef27260c7507",
+      "grade": 0
+    },
+    {
+      "job_id": "7864b9f8-238a-41de-a0f5-580b2d6b5c84",
+      "grade": 0
+    },
+    {
+      "job_id": "789ff581-c9a9-4a08-98e5-8fe2daac4825",
+      "grade": 2
+    },
+    {
+      "job_id": "79a119ee-c111-423b-9382-de636d68ba87",
+      "grade": 0
+    },
+    {
+      "job_id": "7d084313-d6d2-4c95-8a51-2a3cbb07fe6b",
+      "grade": 0
+    },
+    {
+      "job_id": "7d258831-c5cc-4835-a7a9-6ba1cad6c3f9",
+      "grade": 0
+    },
+    {
+      "job_id": "827049b2-ac35-419a-9ef5-54b968b087f8",
+      "grade": 3
+    },
+    {
+      "job_id": "85c8723c-9498-4346-af38-0e5af5a61da0",
+      "grade": 1
+    },
+    {
+      "job_id": "875ef95d-d4b2-4946-8ed0-6af97a1b126e",
+      "grade": 0
+    },
+    {
+      "job_id": "89eef2af-f83b-4133-b40f-9567d236a8ba",
+      "grade": 0
+    },
+    {
+      "job_id": "8b62c62d-4091-43e8-860e-105018ae3971",
+      "grade": 1
+    },
+    {
+      "job_id": "8b8cc0d1-fd8b-4045-b98b-5bccda214bbc",
+      "grade": 3
+    },
+    {
+      "job_id": "8e094f68-346c-4ba9-a94a-9cd6c0d1dea3",
+      "grade": 0
+    },
+    {
+      "job_id": "909088d9-a15d-41ea-9783-295deef229a0",
+      "grade": 1
+    },
+    {
+      "job_id": "91a5f085-a134-4ddc-82a9-49897619f8a7",
+      "grade": 2
+    },
+    {
+      "job_id": "9856885e-4565-4123-813a-64f5951f48eb",
+      "grade": 0
+    },
+    {
+      "job_id": "98ac0a40-27d0-4a19-857c-d96e171b3589",
+      "grade": 0
+    },
+    {
+      "job_id": "98e24ff4-02f6-4417-80d3-f058eb44d399",
+      "grade": 0
+    },
+    {
+      "job_id": "99ca4489-df7f-4150-a912-44dad8fb57ec",
+      "grade": 1
+    },
+    {
+      "job_id": "9e5c0fce-5bc2-48c6-a51c-2ae5ccd89916",
+      "grade": 3
+    },
+    {
+      "job_id": "a03f1041-cf5c-42a4-b3d1-ce33301e93d7",
+      "grade": 1
+    },
+    {
+      "job_id": "a0c2cb53-c3d8-4a38-89a3-165206177beb",
+      "grade": 2
+    },
+    {
+      "job_id": "a9ccf4b1-8b83-421e-8768-48426fa62f6a",
+      "grade": 3
+    },
+    {
+      "job_id": "aa69c1c3-a9e4-46e8-9f7c-4b9982a0883e",
+      "grade": 0
+    },
+    {
+      "job_id": "ab2c2584-09f6-4e20-9baa-b6f431dd4dda",
+      "grade": 2
+    },
+    {
+      "job_id": "af690596-fd9c-4279-9c8c-9cc2cc0a3049",
+      "grade": 2
+    },
+    {
+      "job_id": "afe23482-6ef8-432b-8402-5b5cb1e0bde3",
+      "grade": 1
+    },
+    {
+      "job_id": "b04f0045-a5f8-4548-aa73-1c9cbc2d4a66",
+      "grade": 1
+    },
+    {
+      "job_id": "b2562582-2a9f-4c79-b1d8-3757c74a54ef",
+      "grade": 1
+    },
+    {
+      "job_id": "b26b2ffb-1c6c-4a5f-a57a-2fdebfb2bd8b",
+      "grade": 0
+    },
+    {
+      "job_id": "b58cd338-7537-4181-883f-4ad75238bcc6",
+      "grade": 3
+    },
+    {
+      "job_id": "b63c5372-29fe-4e4c-871e-00a3ffc47775",
+      "grade": 2
+    },
+    {
+      "job_id": "b73522d7-c118-4996-a087-f9c0a8e51ef7",
+      "grade": 2
+    },
+    {
+      "job_id": "b7388deb-0c9b-4404-b6e2-81f2eeb18156",
+      "grade": 0
+    },
+    {
+      "job_id": "badb52c0-77df-42fe-ae1a-2d6835c295c5",
+      "grade": 2
+    },
+    {
+      "job_id": "bbbd345b-98de-4efd-b3ff-1fb6936162b2",
+      "grade": 0
+    },
+    {
+      "job_id": "bd8ab311-da6e-4111-a53e-9f3fdab06b8f",
+      "grade": 0
+    },
+    {
+      "job_id": "c1402510-e34f-44d8-85b5-2ca984c34f26",
+      "grade": 3
+    },
+    {
+      "job_id": "c986ebcc-ea4f-4484-b9be-8654a608f2c8",
+      "grade": 2
+    },
+    {
+      "job_id": "ca5e5182-fc43-40fb-b37e-1310dd6496b8",
+      "grade": 2
+    },
+    {
+      "job_id": "ccc8ee9a-ec7a-45ce-9141-a84fca5e9974",
+      "grade": 2
+    },
+    {
+      "job_id": "cf75af81-9c3b-43f7-ba30-2b9e3d92ce83",
+      "grade": 1
+    },
+    {
+      "job_id": "d164a826-5b1b-4627-bea9-d93e0544569e",
+      "grade": 1
+    },
+    {
+      "job_id": "d2c3283c-c0e2-4e9e-b8f4-190f9dc61d8b",
+      "grade": 0
+    },
+    {
+      "job_id": "d53da4b8-aabe-48c6-bb7d-63e9bc94f77a",
+      "grade": 1
+    },
+    {
+      "job_id": "d5804287-a30f-41a0-8e49-c024c49fd40d",
+      "grade": 3
+    },
+    {
+      "job_id": "d5c0c465-00b9-4b01-aa76-c6c0d6f1c950",
+      "grade": 2
+    },
+    {
+      "job_id": "dc44a20e-69f6-44c7-a45d-5c0db1aa1f65",
+      "grade": 0
+    },
+    {
+      "job_id": "dc54d9e9-cf09-42aa-a669-853ba695f7a1",
+      "grade": 0
+    },
+    {
+      "job_id": "dc8de990-b8f3-4594-9f59-021ac32c19e1",
+      "grade": 3
+    },
+    {
+      "job_id": "e7c55fe3-0845-41fe-ad5f-fd4f6a2a928e",
+      "grade": 2
+    },
+    {
+      "job_id": "e7ef15a3-b46c-44fa-b3f9-0ccfe13a70b8",
+      "grade": 0
+    },
+    {
+      "job_id": "e983b221-79c2-4e1f-9b2d-fb8a1f517614",
+      "grade": 0
+    },
+    {
+      "job_id": "ea79193b-6c39-4ebe-9c7e-d4252612b481",
+      "grade": 0
+    },
+    {
+      "job_id": "eb0ee3f1-f583-4c09-90eb-22f702ed8967",
+      "grade": 1
+    },
+    {
+      "job_id": "ebf7c5c6-cb83-4f44-a3d9-c4ae462289d5",
+      "grade": 0
+    },
+    {
+      "job_id": "ee053fe1-9d0d-4342-8dc1-99c196a207b2",
+      "grade": 0
+    },
+    {
+      "job_id": "eee3910f-bcf2-483c-a281-5de87bb9735f",
+      "grade": 0
+    },
+    {
+      "job_id": "f3825d00-10c0-4262-9fcb-1809a3da646f",
+      "grade": 3
+    },
+    {
+      "job_id": "f4958c8b-0a30-4c8e-9a9d-7a53cdcaf2e0",
+      "grade": 2
+    },
+    {
+      "job_id": "f4f2843f-8acb-4e16-a454-0451c5ead61b",
+      "grade": 0
+    },
+    {
+      "job_id": "f54bdb75-b344-44e7-b385-9b66edbd22e0",
+      "grade": 1
+    },
+    {
+      "job_id": "faa710e3-bc59-4fad-a00a-ebaae1f19cf3",
+      "grade": 2
+    },
+    {
+      "job_id": "fbae30ff-b867-4401-81b8-6e32152a01f2",
+      "grade": 0
+    }
+  ]
 }

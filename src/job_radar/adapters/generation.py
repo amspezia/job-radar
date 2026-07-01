@@ -27,10 +27,7 @@ async def generate[ModelT: BaseModel](
         "messages": [{"role": "user", "content": prompt}],
         "stream": False,
         "format": schema.model_json_schema(),
-        # num_ctx is raised above Ollama's ~4k default: a full CV plus a full job
-        # description can exceed it, and a silently truncated prompt makes the
-        # model lose the schema and degenerate into repetition / invalid JSON.
-        "options": {"temperature": 0, "num_ctx": 8192},
+        "options": {"temperature": 0, "num_ctx": 16384},
     }
 
     async with httpx.AsyncClient(timeout=600) as client:

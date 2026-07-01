@@ -51,7 +51,7 @@ async def test_search_returns_hydrated_jobs_for_a_match(
     # BM25 mechanics are tested in test_bm25.py. Here we only verify that
     # search() hydrates the returned ids into Job ORM objects in fused order.
     async def fake_bm25(
-        session: object, query: object, limit: int, extra_filter: object = None
+        session: object, query: object, limit: int, extra_filter: object = None, **_: object
     ) -> list:
         return [(a.id, 2.0), (b.id, 1.5)]
 
@@ -79,7 +79,7 @@ async def test_search_hydrates_in_fused_order(
     ranking = [(c.id, 1.0), (b.id, 0.9), (a.id, 0.8)]
 
     async def fake_fts(
-        session: object, query: object, limit: int, extra_filter: object = None
+        session: object, query: object, limit: int, extra_filter: object = None, **_: object
     ) -> list:
         return ranking
 
@@ -109,7 +109,7 @@ async def test_search_respects_limit(
     ranking = [(a.id, 1.0), (b.id, 0.9), (c.id, 0.8)]
 
     async def fake_ranker(
-        session: object, second: object, limit: int, extra_filter: object = None
+        session: object, second: object, limit: int, extra_filter: object = None, **_: object
     ) -> list:
         return ranking
 

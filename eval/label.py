@@ -37,16 +37,15 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from eval.qrels import SearchConfig, build_run
-from job_radar.adapters.embeddings import embed
 from job_radar.db.base import async_session_factory
 from job_radar.db.models import EvalLabel, Job, Profile
 from job_radar.fit.analyze import analyze_fit
-from job_radar.fit.pipeline import build_dense_query, build_lexical_query
+from job_radar.fit.pipeline import build_hyde_embedding, build_lexical_query
 
 logger = logging.getLogger(__name__)
 
 # Match OLLAMA_NUM_PARALLEL in justfile so we saturate the eval Ollama.
-_MAX_CONCURRENT_ANALYSIS = 8
+_MAX_CONCURRENT_ANALYSIS = 12
 
 # Verdict from analyze_fit → suggested grade (seeding, not overriding human).
 _VERDICT_GRADE: dict[str, int] = {
@@ -299,8 +298,7 @@ async def _run(args: argparse.Namespace) -> None:
             return
 
         lexical_q = build_lexical_query(profile)
-        dense_text = await build_dense_query(profile, session)
-        hyde_embedding = await embed(dense_text, task="document") if dense_text else None
+        hyde_embedding = await build_hyde_embedding(profile, session)
 
         # Union pool from all three system configs so labels cover the full
         # relevant document space, not just what one config surfaces (pool bias).
@@ -308,8 +306,8 @@ async def _run(args: argparse.Namespace) -> None:
             f"Building union pool from 3 retrieval configs (pool={args.pool} each) …"
         )
         pool_configs = [
-            SearchConfig(arms=["lexical", "hyde", "cv"], pool=args.pool, limit=args.pool),
-            SearchConfig(arms=["hyde", "cv"], pool=args.pool, limit=args.pool),
+            SearchConfig(arms=["lexical", "hyde"], pool=args.pool, limit=args.pool),
+            SearchConfig(arms=["hyde"], pool=args.pool, limit=args.pool),
             SearchConfig(arms=["lexical"], pool=args.pool, limit=args.pool),
         ]
         pool_runs = await asyncio.gather(*[
@@ -321,7 +319,7 @@ async def _run(args: argparse.Namespace) -> None:
             for jid, score in pr.items():
                 if score > run_scores.get(jid, -1):
                     run_scores[jid] = score
-        print(f"Union pool: {len(run_scores)} unique jobs (hybrid + vector-only + keyword-only).")
+        print(f"Union pool: {len(run_scores)} unique jobs (hybrid + hyde-only + keyword-only).")
 
         if not run_scores:
             print("No jobs retrieved — check that ingest has run and BM25/vector indexes exist.")

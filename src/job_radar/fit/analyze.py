@@ -25,12 +25,19 @@ For every requirement you identify in the posting:
 - attach at least one verbatim quote (source "profile" or "posting") backing
   the classification
 
+IMPORTANT — judge each requirement on its OWN merits against the candidate's
+skills and experience. The company's industry/domain must NOT influence how you
+rate individual technical or role requirements. A Python requirement is equally
+"met" whether the posting is from a fintech company or a healthcare company.
+
 Do NOT judge the candidate's location, work authorization, or region eligibility
 — those are checked separately and deterministically.
 
 Also judge:
-- domain: how relevant the candidate's background is to the posting's domain
-  ("strong", "partial", or "weak")
+- domain: how relevant the candidate's DOMAIN EXPERIENCE (not tech skills) is
+  to the posting's business domain. This is ONLY about industry overlap
+  (e.g. fintech↔fintech = strong, fintech↔e-commerce = partial,
+  fintech↔biotech = weak). Tech stack match does NOT factor into domain.
 
 Do NOT judge seniority/level — it is handled separately from posting metadata.
 

@@ -1,16 +1,16 @@
 """One-at-a-time (OAT) parameter sweep for hybrid search tuning.
 
-Follows the impact-priority order from M6_EVAL_IMPLEMENTATION_PLAN.md §4.5:
-  1. RRF k         — highest-sensitivity parameter
-  2. Arm weights   — fixes the 2:1 vector:lexical bias in the default config
-  3. Pool size     — elbow-of-recall vs latency
+Production baseline: 2-arm (lexical + HyDE), k=60, pool=100,
+field_boosts={title:5, requirements:3, responsibilities:1}, no explicit weights.
+Each dimension varies one parameter while holding the rest at baseline defaults.
+
+Dimensions:
+  1. RRF k         — smoothing constant; higher → more uniform contribution
+  2. Arm weights   — lexical vs HyDE relative importance
+  3. Pool size     — per-arm candidate count before fusion
   4. BM25 field boosts — title/requirements/responsibilities weights
 
-Each dimension is swept while holding all others at their default.  Results
-are printed as a table and written to eval/results/sweep-<timestamp>.json.
-
-If ranx is installed, each dimension's runs are compared with a paired
-significance test (Student's t) via ranx.compare().
+Results are printed as a table and written to eval/results/sweep-<timestamp>.json.
 
 Usage
 -----
@@ -40,35 +40,35 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from eval import metrics as m
 from eval.qrels import SearchConfig, build_run, load_qrels
 from eval.run import _ranx_compare
-from job_radar.adapters.embeddings import embed
 from job_radar.db.base import async_session_factory
 from job_radar.db.models import Profile
-from job_radar.fit.pipeline import build_dense_query, build_lexical_query
+from job_radar.fit.pipeline import build_hyde_embedding, build_lexical_query
 
 logger = logging.getLogger(__name__)
 
 _DEFAULT_OUT = Path("eval/results")
 
-# OAT sweep grids — derived from M6 plan §4.5.
+# OAT sweep grids — each dimension varies one parameter from the production
+# baseline: arms=["lexical","hyde"], k=60, pool=100, limit=100, boosts=default.
+# Production uses no explicit weights (2 arms, equal by default in RRF).
 _K_VALUES = [20, 30, 40, 60, 90, 120]
 
 _WEIGHT_CONFIGS: list[tuple[str, list[float]]] = [
-    ("1/1/1 equal", [1.0, 1.0, 1.0]),
-    ("2/1/1 lexical↑", [2.0, 1.0, 1.0]),
-    ("1/2/1 HyDE↑", [1.0, 2.0, 1.0]),
-    ("1/1/2 CV↑", [1.0, 1.0, 2.0]),
-    ("2/2/1 lexical+HyDE↑", [2.0, 2.0, 1.0]),
-    ("1/2/2 vector↑", [1.0, 2.0, 2.0]),
+    ("1/1 equal", [1.0, 1.0]),
+    ("2/1 lexical↑", [2.0, 1.0]),
+    ("1/2 HyDE↑", [1.0, 2.0]),
+    ("3/2 lexical↑", [3.0, 2.0]),
+    ("2/3 HyDE↑", [2.0, 3.0]),
 ]
 
-_POOL_VALUES = [20, 50, 100]
+_POOL_VALUES = [20, 50, 100, 150, 200]
 
 _BOOST_CONFIGS: list[tuple[str, dict[str, int]]] = [
     ("title^3 req^1 resp^1", {"title": 3, "requirements": 1, "responsibilities": 1}),
-    ("title^5 req^2 resp^1", {"title": 5, "requirements": 2, "responsibilities": 1}),  # default
-    ("title^7 req^2 resp^1", {"title": 7, "requirements": 2, "responsibilities": 1}),
+    ("title^5 req^2 resp^1", {"title": 5, "requirements": 2, "responsibilities": 1}),
     ("title^5 req^3 resp^1", {"title": 5, "requirements": 3, "responsibilities": 1}),
-    ("title^5 req^2 resp^2", {"title": 5, "requirements": 2, "responsibilities": 2}),
+    ("title^7 req^2 resp^1", {"title": 7, "requirements": 2, "responsibilities": 1}),
+    ("title^7 req^3 resp^1", {"title": 7, "requirements": 3, "responsibilities": 1}),
     ("title^7 req^3 resp^2", {"title": 7, "requirements": 3, "responsibilities": 2}),
 ]
 
@@ -80,6 +80,7 @@ def _ranking(run: dict[UUID, float]) -> list[UUID]:
 def _score(run: dict[UUID, float], qrels: dict[UUID, int]) -> dict[str, float]:
     r = _ranking(run)
     return {
+        "recall_at_100": round(m.recall_at_k(r, qrels, 100, rel_threshold=2), 4),
         "recall_at_50": round(m.recall_at_k(r, qrels, 50, rel_threshold=2), 4),
         "ndcg_at_10": round(m.ndcg(r, qrels, 10), 4),
         "mrr": round(m.mrr(r, qrels, rel_threshold=1), 4),
@@ -92,7 +93,7 @@ def _print_sweep_table(dimension: str, rows: list[dict]) -> None:
     label_w = max(len(r["label"]) for r in rows)
     header = (
         f"\n{'':>{label_w}}  "
-        + "  ".join(k.rjust(col_w) for k in ["Recall@50", "nDCG@10", "MRR", "P@5"])
+        + "  ".join(k.rjust(col_w) for k in ["Recall@100", "Recall@50", "nDCG@10", "MRR", "P@5"])
     )
     print(f"\n=== Sweep: {dimension} ===")
     print(header)
@@ -103,7 +104,7 @@ def _print_sweep_table(dimension: str, rows: list[dict]) -> None:
             + "  "
             + "  ".join(
                 f"{row.get(k, 0):.4f}".rjust(col_w)
-                for k in ["recall_at_50", "ndcg_at_10", "mrr", "p_at_5"]
+                for k in ["recall_at_100", "recall_at_50", "ndcg_at_10", "mrr", "p_at_5"]
             )
         )
         print(line)
@@ -128,7 +129,7 @@ async def _sweep_k(
     rows: list[dict] = []
     raw_runs: list[tuple[str, dict[UUID, float]]] = []
     for k_val in _K_VALUES:
-        config = SearchConfig(arms=["lexical", "hyde", "cv"], k=k_val, pool=100, limit=100)
+        config = SearchConfig(arms=["lexical", "hyde"], k=k_val, pool=100, limit=100)
         run = await build_run(session, profile, config, query=query, hyde_embedding=hyde_embedding)
         scores = _score(run, qrels)
         label = f"k={k_val}"
@@ -150,20 +151,15 @@ async def _sweep_weights(
     raw_runs: list[tuple[str, dict[UUID, float]]] = []
 
     for label, weights in _WEIGHT_CONFIGS:
-        if len(weights) != 3:
-            continue  # skip malformed entries
-        # Pass the full 3-element weight vector keyed to ["lexical","hyde","cv"].
-        # build_run slices it by active_indices so inactive arms are excluded
-        # correctly even when they're not the last arm in the list.
         config = SearchConfig(
-            arms=["lexical", "hyde", "cv"], k=60, pool=100, limit=100, weights=weights
+            arms=["lexical", "hyde"], k=60, pool=100, limit=100, weights=weights
         )
         run = await build_run(session, profile, config, query=query, hyde_embedding=hyde_embedding)
         scores = _score(run, qrels)
         rows.append({"label": label, **scores})
         raw_runs.append((label, run))
 
-    _print_sweep_table("Arm weights (lexical / HyDE / CV)", rows)
+    _print_sweep_table("Arm weights (lexical / HyDE)", rows)
     _ranx_compare(qrels, raw_runs)
     return rows
 
@@ -178,9 +174,7 @@ async def _sweep_pool(
     rows: list[dict] = []
     raw_runs: list[tuple[str, dict[UUID, float]]] = []
     for pool_val in _POOL_VALUES:
-        config = SearchConfig(
-            arms=["lexical", "hyde", "cv"], k=60, pool=pool_val, limit=pool_val  # pool varies
-        )
+        config = SearchConfig(arms=["lexical", "hyde"], k=60, pool=pool_val, limit=100)
         run = await build_run(session, profile, config, query=query, hyde_embedding=hyde_embedding)
         scores = _score(run, qrels)
         label = f"pool={pool_val}"
@@ -202,7 +196,7 @@ async def _sweep_boosts(
     raw_runs: list[tuple[str, dict[UUID, float]]] = []
     for label, boosts in _BOOST_CONFIGS:
         config = SearchConfig(
-            arms=["lexical", "hyde", "cv"], k=60, pool=100, limit=100, field_boosts=boosts
+            arms=["lexical", "hyde"], k=60, pool=100, limit=100, field_boosts=boosts
         )
         run = await build_run(session, profile, config, query=query, hyde_embedding=hyde_embedding)
         scores = _score(run, qrels)
@@ -211,6 +205,8 @@ async def _sweep_boosts(
     _print_sweep_table("BM25 field boosts", rows)
     _ranx_compare(qrels, raw_runs)
     return rows
+
+
 
 
 async def _run(args: argparse.Namespace) -> None:
@@ -244,11 +240,11 @@ async def _run(args: argparse.Namespace) -> None:
         print(f"Sweep: profile={profile.full_name}  labeled={len(qrels)} pairs")
 
         lexical_q = build_lexical_query(profile)
-        dense_text = await build_dense_query(profile, session)
-        hyde_embedding = await embed(dense_text, task="document") if dense_text else None
+        hyde_embedding = await build_hyde_embedding(profile, session)
 
         sweep_results: dict[str, list[dict]] = {}
-        dims = args.dimension if args.dimension != "all" else ["k", "weights", "pool", "boosts"]
+        all_dims = ["k", "weights", "pool", "boosts"]
+        dims = args.dimension if args.dimension != "all" else all_dims
         dims_set = set(dims)
 
         if "k" in dims_set:

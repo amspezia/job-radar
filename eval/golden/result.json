@@ -1,22 +1,25 @@
 {
-  "_comment": "Golden result — committed after sweep identifies the best config (M6 build step 7). The CI gate asserts nDCG@10 >= ndcg_at_10 - 0.02.",
-  "profile_id": null,
-  "run_at": null,
-  "git_sha": null,
+  "_comment": "Golden result \u2014 committed after sweep identifies the best config (M6 build step 7). The CI gate asserts nDCG@10 >= ndcg_at_10 - 0.02.",
+  "profile_id": "1b9a839f-f3a9-479e-a1f7-b1b8a3d489bc",
+  "run_at": "2026-07-01T13:28:57.620575+00:00",
+  "git_sha": "e4df807",
   "config_name": "hybrid",
   "config": {
-    "arms": ["lexical", "hyde", "cv"],
+    "arms": [
+      "lexical",
+      "hyde"
+    ],
     "k": 60,
-    "pool": 50,
-    "limit": 50,
+    "pool": 100,
+    "limit": 100,
     "weights": null,
     "field_boosts": null
   },
-  "ndcg_at_10": null,
-  "bpref": null,
-  "mrr": null,
-  "p_at_5": null,
-  "p_at_10": null,
-  "recall_at_20": null,
-  "recall_at_50": null
+  "ndcg_at_10": 0.8861,
+  "bpref": 0.6247,
+  "mrr": 1.0,
+  "p_at_5": 1.0,
+  "p_at_10": 1.0,
+  "recall_at_20": 0.3061,
+  "recall_at_50": 0.5714
 }

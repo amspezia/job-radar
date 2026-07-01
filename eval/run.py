@@ -30,11 +30,18 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from eval import metrics as m
-from eval.qrels import HYBRID, KEYWORD_ONLY, VECTOR_ONLY, SearchConfig, build_run, load_qrels
-from job_radar.adapters.embeddings import embed
+from eval.qrels import (
+    HYBRID,
+    HYBRID_PROD,
+    HYDE_ONLY,
+    KEYWORD_ONLY,
+    SearchConfig,
+    build_run,
+    load_qrels,
+)
 from job_radar.db.base import async_session_factory
 from job_radar.db.models import Profile
-from job_radar.fit.pipeline import build_dense_query, build_lexical_query
+from job_radar.fit.pipeline import build_hyde_embedding, build_lexical_query
 
 logger = logging.getLogger(__name__)
 
@@ -66,6 +73,7 @@ def _compute_metrics(run: dict[UUID, float], qrels: dict[UUID, int]) -> dict:
         "p_at_10": round(m.precision_at_k(ranking, qrels, 10, rel_threshold=2), 4),
         "recall_at_20": round(m.recall_at_k(ranking, qrels, 20, rel_threshold=2), 4),
         "recall_at_50": round(m.recall_at_k(ranking, qrels, 50, rel_threshold=2), 4),
+        "recall_at_100": round(m.recall_at_k(ranking, qrels, 100, rel_threshold=2), 4),
     }
 
 
@@ -136,13 +144,14 @@ def _ranx_compare(
 def _print_table(results: dict[str, dict]) -> None:
     configs = list(results.keys())
     metric_keys = [
-        ("Recall@50", "recall_at_50"),
-        ("Recall@20", "recall_at_20"),
-        ("nDCG@10 ", "ndcg_at_10"),
-        ("BPref   ", "bpref"),
-        ("MRR     ", "mrr"),
-        ("P@5     ", "p_at_5"),
-        ("P@10    ", "p_at_10"),
+        ("Recall@100", "recall_at_100"),
+        ("Recall@50 ", "recall_at_50"),
+        ("Recall@20 ", "recall_at_20"),
+        ("nDCG@10  ", "ndcg_at_10"),
+        ("BPref    ", "bpref"),
+        ("MRR      ", "mrr"),
+        ("P@5      ", "p_at_5"),
+        ("P@10     ", "p_at_10"),
     ]
     col_w = 14
     header = " " * 10 + "  ".join(c.rjust(col_w) for c in configs)
@@ -225,8 +234,7 @@ async def _run(args: argparse.Namespace) -> None:
         # Pre-compute embeddings once — shared across all config evaluations.
         print("Building query representations …")
         lexical_q = build_lexical_query(profile)
-        dense_text = await build_dense_query(profile, session)
-        hyde_embedding = await embed(dense_text, task="document") if dense_text else None
+        hyde_embedding = await build_hyde_embedding(profile, session)
         print(
             f"  Lexical query: {len(lexical_q.split())} tokens  |  "
             f"HyDE: {'ok' if hyde_embedding else 'skipped'}"
@@ -234,7 +242,8 @@ async def _run(args: argparse.Namespace) -> None:
 
         configs: list[tuple[str, SearchConfig]] = [
             ("hybrid", HYBRID),
-            ("vector_only", VECTOR_ONLY),
+            ("hybrid_prod", HYBRID_PROD),
+            ("hyde_only", HYDE_ONLY),
             ("keyword_only", KEYWORD_ONLY),
         ]
 
