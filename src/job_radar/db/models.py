@@ -2,7 +2,17 @@ from datetime import datetime
 from uuid import UUID, uuid4
 
 from pgvector.sqlalchemy import Vector
-from sqlalchemy import JSON, Boolean, DateTime, Float, ForeignKey, Integer, String, Text
+from sqlalchemy import (
+    JSON,
+    Boolean,
+    DateTime,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    UniqueConstraint,
+)
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -63,6 +73,54 @@ class Profile(Base):
     seniority_rules: Mapped[dict | None] = mapped_column(JSON)
     remote_required: Mapped[bool] = mapped_column(Boolean)
     dense_query_cache: Mapped[str | None] = mapped_column(Text)
+
+
+class FitJudgmentCache(Base):
+    """A persisted LLM fit *judgment*, so a re-run analyzes only what changed.
+
+    Analyzing one posting costs ~800 LLM output tokens at ~9 tok/s — the dominant
+    cost of a fit run. Almost none of that work differs between consecutive runs,
+    so the model's output is cached and invalidated by key rather than recomputed.
+
+    **Only the LLM's grounded judgment is stored — never the score.** The score,
+    verdict, and gates are recomputed by `score_fit` on every read. That is what
+    keeps the cache correct: those depend on run-time inputs the judgment does not
+    (`--level` overrides) and on constants that change independently (`_WEIGHTS`,
+    `_BANDS`). Caching the number would serve a stale score whenever either moved;
+    recomputing it is free, since `score_fit` is pure arithmetic.
+
+    The five-column unique key IS the invalidation policy:
+      profile_id     — judgments are relative to a candidate,
+      job_id         — and to a posting,
+      content_hash   — copied from the Job; an edited posting re-analyzes,
+      model          — a different model is a different judge,
+      prompt_version — a different prompt/schema is a different question.
+    Dropping either of the last two would silently serve judgments produced
+    under instructions the current code no longer uses.
+    """
+
+    __tablename__ = "fit_judgments"
+    __table_args__ = (
+        UniqueConstraint(
+            "profile_id",
+            "job_id",
+            "content_hash",
+            "model",
+            "prompt_version",
+            name="uq_fit_judgments_cache_key",
+        ),
+    )
+
+    id: Mapped[UUID] = mapped_column(PG_UUID(as_uuid=True), primary_key=True, default=uuid4)
+    profile_id: Mapped[UUID] = mapped_column(
+        PG_UUID(as_uuid=True), ForeignKey("profile.id"), index=True
+    )
+    job_id: Mapped[UUID] = mapped_column(PG_UUID(as_uuid=True), ForeignKey("jobs.id"), index=True)
+    content_hash: Mapped[str] = mapped_column(String(64))
+    model: Mapped[str] = mapped_column(String(255))
+    prompt_version: Mapped[int] = mapped_column(Integer)
+    judgment: Mapped[dict] = mapped_column(JSON)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 
 
 class EvalLabel(Base):

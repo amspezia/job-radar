@@ -9,7 +9,7 @@ _KEYWORDS = ["brazil", "brasil", "br", "worldwide", "anywhere", "global"]
 
 
 def _req(kind: str = "required", satisfaction: str = "met") -> Requirement:
-    return Requirement(text="x", kind=kind, satisfaction=satisfaction, evidence=[])
+    return Requirement(kind=kind, satisfaction=satisfaction, evidence=[])
 
 
 def _judgment(requirements: list[Requirement], relevance: str = "strong") -> FitJudgment:

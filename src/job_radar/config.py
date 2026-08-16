@@ -12,6 +12,11 @@ class Settings(BaseSettings):
     # Defaults to generation_model when unset — extraction is a simple
     # classification task that a 3B model handles as well as a 7B one.
     extraction_model: str | None = None
+    # Optional override for fit analysis, the dominant cost of a fit run
+    # (~800 output tokens per job, decode-bound). Defaults to generation_model.
+    # A smaller model here is faster, not better — measure fit agreement against
+    # the current model before adopting one.
+    fit_model: str | None = None
 
 
 settings = Settings()

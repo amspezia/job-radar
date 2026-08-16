@@ -7,9 +7,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from job_radar.adapters.embeddings import embed
 from job_radar.adapters.generation import generate
+from job_radar.config import settings
 from job_radar.db.models import Job, Profile
+from job_radar.fit import cache
 from job_radar.fit.analyze import analyze_fit
 from job_radar.fit.schema import FitAssessment
+from job_radar.fit.score import score_fit
 from job_radar.retrieval.filters import build_profile_filter
 from job_radar.retrieval.search import search
 
@@ -161,13 +164,20 @@ async def run_fit_pipeline(
     *,
     limit: int = 100,
     levels: list[str] | None = None,
+    max_age_days: int | None = None,
+    refresh: bool = False,
     field_boosts: dict[str, int] | None = None,
 ) -> list[tuple[Job, FitAssessment]]:
     """Retrieve candidate jobs for the stored profile and score each one's fit.
 
     Results are sorted best-first; jobs the pre-flight guard skipped (score is
     None) sort last. `levels` overrides the profile's accepted seniority levels
-    for this run, filtering retrieval and gating scoring alike.
+    for this run, filtering retrieval and gating scoring alike. `max_age_days`
+    drops postings older than that; it rides along in the retrieval WHERE clause,
+    so each arm still fills its pool with in-date jobs rather than trimming after.
+
+    Assessments are read from and written to the fit_assessments cache; `refresh`
+    re-analyzes every retrieved job and overwrites what it finds.
     """
     profile = await _load_profile(session)
     if profile is None:
@@ -175,12 +185,13 @@ async def run_fit_pipeline(
 
     lexical_q = query or build_lexical_query(profile)
     hyde_embedding = await build_hyde_embedding(profile, session)
-    profile_filter = build_profile_filter(profile, levels=levels)
+    profile_filter = build_profile_filter(profile, levels=levels, max_age_days=max_age_days)
     logger.info(
-        "Searching: lexical=%r hyde=%s filtered=%s",
+        "Searching: lexical=%r hyde=%s filtered=%s max_age_days=%s",
         lexical_q,
         "ok" if hyde_embedding else "skipped",
         profile_filter is not None,
+        max_age_days if max_age_days is not None else "none",
     )
     jobs = await search(
         session,
@@ -193,13 +204,36 @@ async def run_fit_pipeline(
     )
     logger.info("Retrieved %d candidate jobs", len(jobs))
 
+    model = settings.fit_model or settings.generation_model
+    cached = {} if refresh else await cache.load(session, profile.id, jobs, model=model)
+    pending = [job for job in jobs if job.id not in cached]
+    logger.info("Fit cache: %d hits, %d to analyze", len(cached), len(pending))
+
     semaphore = asyncio.Semaphore(_MAX_CONCURRENT_ANALYSES)
 
     async def _bounded_analyze(job: Job) -> tuple[Job, FitAssessment]:
         async with semaphore:
-            return job, await analyze_fit(profile, job, levels=levels)
+            return job, await analyze_fit(profile, job, levels=levels, model=model)
 
-    results = await asyncio.gather(*(_bounded_analyze(job) for job in jobs))
+    fresh = list(await asyncio.gather(*(_bounded_analyze(job) for job in pending)))
+    await cache.store(
+        session,
+        profile.id,
+        [(job, a.judgment) for job, a in fresh if a.judgment is not None],
+        model=model,
+    )
+
+    # Cache hits are re-scored rather than restored: score_fit is pure and free,
+    # and its output depends on `levels` and the scoring constants, neither of
+    # which is part of the cache key.
+    results = [
+        *fresh,
+        *(
+            (job, score_fit(cached[job.id], job, profile, levels=levels))
+            for job in jobs
+            if job.id in cached
+        ),
+    ]
     return sorted(
         results, key=lambda pair: pair[1].score if pair[1].score is not None else -1, reverse=True
     )

@@ -1,4 +1,6 @@
-from sqlalchemy import and_, or_
+from datetime import UTC, datetime, timedelta
+
+from sqlalchemy import and_, func, or_
 from sqlalchemy.sql.elements import ColumnElement
 
 from job_radar.db.models import Job, Profile
@@ -7,14 +9,14 @@ from job_radar.retrieval.seniority import LADDER, allowed_levels
 
 
 def build_profile_filter(
-    profile: Profile, *, levels: list[str] | None = None
+    profile: Profile, *, levels: list[str] | None = None, max_age_days: int | None = None
 ) -> ColumnElement[bool] | None:
     """Combine the profile's hard preferences into one retrieval WHERE clause.
 
     Region (geo), remote, and salary floor are non-negotiable filters applied
     before ranking. `levels` overrides the profile's accepted seniority levels
-    for this call (e.g. from a CLI flag). Returns None when the profile
-    expresses no constraints.
+    for this call (e.g. from a CLI flag). `max_age_days` caps posting age.
+    Returns None when the profile expresses no constraints.
     """
     clauses: list[ColumnElement[bool]] = []
 
@@ -46,6 +48,13 @@ def build_profile_filter(
                 Job.currency.is_distinct_from(profile.currency),
             )
         )
+
+    # Freshness. Judge by publication date, falling back to when we first saw the
+    # posting for the sources that omit it — collected_at is NOT NULL, so every row
+    # gets a comparable timestamp and nothing slips past the cutoff on a NULL.
+    if max_age_days is not None:
+        cutoff = datetime.now(UTC) - timedelta(days=max_age_days)
+        clauses.append(func.coalesce(Job.published_at, Job.collected_at) >= cutoff)
 
     if not clauses:
         return None

@@ -80,6 +80,18 @@ def test_levels_override_narrows_what_the_profile_would_allow() -> None:
     assert "'staff'" not in _sql(build_profile_filter(profile, levels=["senior"])).lower()
 
 
+def test_max_age_days_falls_back_to_collected_at_for_null_published() -> None:
+    # coalesce keeps NULL-published postings in the comparison (judged by when we
+    # first saw them) instead of letting them bypass the cutoff entirely.
+    sql = _sql(build_profile_filter(_profile(), max_age_days=30)).lower()
+    assert "coalesce" in sql
+    assert "published_at" in sql and "collected_at" in sql
+
+
+def test_no_max_age_adds_no_freshness_clause() -> None:
+    assert build_profile_filter(_profile(), max_age_days=None) is None
+
+
 def test_build_lexical_query_merges_titles_and_stack_only() -> None:
     # Domains are intentionally excluded — sweep showed they hurt recall@100.
     profile = _profile(
