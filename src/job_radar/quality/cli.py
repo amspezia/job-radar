@@ -30,12 +30,14 @@ _DISPLAY: list[tuple[str, str, str]] = [
     ("desc residual-HTML %", "desc_html_pct", "pct"),
     ("salary min>max %", "salary_invalid_pct", "pct"),
     ("dev title % (keyword)", "dev_title_pct", "pct"),
+    ("extraction null %", "extraction_null_pct", "pct"),
     ("relevance mean", "relevance_mean", "sim"),
     ("dev embed % (vector)", "dev_embed_pct", "pct"),
 ]
 
 
 async def _load_rows(session: AsyncSession) -> list[metrics.JobRow]:
+    # Column order must match JobRow's field order exactly (positional unpack below).
     stmt = select(
         Job.source,
         Job.title,
@@ -46,6 +48,10 @@ async def _load_rows(session: AsyncSession) -> list[metrics.JobRow]:
         Job.location,
         Job.job_type,
         Job.published_at,
+        Job.company,
+        Job.requirements,
+        Job.responsibilities,
+        Job.content_hash,
     )
     return [metrics.JobRow(*row) for row in (await session.execute(stmt)).all()]
 
@@ -100,12 +106,15 @@ def render_table(columns: list[dict]) -> str:
     return "\n".join(lines)
 
 
-def _write_json(columns: list[dict], *, threshold: float, generated_at: datetime) -> Path:
+def _write_json(
+    columns: list[dict], *, threshold: float, generated_at: datetime, duplicate_rate: float
+) -> Path:
     report = {
         "generated_at": generated_at.isoformat(),
         "relevance_threshold": threshold,
         "relevance_anchors": relevance.ANCHORS,
         "total_jobs": next((c["count"] for c in columns if c["source"] == "ALL"), 0),
+        "duplicate_rate_pct": duplicate_rate,
         "overall": next((c for c in columns if c["source"] == "ALL"), None),
         "sources": [c for c in columns if c["source"] != "ALL"],
     }
@@ -123,12 +132,17 @@ async def _run(threshold: float) -> None:
             print("No jobs in the database — run job-radar-ingest first.")
             return
         quals = metrics.compute(rows, now=now)
+        dup_rate = metrics.duplicate_rate(rows)
         centroid = await relevance.build_centroid(lambda t: embed(t, task="query"))
         rel = await relevance.relevance_by_source(session, centroid, threshold)
 
     columns = _merge(quals, rel)
     print(render_table(columns))
-    path = _write_json(columns, threshold=threshold, generated_at=now)
+    print(
+        f"\nLikely cross-source duplicates missed by content_hash: {dup_rate:.1f}% of corpus "
+        "(same company+title, different location string)"
+    )
+    path = _write_json(columns, threshold=threshold, generated_at=now, duplicate_rate=dup_rate)
     print(f"\nSnapshot written to {path}")
 
 

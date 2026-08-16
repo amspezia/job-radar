@@ -1,0 +1,75 @@
+{
+  "_comment": "Hand-derived ground truth for eval/personas/alice-rust-senior.cv.txt — see eval/personas/README.md for the schema convention (years-for-closed-roles-only, target_titles/domains as acceptable-sets, search_preferences authored separately since a CV doesn't state them).",
+  "persona_id": "alice-rust-senior",
+  "cv_file": "alice-rust-senior.cv.txt",
+  "full_name": "Alice Renner",
+  "email": "alice.renner.dev@fictionmail.com",
+  "seniority": "senior",
+  "seniority_notes": "Current title is Senior Backend Engineer; mentors two mid-level engineers and owns cross-service technical decisions, but nothing at the org-wide, multi-team scope that would justify staff (contrast dave-go-platform-staff, who explicitly sets direction across three teams).",
+  "target_titles": {
+    "expected_any_of": [
+      "Senior Backend Engineer",
+      "Senior Rust Engineer",
+      "Senior Systems Engineer",
+      "Backend Engineer",
+      "Staff Backend Engineer"
+    ],
+    "must_not_include": [
+      "Junior Software Engineer",
+      "Junior Engineer",
+      "Intern",
+      "Engineering Manager",
+      "Principal Backend Engineer"
+    ],
+    "notes": "'Staff Backend Engineer' is a plausible stretch (some mentoring/technical-leadership signal) and acceptable if produced, but not required. 'Engineering Manager' has zero support in the CV (no stated interest or people-management experience) and 'Principal' is two levels above her actual seniority — either should count as an error, not just an imprecision."
+  },
+  "tech_stack": [
+    "Rust",
+    "PostgreSQL",
+    "gRPC",
+    "Kubernetes",
+    "Docker",
+    "Kafka",
+    "distributed systems",
+    "async/Tokio",
+    "C++"
+  ],
+  "tech_stack_notes": "C++ appears only in a bullet ('Maintained a C++ telemetry ingestion service'), not the SKILLS line — deliberately placed there to test whether extraction reads bullets, not just the skills list.",
+  "domains": {
+    "expected_any_of": ["fintech", "payments"],
+    "must_not_include": [],
+    "notes": "Single clear domain — Meridian Pay is explicitly described as processing card/bank-transfer payments."
+  },
+  "work_history": [
+    {
+      "role": "Senior Backend Engineer",
+      "company": "Meridian Pay",
+      "start": "Jan 2023",
+      "end": null,
+      "years": null,
+      "years_note": "Ongoing (Present) — compute expected years dynamically as (eval run date - Jan 2023), do not hardcode."
+    },
+    {
+      "role": "Backend Engineer",
+      "company": "Meridian Pay",
+      "start": "Jun 2020",
+      "end": "Dec 2022",
+      "years": 2.5
+    },
+    {
+      "role": "Junior Software Engineer",
+      "company": "Kestrel Systems",
+      "start": "Aug 2018",
+      "end": "May 2020",
+      "years": 1.75
+    }
+  ],
+  "career_start": "Aug 2018",
+  "years_experience_note": "Continuous employment, no stated gaps — compute dynamically as (eval run date - Aug 2018) in years.",
+  "search_preferences": {
+    "location_rules": { "allowed_keywords": ["Germany", "EU", "Europe", "Remote"] },
+    "remote_required": true,
+    "salary_floor": null,
+    "currency": "EUR"
+  }
+}

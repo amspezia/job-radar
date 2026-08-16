@@ -1,3 +1,4 @@
+import httpx
 import pytest
 
 from job_radar.adapters.embeddings import embed
@@ -73,3 +74,32 @@ async def test_embed_sets_num_ctx(monkeypatch: pytest.MonkeyPatch) -> None:
     await embed("text", task="document")
 
     assert captured["client"].posted["json"]["options"]["num_ctx"] == 8192
+
+
+async def test_embed_retries_transient_failure_then_succeeds(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    attempts = 0
+
+    class _FlakyClient(_FakeClient):
+        async def post(self, url: str, json: dict) -> _FakeResponse:
+            nonlocal attempts
+            attempts += 1
+            if attempts < 2:
+                raise httpx.ConnectError("ollama unreachable", request=httpx.Request("POST", url))
+            return await super().post(url, json)
+
+    def factory(*args: object, **kwargs: object) -> _FlakyClient:
+        return _FlakyClient()
+
+    monkeypatch.setattr("job_radar.adapters.embeddings.httpx.AsyncClient", factory)
+
+    async def _instant_sleep(_seconds: float) -> None:
+        return None
+
+    monkeypatch.setattr("job_radar.adapters.retry.asyncio.sleep", _instant_sleep)
+
+    vector = await embed("text", task="document")
+
+    assert vector == [0.1, 0.2, 0.3]
+    assert attempts == 2

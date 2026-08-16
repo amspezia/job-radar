@@ -38,10 +38,14 @@ async def load_profile(session: AsyncSession, path: Path) -> Profile:
     embedding = await embed(text, task="document")
     logger.debug("Computed CV embedding (%d dims)", len(embedding))
 
-    profile = (await session.execute(select(Profile))).scalars().first()
+    profile = (
+        (await session.execute(select(Profile).where(Profile.source == "real"))).scalars().first()
+    )
     created = profile is None
     if profile is None:
-        profile = Profile(links={}, location_rules={}, seniority_rules={}, remote_required=False)
+        profile = Profile(
+            source="real", links={}, location_rules={}, seniority_rules={}, remote_required=False
+        )
         session.add(profile)
 
     profile.full_name = structured.full_name or ""

@@ -1,0 +1,182 @@
+[
+  {
+    "grade": 3,
+    "title": "Senior Backend Engineer",
+    "company": "Ledgerline Financial",
+    "seniority": "senior",
+    "requirements": "Candidates should bring at least five years of backend engineering experience, with deep, hands-on proficiency in Rust for building high-throughput, low-latency services. Strong command of PostgreSQL is required, including schema design, query optimization, and experience operating it at scale in a transactional environment. The role calls for practical experience designing and maintaining gRPC service contracts across a distributed microservice topology, along with proven Kubernetes experience for deploying and operating containerized workloads in production. Familiarity with asynchronous Rust, particularly the Tokio runtime, is essential, as the majority of our transaction-processing services are built on it. Prior experience in payments, banking, or another regulated financial services environment is strongly preferred, as is comfort working within strict correctness and auditability constraints.",
+    "responsibilities": "You will design, build, and operate core services within our payment settlement platform, working primarily in Rust against PostgreSQL-backed data stores. You will define and evolve gRPC APIs consumed by adjacent teams, ensuring backward compatibility and clear contracts as the service mesh grows. Day to day work includes profiling and tuning asynchronous Tokio-based services under real transaction load, diagnosing latency regressions, and shipping fixes to production via our Kubernetes-based deployment pipeline. You will participate in architecture reviews for new payment flows, collaborate with the risk and compliance teams on data-handling requirements, and mentor engineers earlier in their careers on our backend conventions and Rust idioms.",
+    "construction_rationale": "Grade 3: exact title match, full core stack (Rust, PostgreSQL, gRPC, Kubernetes, Tokio), senior level, fintech/payments domain — formal register."
+  },
+  {
+    "grade": 3,
+    "title": "Senior Rust Engineer",
+    "company": "Pennywise Rails",
+    "seniority": "senior",
+    "requirements": "We want someone who's spent real time writing Rust in production, not just side projects — think services that move money and can't be flaky. You should be comfortable with PostgreSQL as our primary datastore and know your way around gRPC for talking between services. We run everything on Kubernetes, so you should be able to write a Helm chart or debug a crashlooping pod without much hand-holding. Async Rust and Tokio specifically are a big part of the job, since our payment processing pipeline leans hard on concurrent task execution. A few years in fintech or payments is a big plus — you'll pick up the domain fast if you've dealt with settlement, reconciliation, or anything money-adjacent before.",
+    "responsibilities": "You'll be heads-down building and improving the Rust services that sit at the center of our payment rails — think authorization, ledger writes, and settlement, all backed by Postgres. You'll design gRPC endpoints for other teams to consume, ship them to Kubernetes, and keep an eye on how they behave under real traffic. A lot of your time will go into async Rust and Tokio — chasing down weird concurrency bugs, tuning task scheduling, that kind of thing. You'll also pair with newer engineers, help set technical direction for the payments team, and jump into incidents when something in the money path breaks.",
+    "construction_rationale": "Grade 3: exact title match, full core stack, senior level, fintech/payments domain — casual startup-voice register for authorial variety."
+  },
+  {
+    "grade": 3,
+    "title": "Senior Systems Engineer",
+    "company": "Northfield Clearing Systems",
+    "seniority": "senior",
+    "requirements": "Minimum five years of professional experience developing backend systems in Rust, including production use of async/await and the Tokio runtime. Demonstrated experience with PostgreSQL in high-write, transactional contexts. Working knowledge of gRPC for inter-service communication, including protobuf schema evolution. Operational experience with Kubernetes, including deployment configuration, resource management, and troubleshooting in a multi-service cluster. Experience in the payments or fintech sector is required, with specific familiarity with transaction processing, clearing, or settlement workflows considered a strong asset. Candidates should be able to reason about correctness and failure modes in distributed systems handling financial data.",
+    "responsibilities": "Design and implement backend services supporting card clearing and settlement operations, primarily in Rust with PostgreSQL as the system of record. Define gRPC interfaces between internal services and maintain compatibility as schemas evolve. Operate and troubleshoot services deployed on Kubernetes, including on-call responsibility for the clearing pipeline. Analyze and resolve concurrency and performance issues in Tokio-based asynchronous services under production load. Participate in design reviews for new clearing and settlement features, and produce technical documentation covering service architecture and failure recovery procedures.",
+    "construction_rationale": "Grade 3: exact/synonym title match, full core stack, senior level, fintech/payments domain — dry, formal-technical register."
+  },
+  {
+    "grade": 3,
+    "title": "Senior Software Engineer, Backend",
+    "company": "Vaultbridge",
+    "seniority": "senior",
+    "requirements": "This role is for an engineer who has built real systems in Rust and wants to keep doing that — you should have several years of experience shipping production Rust code, ideally including async work with Tokio. You'll need solid PostgreSQL experience, since it underpins nearly everything we store, and you should be comfortable designing gRPC services that other teams depend on. We run our infrastructure on Kubernetes, so hands-on experience deploying and debugging services there matters. Because we operate in the payments space, prior exposure to financial transaction systems, fraud checks, or anything with strict correctness requirements will help you ramp quickly, though we're open to strong engineers coming from adjacent high-reliability domains.",
+    "responsibilities": "You'll own significant pieces of our payment-processing backend, written in Rust and backed by PostgreSQL, from design through production operation. That includes defining gRPC contracts for services consumed across the company, writing and tuning async Tokio code that handles real transaction volume, and deploying and monitoring those services on Kubernetes. You'll be involved in incident response for anything touching the payment path, contribute to architectural decisions as the platform scales, and work closely with product and compliance stakeholders to translate payment requirements into reliable software.",
+    "construction_rationale": "Grade 3: adjacent-but-exact title phrasing, full core stack, senior level, fintech/payments domain — narrative, mixed register."
+  },
+  {
+    "grade": 3,
+    "title": "Senior Rust Backend Engineer",
+    "company": "Ironclad Settlements",
+    "seniority": "senior",
+    "requirements": "5+ years backend engineering, with strong production Rust experience including async/Tokio. Solid PostgreSQL skills — schema design, indexing, query tuning under load. Experience building and maintaining gRPC services in a multi-service architecture. Hands-on Kubernetes experience: deployments, scaling, debugging in production. Payments or fintech background required; you should understand transaction integrity, idempotency, and reconciliation at a practical level. Bonus if you've worked on ledger or settlement systems specifically.",
+    "responsibilities": "Build and maintain Rust services powering our transaction ledger and settlement engine, backed by PostgreSQL. Define and evolve gRPC interfaces between internal services. Write and optimize async Tokio code for high-throughput transaction processing. Deploy, monitor, and troubleshoot services on Kubernetes. Own reliability for the settlement path, including on-call rotation and incident response. Work directly with the founding engineering team on architecture decisions as we scale transaction volume.",
+    "construction_rationale": "Grade 3: exact title match, full core stack, senior level, fintech/payments domain — terse, bullet-like sentence structure for register variety."
+  },
+  {
+    "grade": 2,
+    "title": "Backend Engineer",
+    "company": "Solstice Payments",
+    "seniority": "senior",
+    "requirements": "We're looking for an engineer with 5+ years of backend experience and strong production Rust skills, including comfort with async/await and the Tokio runtime. You should have solid PostgreSQL experience, including schema design and performance tuning for transactional workloads. Kubernetes experience is required, as all our services run in a containerized cluster environment. You'll be expected to operate with a high degree of autonomy, own services end to end, and make architectural calls without close supervision. Experience in payments or another regulated financial environment is preferred, given the nature of the systems you'll be working on.",
+    "responsibilities": "You will build and maintain Rust services that support our payment processing platform, using PostgreSQL as the primary datastore. Using async Rust and Tokio, you'll implement and optimize services handling real-time transaction volume. You'll deploy and operate those services on Kubernetes, including diagnosing production issues and improving reliability over time. You'll work closely with senior engineers and the platform lead to shape technical direction for the payments backend, and take ownership of at least one core service end to end.",
+    "construction_rationale": "Grade 2: adjacent title (no explicit \"Senior\") with senior-scope description, core stack minus gRPC, fintech domain."
+  },
+  {
+    "grade": 2,
+    "title": "Backend Engineer",
+    "company": "Cobalt Systems",
+    "seniority": "senior",
+    "requirements": "Candidates should have several years of backend development experience with production Rust, including working knowledge of async/await and the Tokio ecosystem. Strong PostgreSQL skills are required, including experience designing schemas and tuning queries for a high-traffic application. Experience designing and consuming gRPC services in a microservice architecture is expected, as our backend is composed of a dozen or so interconnected services. We're looking for someone who can operate independently, take ownership of ambiguous problems, and mentor other engineers on the team as needed.",
+    "responsibilities": "You will design and build backend services in Rust, using PostgreSQL as the system of record for core application data. You'll define gRPC interfaces consumed by other internal services and maintain them as the system evolves. Working with async Rust and Tokio, you'll build services that handle concurrent request loads reliably. You'll take a lead role in technical design discussions, provide guidance to less experienced engineers, and help set standards for how the backend team builds and ships services.",
+    "construction_rationale": "Grade 2: adjacent title, senior-scope via autonomy/mentoring language, core stack minus Kubernetes, domain left unstated."
+  },
+  {
+    "grade": 2,
+    "title": "Rust Engineer",
+    "company": "Marrow Data",
+    "seniority": "senior",
+    "requirements": "We're hiring an experienced Rust engineer who has shipped production systems and is comfortable owning services with minimal oversight. You should have hands-on experience with async/await and the Tokio runtime, as our core services are built around asynchronous execution. Experience with MySQL is required, including schema design and query optimization for high-traffic applications. You should be able to design and maintain gRPC interfaces between services, and have solid Kubernetes experience for deploying and operating those services in production. Several years of relevant experience is expected, along with the judgment to make sound technical tradeoffs independently.",
+    "responsibilities": "You'll build and maintain backend services in Rust, working against a MySQL-backed data layer, and design gRPC interfaces for other teams to build on. Using async Rust and Tokio, you'll implement services that handle significant concurrent load, and you'll deploy and operate them on our Kubernetes cluster. You'll take ownership of technical design for your area, work with product stakeholders to scope new features, and help other engineers on the team level up their Rust skills.",
+    "construction_rationale": "Grade 2: title matches Rust specialty, senior-scope via ownership language, core stack minus PostgreSQL (MySQL swapped in), domain unstated."
+  },
+  {
+    "grade": 2,
+    "title": "Platform Engineer",
+    "company": "Fenwick Financial",
+    "seniority": "senior",
+    "requirements": "This role requires substantial backend experience, including production use of Rust for building reliable, high-throughput services. You should have strong PostgreSQL skills, with experience running it in a transactional, financial-services context. Experience designing gRPC-based service interfaces is required, as is solid, hands-on Kubernetes experience for deploying and scaling containerized workloads. You should be comfortable owning platform-level decisions and working with minimal supervision. Prior experience in payments or fintech is strongly preferred, given the regulatory and correctness demands of the systems involved.",
+    "responsibilities": "You'll build and operate platform services in Rust that support our payments infrastructure, with PostgreSQL as the backing store for transactional data. You'll design gRPC contracts used across multiple internal teams and deploy those services to our Kubernetes cluster, taking responsibility for their reliability in production. You'll work with engineering leadership to plan platform-level improvements, review designs from other teams, and troubleshoot production issues as they arise across the payments stack.",
+    "construction_rationale": "Grade 2: adjacent title, senior-scope via platform-ownership language, core stack minus async/Tokio (never mentioned), fintech domain present."
+  },
+  {
+    "grade": 2,
+    "title": "Backend Engineer",
+    "company": "Harbor Nine",
+    "seniority": "senior",
+    "requirements": "We're looking for a backend engineer with 5+ years of experience building production services in Go, with strong PostgreSQL skills including schema design and performance tuning under load. You should have experience designing and maintaining gRPC services in a distributed, multi-service environment, along with solid Kubernetes experience for deployment and operations. Comfort with concurrent, asynchronous service design is important, since our transaction-processing pipeline depends heavily on it. Experience in payments or another regulated financial domain is required, given the correctness and auditability standards our systems must meet.",
+    "responsibilities": "You'll build and maintain backend services in Go that support our payment transaction pipeline, using PostgreSQL as the primary datastore. You'll define gRPC interfaces consumed by other services, deploy your work to our Kubernetes cluster, and take ownership of reliability for the systems you build. You'll design for high concurrency given our transaction volume, participate in incident response for the payments path, and work closely with other senior engineers to shape technical direction for the backend.",
+    "construction_rationale": "Grade 2: adjacent title, senior-scope via years/ownership language, core stack minus Rust (Go used instead), fintech domain present."
+  },
+  {
+    "grade": 1,
+    "title": "Senior Backend Engineer",
+    "company": "Nightfall Interactive",
+    "seniority": "senior",
+    "requirements": "We're looking for a senior backend engineer with deep production experience in Rust, including async/await and the Tokio runtime, to help scale the server infrastructure behind our multiplayer titles. Strong PostgreSQL experience is required, including schema design and query optimization under heavy read/write load. You should have experience designing gRPC services for low-latency communication between game servers and backend systems, and solid Kubernetes experience for deploying and scaling those services during peak player traffic. Five or more years of backend engineering experience is expected, along with the ability to reason about performance under highly concurrent, real-time conditions.",
+    "responsibilities": "You'll design and build Rust services that power matchmaking, session state, and live-event systems for our multiplayer games, backed by PostgreSQL. You'll define gRPC interfaces between game servers and backend services, and use async Tokio to handle thousands of concurrent player connections efficiently. You'll deploy and operate these services on Kubernetes, scaling them up ahead of major game launches and live events, and work closely with game designers to translate gameplay requirements into backend systems.",
+    "construction_rationale": "Grade 1: full stack match and senior level, but domain is gaming rather than fintech/payments — single deliberate axis off."
+  },
+  {
+    "grade": 1,
+    "title": "Senior Rust Engineer",
+    "company": "Waybound Freight",
+    "seniority": "senior",
+    "requirements": "We need a senior engineer with strong, hands-on Rust experience, including comfort with async/await and the Tokio runtime, to build core systems for our logistics platform. You should have solid PostgreSQL experience, including designing schemas that hold up under high transaction volume from real-time shipment tracking. Experience building gRPC services across a distributed system is required, along with practical Kubernetes experience operating containerized services in production. At least five years of backend engineering experience is expected, ideally including systems that need to stay correct and available under real-world operational pressure, such as fleet or route-planning systems.",
+    "responsibilities": "You'll build and maintain Rust services that track shipments and coordinate fleet routing in real time, using PostgreSQL as the backing store. You'll define gRPC interfaces between routing, tracking, and dispatch services, and use async Tokio to handle high volumes of concurrent location updates. You'll deploy and operate these services on Kubernetes, troubleshoot production issues affecting live shipments, and collaborate with the operations team to refine routing logic based on real-world constraints.",
+    "construction_rationale": "Grade 1: full stack match and senior level, but domain is logistics rather than fintech/payments — single deliberate axis off."
+  },
+  {
+    "grade": 1,
+    "title": "Senior Backend Engineer",
+    "company": "Anchorpoint Clearing",
+    "seniority": "senior",
+    "requirements": "We're hiring a senior backend engineer to work on the core systems behind our payment clearing platform. You should have deep, production experience in C++, including multithreaded and concurrent systems programming, as our lowest-latency services are built on it. Strong PostgreSQL experience is required, including schema design and tuning for high-throughput transactional workloads. You should have experience designing and maintaining gRPC services across a distributed architecture, and solid Kubernetes experience deploying and operating containerized services in production. Five or more years of experience is expected, along with prior work in payments, banking, or another financial services environment.",
+    "responsibilities": "You'll design and build C++ services that sit at the center of our payment clearing pipeline, backed by PostgreSQL, focusing on low-latency, high-throughput transaction processing. You'll define gRPC interfaces between clearing, settlement, and reconciliation services, and use modern concurrency patterns in C++ to keep throughput high under peak load. You'll deploy and operate these services on Kubernetes, respond to incidents affecting the clearing pipeline, and work with the risk team to ensure correctness of financial calculations.",
+    "construction_rationale": "Grade 1: title, fintech domain, and senior level all match, but the role asks for C++ systems experience instead of Rust — single deliberate axis off."
+  },
+  {
+    "grade": 1,
+    "title": "Senior Systems Engineer",
+    "company": "Redbridge Payments",
+    "seniority": "senior",
+    "requirements": "Redbridge is looking for a senior systems engineer with strong C++ experience to work on performance-critical parts of our payment authorization system. You should be comfortable writing concurrent, low-latency C++ code and have a solid track record shipping systems software to production. PostgreSQL experience is required, particularly around schema design and performance tuning for transactional data. You'll need experience designing gRPC services within a larger distributed system, as well as hands-on Kubernetes experience for deploying and operating services at scale. We expect at least five years of relevant experience, ideally including time spent in payments or another domain with strict correctness requirements.",
+    "responsibilities": "You'll build and optimize C++ services responsible for real-time payment authorization decisions, working against a PostgreSQL-backed data layer. You'll design gRPC interfaces connecting authorization services to the rest of the payment platform, and apply concurrency and performance techniques in C++ to keep decision latency low under heavy transaction load. You'll deploy your work to Kubernetes, take part in on-call rotation for the authorization path, and collaborate with fraud and risk teams on the logic your services implement.",
+    "construction_rationale": "Grade 1: title, fintech domain, and senior level all match, but the role asks for C++ systems experience instead of Rust — single deliberate axis off."
+  },
+  {
+    "grade": 1,
+    "title": "Staff Backend Engineer",
+    "company": "Vantage Settlements",
+    "seniority": "staff",
+    "requirements": "We're looking for a staff-level engineer to set technical direction for backend systems across our payments organization. You should have extensive, production experience in Rust, including deep familiarity with async/await and the Tokio runtime, along with strong PostgreSQL skills and experience designing gRPC services used across many teams. Kubernetes experience operating services at scale is required. This role expects a track record of driving architectural decisions across multiple teams, not just within a single service — you'll be expected to set technical standards, resolve cross-team design conflicts, and represent engineering in conversations with senior leadership. Significant experience in payments or fintech is required.",
+    "responsibilities": "You'll set technical direction for backend architecture across several payments engineering teams, using your deep Rust and PostgreSQL expertise to guide decisions on service boundaries, data modeling, and gRPC contract design company-wide. You'll drive adoption of shared patterns for async Tokio services and Kubernetes deployment across teams, resolve architectural disagreements between teams, and act as a technical escalation point for the most complex production issues. You'll also mentor senior engineers, contribute to org-wide technical roadmaps, and represent the backend organization in leadership planning discussions.",
+    "construction_rationale": "Grade 1: full stack and fintech domain match, but the role is explicitly staff-level with org-wide leadership scope one level above Alice — single deliberate axis off."
+  },
+  {
+    "grade": 0,
+    "title": "Senior Backend Engineer",
+    "company": "Glasswing Studio",
+    "seniority": "senior",
+    "requirements": "We're looking for a senior backend engineer to join our product engineering team and help build the interfaces our customers use every day. Strong expertise in React and TypeScript is required, along with a deep understanding of modern component architecture and state management patterns. You should have experience building and maintaining design systems, and be comfortable working closely with designers to translate Figma mockups into polished, accessible user interfaces. Experience with GraphQL clients such as Apollo is a plus. We're looking for someone who cares deeply about UI performance, pixel-level polish, and delivering a smooth experience across desktop and mobile browsers.",
+    "responsibilities": "You'll build and maintain customer-facing features using React and TypeScript, working closely with our design team to implement new UI components and improve existing ones. You'll own the performance and accessibility of key user flows, write and maintain our component library, and collaborate with backend teams to consume their APIs from the frontend. You'll participate in design reviews, contribute to our design system, and help shape how new features look and feel across the product.",
+    "construction_rationale": "Grade 0: wrong stack entirely — a frontend role (React/TypeScript) mislabeled with \"Senior Backend Engineer,\" none of Alice's actual stack present."
+  },
+  {
+    "grade": 0,
+    "title": "Senior Software Engineer",
+    "company": "Puddlejump Games",
+    "seniority": "senior",
+    "requirements": "We're hiring a senior software engineer to work on our flagship mobile app. You should have several years of experience building native applications with Swift and Kotlin, and a strong understanding of mobile app architecture, including offline data sync and local storage. Experience with Core Data or Room, along with mobile CI/CD pipelines, is expected. You should be comfortable working within platform-specific constraints on iOS and Android, and have a track record of shipping polished, high-performing mobile experiences to millions of users. Experience with push notification systems and in-app purchase flows is a plus.",
+    "responsibilities": "You'll build and maintain features for our iOS and Android apps, writing native Swift and Kotlin code and working closely with product and design to ship new functionality. You'll optimize app performance and battery usage, manage offline data synchronization, and troubleshoot platform-specific issues across a wide range of devices. You'll also work with the analytics team to instrument new features, and participate in the app store release process for both platforms.",
+    "construction_rationale": "Grade 0: wrong stack entirely — a mobile engineering role (Swift/Kotlin) with an \"engineer\"/\"senior\" title but none of Alice's actual stack."
+  },
+  {
+    "grade": 0,
+    "title": "Senior Solutions Engineer",
+    "company": "Corvid Analytics",
+    "seniority": "senior",
+    "requirements": "We're looking for a senior solutions engineer to support our sales team through the technical portions of the deal cycle. You should be comfortable running product demos, answering technical questions from prospective customers, and building proof-of-concept integrations to demonstrate value during evaluations. Familiarity with backend systems and languages such as Rust is a plus but not required, as most of the role involves communicating technical concepts clearly to non-technical stakeholders. Strong presentation skills and comfort traveling to customer sites are important. Prior experience in a pre-sales, sales engineering, or customer-facing technical role is required.",
+    "responsibilities": "You'll partner with account executives throughout the sales cycle, running technical discovery calls, delivering product demos, and answering prospect questions about our platform's architecture and integrations. You'll build lightweight proof-of-concept demos tailored to specific customer use cases, and help prospects understand how our product would fit into their existing systems. You'll also gather technical feedback from the field and relay it to product and engineering, and represent the company at industry conferences and trade shows.",
+    "construction_rationale": "Grade 0: unrelated role function — sales/customer-facing solutions engineering, not engineering, despite a passing mention of Rust as \"a plus.\""
+  },
+  {
+    "grade": 0,
+    "title": "Senior Database Administrator",
+    "company": "Fernbridge Data Ops",
+    "seniority": "senior",
+    "requirements": "We're looking for a senior database administrator to manage and scale our PostgreSQL infrastructure. You should have deep expertise in PostgreSQL administration, including replication, backup and recovery, performance tuning, and capacity planning. Experience running database workloads on Kubernetes is required, including managing stateful sets and persistent storage for production clusters. You should be comfortable writing runbooks, managing on-call rotations for database incidents, and working with engineering teams to review schema changes before they ship. Experience with monitoring and alerting tools for database health is expected, along with a strong understanding of backup and disaster recovery procedures.",
+    "responsibilities": "You'll manage the day-to-day health of our PostgreSQL fleet, including monitoring performance, tuning slow queries, and planning capacity ahead of growth. You'll maintain our Kubernetes-based database deployments, including upgrades, failover testing, and backup verification. You'll review schema migrations proposed by application teams, provide guidance on indexing and query patterns, and own incident response when database issues affect production systems. You'll also maintain documentation and runbooks for database operations.",
+    "construction_rationale": "Grade 0: different field — a DBA/ops role that mentions PostgreSQL and Kubernetes but is fundamentally database administration, not backend engineering, with no Rust."
+  },
+  {
+    "grade": 0,
+    "title": "Senior Site Reliability Engineer, Data Platform",
+    "company": "Millhaven Infrastructure",
+    "seniority": "senior",
+    "requirements": "We're seeking a senior site reliability engineer to own the reliability of our data infrastructure, primarily built on PostgreSQL and deployed on Kubernetes. You should have strong experience operating PostgreSQL at scale, including replication topology design and failover procedures, along with deep Kubernetes operational expertise, including cluster upgrades and resource management. Experience with infrastructure-as-code tools and observability stacks is required. This role is focused on operational excellence rather than feature development, so a strong background in incident response, postmortems, and reliability engineering practices is essential. Scripting experience in Python or Bash is expected for automation work.",
+    "responsibilities": "You'll be responsible for the reliability and performance of our PostgreSQL-based data platform, running on Kubernetes across multiple regions. You'll design and test failover and disaster recovery procedures, manage cluster upgrades, and build automation to reduce manual operational toil. You'll lead incident response for data infrastructure issues, write postmortems, and work with engineering teams to establish reliability standards. You'll also maintain dashboards and alerting for database and cluster health.",
+    "construction_rationale": "Grade 0: different field — an SRE/data-ops role with coincidental PostgreSQL and Kubernetes keyword overlap, not backend engineering, with no Rust."
+  }
+]

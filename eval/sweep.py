@@ -64,6 +64,7 @@ _WEIGHT_CONFIGS: list[tuple[str, list[float]]] = [
 
 _POOL_VALUES = [20, 50, 100, 150, 200]
 
+
 def _build_query_variant(profile: Profile, variant: str) -> str:
     """Build a BM25 token bag for the given query construction variant.
 
@@ -135,9 +136,8 @@ def _score(run: dict[UUID, float], qrels: dict[UUID, int]) -> dict[str, float]:
 def _print_sweep_table(dimension: str, rows: list[dict]) -> None:
     col_w = 16
     label_w = max(len(r["label"]) for r in rows)
-    header = (
-        f"\n{'':>{label_w}}  "
-        + "  ".join(k.rjust(col_w) for k in ["Recall@100", "Recall@50", "nDCG@10", "MRR", "P@5"])
+    header = f"\n{'':>{label_w}}  " + "  ".join(
+        k.rjust(col_w) for k in ["Recall@100", "Recall@50", "nDCG@10", "MRR", "P@5"]
     )
     print(f"\n=== Sweep: {dimension} ===")
     print(header)
@@ -156,9 +156,7 @@ def _print_sweep_table(dimension: str, rows: list[dict]) -> None:
 
 def _git_sha() -> str:
     try:
-        return subprocess.check_output(
-            ["git", "rev-parse", "--short", "HEAD"], text=True
-        ).strip()
+        return subprocess.check_output(["git", "rev-parse", "--short", "HEAD"], text=True).strip()
     except Exception:
         return "unknown"
 
@@ -195,9 +193,7 @@ async def _sweep_weights(
     raw_runs: list[tuple[str, dict[UUID, float]]] = []
 
     for label, weights in _WEIGHT_CONFIGS:
-        config = SearchConfig(
-            arms=["lexical", "hyde"], k=60, pool=100, limit=100, weights=weights
-        )
+        config = SearchConfig(arms=["lexical", "hyde"], k=60, pool=100, limit=100, weights=weights)
         run = await build_run(session, profile, config, query=query, hyde_embedding=hyde_embedding)
         scores = _score(run, qrels)
         rows.append({"label": label, **scores})
@@ -271,8 +267,6 @@ async def _sweep_boosts(
     return rows
 
 
-
-
 async def _run(args: argparse.Namespace) -> None:
     out_dir = Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -280,15 +274,19 @@ async def _run(args: argparse.Namespace) -> None:
     async with async_session_factory() as session:
         if args.profile_id:
             profile = (
-                await session.execute(
-                    select(Profile).where(Profile.id == UUID(args.profile_id))
-                )
-            ).scalars().first()
+                (await session.execute(select(Profile).where(Profile.id == UUID(args.profile_id))))
+                .scalars()
+                .first()
+            )
             if profile is None:
                 print(f"Profile {args.profile_id} not found.")
                 sys.exit(1)
         else:
-            profile = (await session.execute(select(Profile))).scalars().first()
+            profile = (
+                (await session.execute(select(Profile).where(Profile.source == "real")))
+                .scalars()
+                .first()
+            )
             if profile is None:
                 print("No profile found — run job-radar-profile first.")
                 sys.exit(1)
@@ -312,9 +310,7 @@ async def _run(args: argparse.Namespace) -> None:
         dims_set = set(dims)
 
         if "k" in dims_set:
-            sweep_results["k"] = await _sweep_k(
-                session, profile, qrels, lexical_q, hyde_embedding
-            )
+            sweep_results["k"] = await _sweep_k(session, profile, qrels, lexical_q, hyde_embedding)
         if "weights" in dims_set:
             sweep_results["weights"] = await _sweep_weights(
                 session, profile, qrels, lexical_q, hyde_embedding
@@ -328,9 +324,7 @@ async def _run(args: argparse.Namespace) -> None:
                 session, profile, qrels, lexical_q, hyde_embedding
             )
         if "query" in dims_set:
-            sweep_results["query"] = await _sweep_query(
-                session, profile, qrels, hyde_embedding
-            )
+            sweep_results["query"] = await _sweep_query(session, profile, qrels, hyde_embedding)
 
     artifact = {
         "profile_id": str(profile.id),
@@ -347,9 +341,7 @@ async def _run(args: argparse.Namespace) -> None:
 
 def main() -> None:
     logging.basicConfig(level=logging.INFO)
-    parser = argparse.ArgumentParser(
-        description="OAT parameter sweep for hybrid search tuning."
-    )
+    parser = argparse.ArgumentParser(description="OAT parameter sweep for hybrid search tuning.")
     parser.add_argument(
         "--dimension",
         nargs="+",

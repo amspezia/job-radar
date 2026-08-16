@@ -1,0 +1,26 @@
+Bob Okafor
+bob.okafor.ml@fictionmail.com | Toronto, Canada (remote preferred)
+
+EXPERIENCE
+
+Machine Learning Engineer — Vireo Health Analytics | Mar 2024 – Present
+Vireo builds risk-prediction tools used by hospital readmission-prevention teams.
+- Built and deployed a patient-readmission risk model (PyTorch, gradient-boosted ensemble) now scoring ~15,000 discharge records/week.
+- Own the model-serving layer: containerized inference service behind an internal API, monitored for feature drift.
+- Rebuilt the training data pipeline in Airflow, cutting model-refresh turnaround from 9 days to 36 hours.
+- Working with the clinical data team to add a second model predicting 30-day ER return risk.
+
+Junior Data Scientist — Vireo Health Analytics | Jul 2022 – Feb 2024
+- Built the first version of a patient-cohort segmentation model using scikit-learn.
+- Wrote the SQL data-quality checks that catch malformed intake records before they reach the modeling pipeline.
+- Presented model performance reviews to the clinical stakeholders on a monthly cadence.
+
+Data Analyst Intern — Northline Logistics | May 2021 – Jun 2022
+- Built delivery-time dashboards in SQL and pandas for the operations team.
+- No modeling work — mostly reporting and ad hoc analysis.
+
+SKILLS
+Python, PyTorch, scikit-learn, SQL, Airflow, Docker
+
+EDUCATION
+B.Sc. Statistics, University of Toronto, 2021

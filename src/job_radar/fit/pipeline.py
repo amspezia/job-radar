@@ -1,4 +1,5 @@
 import asyncio
+import json
 import logging
 
 from pydantic import BaseModel, field_validator
@@ -57,6 +58,9 @@ for these roles — not the vocabulary of the candidate's past work.
 
 Rules:
 - Anchor the posting to the TARGET ROLES above, not to the candidate's past projects.
+- If business domains are given below, frame the hiring company as operating in one of
+  them (e.g. "a healthcare analytics company", "a fintech payments platform") rather than
+  a generic, industry-agnostic company. If none are given, omit industry framing entirely.
 - Use the work history ONLY to infer the candidate's depth and strongest technologies.
   Do NOT copy project descriptions, internal tool names, or company-specific patterns.
 - Name 4-6 technologies that a strong candidate for these roles would know.
@@ -67,6 +71,7 @@ Rules:
 
 Candidate's demonstrated stack and experience (use to infer skill depth only):
 tech stack: {tech_stack}
+business domains: {domains}
 
 Recent work history (most recent first — use for skill-level calibration, not as source material):
 {work_history}
@@ -74,7 +79,9 @@ Recent work history (most recent first — use for skill-level calibration, not 
 
 
 async def _load_profile(session: AsyncSession) -> Profile | None:
-    return (await session.execute(select(Profile))).scalars().first()
+    return (
+        (await session.execute(select(Profile).where(Profile.source == "real"))).scalars().first()
+    )
 
 
 def build_lexical_query(profile: Profile) -> str:
@@ -88,6 +95,7 @@ def build_lexical_query(profile: Profile) -> str:
     parts = [
         *(profile.target_titles or []),
         *keywords.get("tech_stack", []),
+        *keywords.get("domains", []),
     ]
     seen: set[str] = set()
     tokens: list[str] = []
@@ -120,6 +128,7 @@ async def _generate_hyde_posting(profile: Profile) -> str | None:
         seniority=profile.seniority or "unspecified",
         target_titles=", ".join(profile.target_titles or []),
         tech_stack=", ".join(keywords.get("tech_stack", [])),
+        domains=", ".join(keywords.get("domains", [])) or "unspecified",
         work_history="\n".join(history_lines) if history_lines else "(none provided)",
     )
     try:
@@ -129,30 +138,62 @@ async def _generate_hyde_posting(profile: Profile) -> str | None:
         return None
 
 
-async def build_hyde_embedding(
-    profile: Profile, _session: AsyncSession
-) -> list[float] | None:
-    """Synthesize _HYDE_N HyDE postings concurrently and return their averaged embedding.
+def _load_cached_hyde_texts(profile: Profile) -> list[str]:
+    """Parse `profile.dense_query_cache` into posting texts, or [] on any miss.
 
-    Averaging embeddings across multiple independent LLM samples reduces the
-    single-call variance that otherwise causes run-to-run ranking instability.
-    Falls back to fewer samples when some calls fail; returns None only when
-    every attempt fails, in which case the caller skips the dense arm entirely.
+    A miss covers "never cached" (None) and "unreadable" (pre-cache-format data,
+    corruption) alike — both fall through to regenerating, never raise.
     """
-    logger.info("Synthesizing %d HyDE postings concurrently", _HYDE_N)
-    texts = await asyncio.gather(*(_generate_hyde_posting(profile) for _ in range(_HYDE_N)))
-    valid = [t for t in texts if t]
-    if not valid:
-        logger.warning("All HyDE postings failed; dense arm will be skipped")
-        return None
-    if len(valid) < _HYDE_N:
-        logger.warning(
-            "%d/%d HyDE postings failed; averaging remaining %d",
-            _HYDE_N - len(valid),
-            _HYDE_N,
-            len(valid),
-        )
-    embeddings = await asyncio.gather(*(embed(t, task="document") for t in valid))
+    if not profile.dense_query_cache:
+        return []
+    try:
+        cached = json.loads(profile.dense_query_cache)
+    except (json.JSONDecodeError, TypeError):
+        logger.warning("Unreadable dense_query_cache for profile %s; regenerating", profile.id)
+        return []
+    return [t for t in cached if isinstance(t, str) and t]
+
+
+async def build_hyde_embedding(profile: Profile, session: AsyncSession) -> list[float] | None:
+    """Return the averaged embedding of this profile's HyDE posting(s), cached or fresh.
+
+    `profile.dense_query_cache` holds the last-synthesized posting texts as a JSON
+    list, invalidated to None on every CV reload (profile/loader.py) — the only
+    thing that should force resynthesis, since the postings are derived solely from
+    the CV/profile. A cache hit skips all _HYDE_N generation calls, which is the
+    dominant cost of a fit run's HyDE arm. All N texts are cached together (not
+    just one) so a later cache hit still gets the same multi-sample variance
+    reduction a fresh run would.
+
+    Falls back to fewer samples when some generation calls fail; returns None only
+    when every attempt fails, in which case the caller skips the dense arm entirely.
+    A cache holding fewer than `_HYDE_N` texts (a prior partial failure) is topped up
+    rather than treated as complete, so a transient miss self-heals on the next call
+    instead of permanently degrading the arm's variance reduction.
+    """
+    texts = _load_cached_hyde_texts(profile)
+    missing = _HYDE_N - len(texts)
+    if missing <= 0:
+        logger.debug("Reusing %d cached HyDE posting(s) for profile %s", len(texts), profile.id)
+    else:
+        logger.info("Synthesizing %d HyDE posting(s) (%d already cached)", missing, len(texts))
+        generated = await asyncio.gather(*(_generate_hyde_posting(profile) for _ in range(missing)))
+        texts = texts + [t for t in generated if t]
+        if not texts:
+            logger.warning("All HyDE postings failed; dense arm will be skipped")
+            return None
+        if len(texts) < _HYDE_N:
+            logger.warning(
+                "%d/%d HyDE postings still missing; averaging remaining %d",
+                _HYDE_N - len(texts),
+                _HYDE_N,
+                len(texts),
+            )
+        profile.dense_query_cache = json.dumps(texts)
+        session.add(profile)
+        await session.commit()
+
+    embeddings = await asyncio.gather(*(embed(t, task="document") for t in texts))
     dim = len(embeddings[0])
     n = len(embeddings)
     return [sum(e[i] for e in embeddings) / n for i in range(dim)]

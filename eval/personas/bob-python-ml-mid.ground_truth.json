@@ -1,0 +1,66 @@
+{
+  "_comment": "Hand-derived ground truth for eval/personas/bob-python-ml-mid.cv.txt — see eval/personas/README.md for the schema convention.",
+  "persona_id": "bob-python-ml-mid",
+  "cv_file": "bob-python-ml-mid.cv.txt",
+  "full_name": "Bob Okafor",
+  "email": "bob.okafor.ml@fictionmail.com",
+  "seniority": "mid",
+  "seniority_notes": "One promotion (Junior Data Scientist -> Machine Learning Engineer) and ~4.25 years total by the current role's start; owns model-serving and pipeline work independently but no mentoring/leadership signal — solidly mid, not yet senior.",
+  "target_titles": {
+    "expected_any_of": [
+      "Machine Learning Engineer",
+      "ML Engineer",
+      "Applied Scientist",
+      "Data Scientist"
+    ],
+    "must_not_include": [
+      "Junior Data Scientist",
+      "Data Analyst Intern",
+      "Intern",
+      "Senior Machine Learning Engineer",
+      "Staff",
+      "Manager",
+      "Lead"
+    ],
+    "notes": "Current title (Machine Learning Engineer) should appear or be closely paraphrased. 'Senior' is a borderline stretch — one promotion plus ~2.5 years in the current role is thin evidence for it, so treat as acceptable-but-not-required at most; anything staff/lead/manager has zero support."
+  },
+  "tech_stack": ["Python", "PyTorch", "scikit-learn", "SQL", "Airflow", "Docker"],
+  "tech_stack_notes": "Exactly the SKILLS line — no additional stack terms are stated anywhere else in the CV. Extracting anything beyond these six (e.g. 'pandas', 'AWS') would be inventing, not inferring.",
+  "domains": {
+    "expected_any_of": ["healthcare", "healthtech"],
+    "must_not_include": ["risk prediction", "data analysis", "machine learning"],
+    "notes": "Vireo Health Analytics builds hospital-readmission risk tools; 'healthcare'/'healthtech' is the actual business vertical. 'Risk prediction' and 'data analysis' describe technique/function, not a business domain — including them conflates the two categories the parse_cv prompt's own example list (fintech, proptech, telecom, ...) is ambiguous about, but they should not count as correct domains here."
+  },
+  "work_history": [
+    {
+      "role": "Machine Learning Engineer",
+      "company": "Vireo Health Analytics",
+      "start": "Mar 2024",
+      "end": null,
+      "years": null,
+      "years_note": "Ongoing (Present) — compute dynamically as (eval run date - Mar 2024)."
+    },
+    {
+      "role": "Junior Data Scientist",
+      "company": "Vireo Health Analytics",
+      "start": "Jul 2022",
+      "end": "Feb 2024",
+      "years": 1.58
+    },
+    {
+      "role": "Data Analyst Intern",
+      "company": "Northline Logistics",
+      "start": "May 2021",
+      "end": "Jun 2022",
+      "years": 1.08
+    }
+  ],
+  "career_start": "May 2021",
+  "years_experience_note": "Continuous employment, no stated gaps — compute dynamically as (eval run date - May 2021) in years.",
+  "search_preferences": {
+    "location_rules": { "allowed_keywords": ["Canada", "North America", "Remote"] },
+    "remote_required": true,
+    "salary_floor": null,
+    "currency": "CAD"
+  }
+}

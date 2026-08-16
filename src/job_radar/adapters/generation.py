@@ -3,6 +3,7 @@ import logging
 import httpx
 from pydantic import BaseModel
 
+from job_radar.adapters.retry import with_retry
 from job_radar.config import settings
 
 logger = logging.getLogger(__name__)
@@ -46,10 +47,13 @@ async def generate[ModelT: BaseModel](
         "options": {"temperature": 0, "num_ctx": _NUM_CTX},
     }
 
-    async with httpx.AsyncClient(timeout=600) as client:
-        resp = await client.post(url=f"{settings.ollama_base_url}/api/chat", json=payload)
-    resp.raise_for_status()
+    async def _call() -> httpx.Response:
+        async with httpx.AsyncClient(timeout=600) as client:
+            resp = await client.post(url=f"{settings.ollama_base_url}/api/chat", json=payload)
+        resp.raise_for_status()
+        return resp
 
+    resp = await with_retry(_call, label=f"generate({schema.__name__})")
     body = resp.json()
     if body.get("done_reason") == "length":
         raise TruncatedGeneration(

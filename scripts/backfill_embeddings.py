@@ -48,7 +48,14 @@ async def backfill_jobs(batch_size: int, dry_run: bool) -> int:
 
 async def backfill_profile(dry_run: bool) -> int:
     async with async_session_factory() as session:
-        profile = (await session.execute(select(Profile))).scalars().first()
+        # Unscoped would risk grabbing a synthetic eval persona instead of the
+        # real profile now that eval/inject_synthetic.py puts several rows in
+        # this same table (see db/models.py's Profile.source docstring).
+        profile = (
+            (await session.execute(select(Profile).where(Profile.source == "real")))
+            .scalars()
+            .first()
+        )
         if profile is None:
             logger.info("No profile found — skipping")
             return 0

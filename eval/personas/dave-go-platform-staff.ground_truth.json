@@ -1,0 +1,71 @@
+{
+  "_comment": "Hand-derived ground truth for eval/personas/dave-go-platform-staff.cv.txt — see eval/personas/README.md for the schema convention.",
+  "persona_id": "dave-go-platform-staff",
+  "cv_file": "dave-go-platform-staff.cv.txt",
+  "full_name": "Dave Kowalski",
+  "email": "dave.kowalski.infra@fictionmail.com",
+  "seniority": "staff",
+  "seniority_notes": "Current title is Staff Platform Engineer; explicitly 'sets technical direction... across three teams' and is 'the de facto lead on every major infra decision' — genuine staff-scope evidence, unlike alice/carol's cases where a level-up title would be unsupported.",
+  "target_titles": {
+    "expected_any_of": [
+      "Staff Platform Engineer",
+      "Staff Infrastructure Engineer",
+      "Principal SRE",
+      "Platform Engineer",
+      "Infrastructure Architect"
+    ],
+    "must_not_include": ["Site Reliability Engineer", "Junior", "Intern"],
+    "notes": "'Site Reliability Engineer' was his title from 2015-2018, three roles and ~8 years below his current level — the equivalent of the stale-early-title case for a persona at the top of the ladder. 'Senior Infrastructure Engineer' (his 2019-2022 title, one level below current) reappearing is neutral, not an error, same reasoning as carol's 'Frontend Developer'. Unlike alice/carol, a 'Principal'-level stretch title IS supported here given the explicit cross-team technical-direction evidence."
+  },
+  "tech_stack": [
+    "Go",
+    "Kubernetes",
+    "Terraform",
+    "gRPC",
+    "Prometheus",
+    "Grafana",
+    "Istio",
+    "Helm",
+    "CI/CD",
+    "Python"
+  ],
+  "tech_stack_notes": "'Python' appears only in a bullet ('CI/CD for ~30 services (Go, some Python)'), not the SKILLS line — a second deliberate bullet-only test case. 'AWS' is arguable (only implied via 'shared EC2 fleet') — treat as optional/acceptable if extracted, not required, since it's an inference rather than a stated skill.",
+  "domains": {
+    "expected_any_of": [],
+    "must_not_include": [],
+    "max_items": 2,
+    "notes": "Deliberately the ambiguous case: platform/infrastructure engineering is domain-agnostic by nature, and his two employers (streaming media, retail) are different verticals with no consistent business-domain thread — the CV's own two employers actively argue against a single domain. The correct behavior is recognizing domain doesn't strongly apply here (an empty or very short list), not listing every employer's industry as if it were the candidate's specialization. Treat 3+ domain items as over-inclusive and a real miss, not just an imprecision — this is the persona this exact failure mode is designed to catch; max_items=2 encodes that threshold so check_acceptable_set enforces it."
+  },
+  "work_history": [
+    {
+      "role": "Staff Platform Engineer",
+      "company": "Nordreel",
+      "start": "Apr 2022",
+      "end": null,
+      "years": null,
+      "years_note": "Ongoing (Present) — compute dynamically as (eval run date - Apr 2022)."
+    },
+    {
+      "role": "Senior Infrastructure Engineer",
+      "company": "Cartway Retail",
+      "start": "Jan 2019",
+      "end": "Mar 2022",
+      "years": 3.17
+    },
+    {
+      "role": "Site Reliability Engineer",
+      "company": "Cartway Retail",
+      "start": "Aug 2015",
+      "end": "Dec 2018",
+      "years": 3.33
+    }
+  ],
+  "career_start": "Aug 2015",
+  "years_experience_note": "Continuous employment, no stated gaps — compute dynamically as (eval run date - Aug 2015) in years.",
+  "search_preferences": {
+    "location_rules": { "allowed_keywords": ["United States", "US", "Remote"] },
+    "remote_required": true,
+    "salary_floor": null,
+    "currency": "USD"
+  }
+}

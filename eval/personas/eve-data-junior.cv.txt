@@ -1,0 +1,20 @@
+Eve Tanaka
+eve.tanaka.data@fictionmail.com | Vancouver, Canada (remote preferred)
+
+EXPERIENCE
+
+Junior Data Engineer — Cartway Retail | Jan 2025 – Present
+Cartway operates e-commerce and in-store systems for a regional retail chain.
+- Build and maintain dbt models for the weekly sales-performance dashboard used by store planning teams.
+- Wrote the Airflow DAG that replaced a manually-run nightly inventory-sync script, cutting the ops team's morning fire drills to near zero.
+- Added data-quality tests (dbt tests) after a bad join silently double-counted a week of transaction data.
+
+Data Analytics Intern — Cartway Retail | May 2024 – Dec 2024
+- Built ad hoc SQL reports for the merchandising team on request.
+- Shadowed the senior data engineer on the initial dbt migration from a legacy stored-procedure pipeline.
+
+SKILLS
+SQL, Python, dbt, Airflow, pandas
+
+EDUCATION
+B.Sc. Data Science, University of British Columbia, 2024

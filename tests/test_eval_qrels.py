@@ -74,9 +74,7 @@ async def _db_objects(db_session: AsyncSession):
 
     yield profile, job_a, job_b
 
-    await db_session.execute(
-        delete(EvalLabel).where(EvalLabel.profile_id == profile.id)
-    )
+    await db_session.execute(delete(EvalLabel).where(EvalLabel.profile_id == profile.id))
     await db_session.execute(delete(Job).where(Job.id.in_([job_a.id, job_b.id])))
     await db_session.execute(delete(Profile).where(Profile.id == profile.id))
     await db_session.commit()
@@ -175,6 +173,7 @@ async def test_build_run_returns_scores_for_all_active_arms(
     db_session: AsyncSession, _db_objects: tuple, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     profile, job_a, job_b = _db_objects
+
     # Fake BM25 and vector return the two jobs.
     async def fake_bm25(session, query, limit, extra_filter=None, *, field_boosts=None):
         return [(job_a.id, 9.0), (job_b.id, 8.0)]
@@ -218,9 +217,7 @@ async def test_build_run_respects_pool_size(
     monkeypatch.setattr(qrels_mod, "search_vector", fake_vector)
 
     config = SearchConfig(arms=["lexical", "hyde", "cv"], pool=7, limit=7)
-    await build_run(
-        db_session, profile, config, query="test", hyde_embedding=[0.1] * 768
-    )
+    await build_run(db_session, profile, config, query="test", hyde_embedding=[0.1] * 768)
 
     assert all(lim == 7 for lim in captured_limits)
 
@@ -243,9 +240,7 @@ async def test_build_run_skips_lexical_arm_when_query_blank(
     monkeypatch.setattr(qrels_mod, "search_vector", fake_vector)
 
     config = SearchConfig(arms=["lexical", "hyde", "cv"], pool=10, limit=10)
-    run = await build_run(
-        db_session, profile, config, query="", hyde_embedding=[0.1] * 768
-    )
+    run = await build_run(db_session, profile, config, query="", hyde_embedding=[0.1] * 768)
 
     assert not bm25_called
     assert job_a.id in run
@@ -288,9 +283,7 @@ async def test_build_run_keyword_only_config_omits_vector_arms(
     monkeypatch.setattr(qrels_mod, "search_vector", track_vector)
 
     config = SearchConfig(arms=["lexical"], pool=10, limit=10)
-    run = await build_run(
-        db_session, profile, config, query="python", hyde_embedding=[0.1] * 768
-    )
+    run = await build_run(db_session, profile, config, query="python", hyde_embedding=[0.1] * 768)
 
     assert not vector_called
     assert job_a.id in run

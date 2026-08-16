@@ -1,0 +1,54 @@
+{
+  "_comment": "Hand-derived ground truth for eval/personas/carol-ts-fullstack-mid.cv.txt — see eval/personas/README.md for the schema convention.",
+  "persona_id": "carol-ts-fullstack-mid",
+  "cv_file": "carol-ts-fullstack-mid.cv.txt",
+  "full_name": "Carol Bergman",
+  "email": "carol.bergman.dev@fictionmail.com",
+  "seniority": "mid",
+  "seniority_notes": "One promotion (Frontend Developer -> Full Stack Engineer), owns multiple services independently and introduced org-adopted practices (integration tests, component library), but no mentoring or org-wide scope — mid, same reasoning shape as bob.",
+  "target_titles": {
+    "expected_any_of": ["Full Stack Engineer", "Full-Stack Developer", "Software Engineer"],
+    "must_not_include": ["Engineering Manager", "Technical Lead", "CTO", "Staff", "Principal"],
+    "notes": "'Frontend Developer' (her own prior title) reappearing is neutral — not stale/wrong, just not required, since it's one level/specialization back rather than an early-career title. No leadership or management signal anywhere in the CV, so any lead/manager/staff-track title is unsupported."
+  },
+  "tech_stack": [
+    "TypeScript",
+    "React",
+    "Node.js",
+    "GraphQL",
+    "PostgreSQL",
+    "Next.js",
+    "Tailwind CSS"
+  ],
+  "tech_stack_notes": "Exactly the SKILLS line, all seven terms also corroborated in the experience bullets.",
+  "domains": {
+    "expected_any_of": ["e-commerce", "online marketplaces", "marketplace"],
+    "must_not_include": [],
+    "notes": "Bazaario is explicitly described as a multi-vendor online marketplace — the cleanest, least ambiguous domain case of the five personas."
+  },
+  "work_history": [
+    {
+      "role": "Full Stack Engineer",
+      "company": "Bazaario",
+      "start": "Jun 2023",
+      "end": null,
+      "years": null,
+      "years_note": "Ongoing (Present) — compute dynamically as (eval run date - Jun 2023)."
+    },
+    {
+      "role": "Frontend Developer",
+      "company": "Bazaario",
+      "start": "Sep 2021",
+      "end": "May 2023",
+      "years": 1.67
+    }
+  ],
+  "career_start": "Sep 2021",
+  "years_experience_note": "Continuous employment at one company, two titles — compute dynamically as (eval run date - Sep 2021) in years.",
+  "search_preferences": {
+    "location_rules": { "allowed_keywords": ["Netherlands", "EU", "Europe", "Remote"] },
+    "remote_required": true,
+    "salary_floor": null,
+    "currency": "EUR"
+  }
+}

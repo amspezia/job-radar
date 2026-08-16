@@ -1,0 +1,27 @@
+Dave Kowalski
+dave.kowalski.infra@fictionmail.com | Austin, TX (remote)
+
+EXPERIENCE
+
+Staff Platform Engineer — Nordreel (streaming media) | Apr 2022 – Present
+Nordreel operates a video-streaming platform serving several million monthly viewers.
+- Lead the platform team's move from a shared EC2 fleet to a multi-tenant Kubernetes platform now running ~400 services for six product teams.
+- Designed the org's Terraform module library that every team now provisions infrastructure through, replacing ad hoc per-team scripts.
+- Built the gRPC-based internal service mesh's observability layer (Prometheus, Grafana, distributed tracing) after a cascading outage went undiagnosed for four hours.
+- Set technical direction for platform reliability across three teams; not people-managing, but the de facto lead on every major infra decision.
+
+Senior Infrastructure Engineer — Cartway Retail | Jan 2019 – Mar 2022
+Cartway operates e-commerce and in-store systems for a regional retail chain.
+- Owned CI/CD for ~30 services (Go, some Python) — cut average deploy time from 40 minutes to 6.
+- Migrated the checkout and inventory services from bare-metal to Kubernetes ahead of a Black Friday capacity crunch.
+- Introduced Helm charts and a standard service template, adopted org-wide within a year.
+
+Site Reliability Engineer — Cartway Retail | Aug 2015 – Dec 2018
+- On-call for the checkout and payments infrastructure; wrote the team's first real runbook set.
+- Automated the manual capacity-planning spreadsheet into a script pulling live metrics from the monitoring stack.
+
+SKILLS
+Go, Kubernetes, Terraform, gRPC, Prometheus, Grafana, Istio, Helm, CI/CD
+
+EDUCATION
+B.Sc. Computer Engineering, University of Texas at Austin, 2015

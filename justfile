@@ -98,6 +98,22 @@ eval-sweep *args:
 eval-commit-golden *args:
     uv run python scripts/commit_eval_golden.py {{args}}
 
+# Inject the 5 synthetic personas + 100 jobs into the DB (idempotent)
+eval-inject-synthetic *args:
+    uv run job-radar-eval-inject-synthetic {{args}}
+
+# Remove all synthetic persona/job/label data
+eval-teardown-synthetic:
+    uv run job-radar-eval-inject-synthetic --teardown
+
+# Per-persona retrieval eval over the synthetic personas (uses eval Ollama on :11435)
+eval-run-synthetic *args:
+    OLLAMA_BASE_URL={{_EVAL_OLLAMA_URL}} uv run job-radar-eval-run-synthetic {{args}}
+
+# CV-parsing quality eval against the 5 personas' ground truth (uses eval Ollama on :11435)
+eval-profile-parsing:
+    OLLAMA_BASE_URL={{_EVAL_OLLAMA_URL}} uv run job-radar-eval-profile-parsing
+
 # Wipe all eval labels (irreversible — forces full re-labeling)
 eval-reset-labels:
     #!/usr/bin/env bash

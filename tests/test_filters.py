@@ -92,14 +92,19 @@ def test_no_max_age_adds_no_freshness_clause() -> None:
     assert build_profile_filter(_profile(), max_age_days=None) is None
 
 
-def test_build_lexical_query_merges_titles_and_stack_only() -> None:
-    # Domains are intentionally excluded — sweep showed they hurt recall@100.
+def test_build_lexical_query_merges_titles_stack_and_domains() -> None:
+    # Domains are included: the synthetic 5-persona eval (RETRIEVAL_ANALYSIS.md
+    # finding #2) showed dropping them left BM25/HyDE unable to distinguish a
+    # domain-matched posting from a same-stack, wrong-industry one — the single
+    # biggest driver of one persona's weak score. The prior exclusion here was
+    # based on an n=1 sweep, which docs/ASSESSMENT.md already flags as too thin
+    # a sample to support a "consistently hurts" conclusion.
     profile = _profile(
         target_titles=["Backend Engineer"],
         domains_keywords={"tech_stack": ["Python", "Kafka"], "domains": ["fintech"]},
     )
     query = build_lexical_query(profile)
-    assert query == "Backend Engineer Python Kafka"
+    assert query == "Backend Engineer Python Kafka fintech"
 
 
 def test_build_lexical_query_handles_empty_profile() -> None:

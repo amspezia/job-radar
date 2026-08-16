@@ -1,0 +1,22 @@
+Carol Bergman
+carol.bergman.dev@fictionmail.com | Amsterdam, Netherlands (remote)
+
+EXPERIENCE
+
+Full Stack Engineer — Bazaario | Jun 2023 – Present
+Bazaario is a multi-vendor online marketplace connecting independent sellers with buyers across Europe.
+- Rebuilt the seller storefront editor in React + TypeScript, reducing seller onboarding time from 25 minutes to 8.
+- Designed and shipped a GraphQL layer in front of the legacy REST checkout API, now serving the storefront, mobile web, and internal admin tools from one schema.
+- Own the Node.js order-notification service (webhooks + email/SMS fan-out), rebuilt it to handle Black Friday load (12x normal traffic) without dropping events.
+- Introduced component-level integration tests for the checkout flow after a pricing-display bug shipped to production twice in one quarter.
+
+Frontend Developer — Bazaario | Sep 2021 – May 2023
+- Built the buyer-facing product search and filtering UI in React.
+- Migrated the marketing site from a legacy jQuery codebase to Next.js.
+- Worked closely with the design team to build out the component library still in use today.
+
+SKILLS
+TypeScript, React, Node.js, GraphQL, PostgreSQL, Next.js, Tailwind CSS
+
+EDUCATION
+B.Sc. Information Science, University of Amsterdam, 2021

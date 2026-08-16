@@ -69,9 +69,7 @@ def recall_at_k(
     return hits / total_relevant
 
 
-def bpref(
-    ranking: list[UUID], labels: dict[UUID, int], rel_threshold: int = 2
-) -> float:
+def bpref(ranking: list[UUID], labels: dict[UUID, int], rel_threshold: int = 2) -> float:
     """BPref: robust to incomplete judgments (Buckley & Voorhees 2004).
 
     Only judged documents count — unlabeled docs are ignored entirely.

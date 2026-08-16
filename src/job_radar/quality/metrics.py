@@ -31,7 +31,12 @@ def is_dev_title(title: str) -> bool:
 
 @dataclass(frozen=True)
 class JobRow:
-    """The columns the assessment reads, decoupled from the ORM for testing."""
+    """The columns the assessment reads, decoupled from the ORM for testing.
+
+    New fields are appended, not inserted, because `quality/cli.py::_load_rows`
+    unpacks a SELECT tuple into this dataclass positionally — field order here
+    must match that SELECT's column order exactly.
+    """
 
     source: str
     title: str
@@ -42,6 +47,10 @@ class JobRow:
     location: str | None
     job_type: str | None
     published_at: datetime | None
+    company: str
+    requirements: str | None
+    responsibilities: str | None
+    content_hash: str
 
 
 @dataclass
@@ -60,6 +69,7 @@ class SourceQuality:
     desc_html_pct: float
     salary_invalid_pct: float
     dev_title_pct: float
+    extraction_null_pct: float
 
 
 def _pct(numerator: int, denom: int) -> float:
@@ -96,6 +106,13 @@ def quality_for(
             n,
         ),
         dev_title_pct=_pct(sum(is_dev_title(r.title) for r in rows), n),
+        # Both fields null means ingest-time LLM extraction produced nothing for this
+        # posting — BM25 then has only the title to index, since it covers
+        # title/requirements/responsibilities, not the raw description (retrieval/bm25.py).
+        # Either field present still gives BM25 some signal, so only "both null" counts.
+        extraction_null_pct=_pct(
+            sum(not r.requirements and not r.responsibilities for r in rows), n
+        ),
     )
 
 
@@ -115,3 +132,25 @@ def compute(rows: Sequence[JobRow], *, now: datetime | None = None) -> list[Sour
 
 def as_dict(quality: SourceQuality) -> dict:
     return asdict(quality)
+
+
+def duplicate_rate(rows: Sequence[JobRow]) -> float:
+    """Corpus-wide % of rows sitting in a likely-duplicate cluster content_hash missed.
+
+    `content_hash` (ingest/dedup.py) keys on normalized company+title+location, so two
+    postings of the same role from different sources collapse into one row only when
+    their location strings match exactly. Groups rows by normalized (company, title)
+    instead — a group with more than one distinct content_hash is the same role listed
+    under different-enough location text (e.g. "Remote" vs "Remote - US") to have
+    dodged the hash. Reports the % of the corpus inside such a cluster, not the number
+    of clusters, so the number reads as "how much of the corpus is affected."
+    """
+    groups: dict[tuple[str, str], list[JobRow]] = defaultdict(list)
+    for row in rows:
+        key = (" ".join(row.company.split()).lower(), " ".join(row.title.split()).lower())
+        groups[key].append(row)
+
+    affected = sum(
+        len(group) for group in groups.values() if len({r.content_hash for r in group}) > 1
+    )
+    return _pct(affected, len(rows))

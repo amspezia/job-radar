@@ -1,0 +1,182 @@
+[
+  {
+    "grade": 3,
+    "title": "Staff Platform Engineer",
+    "company": "Meridian Pay",
+    "seniority": "staff",
+    "requirements": "Candidates should have deep, hands-on experience with Go in production systems, and be comfortable owning Kubernetes at scale across multiple clusters and teams. Strong Terraform experience is required, including designing reusable modules that other engineering teams consume directly. Familiarity with gRPC-based service architectures and the operational patterns around them is expected, as is experience building or maintaining observability stacks (Prometheus, Grafana, distributed tracing). We are looking for someone who has operated at a staff level, setting technical direction for platform reliability across several teams rather than only executing on assigned tickets. Prior experience in a regulated or high-availability environment is a plus but not required.",
+    "responsibilities": "You will set the technical direction for our platform organization's infrastructure strategy, working across payments, risk, and consumer engineering teams to ensure consistent, reliable infrastructure patterns. Day to day, you will design and evolve our Kubernetes platform, extend our internal Terraform module library, and improve the observability and reliability of our gRPC-based service mesh. You will be the escalation point for the org's most complex infrastructure incidents, drive postmortems to completion, and mentor senior engineers on platform architecture decisions. You will also represent platform engineering in cross-functional planning, influencing how new services are built and deployed company-wide.",
+    "construction_rationale": "Grade 3: exact title and staff-level scope, full core stack (Go, Kubernetes, Terraform, gRPC) plus secondary tooling, in a fintech setting unrelated to Dave's actual employers."
+  },
+  {
+    "grade": 3,
+    "title": "Staff Infrastructure Engineer",
+    "company": "Streamloop",
+    "seniority": "staff",
+    "requirements": "You've shipped and operated real infra at scale — Go is your primary language, you know Kubernetes inside and out (not just kubectl apply, but cluster design, multi-tenancy, upgrade strategy), and you write Terraform that other teams actually want to reuse. You've built or run gRPC services and you know your way around Prometheus and Grafana well enough to design dashboards and alerts from scratch, not just consume someone else's. We're a small, fast-moving team, so you should be comfortable being the most senior infra voice in the room — setting direction, not waiting for it. Bonus points if you've dealt with video or streaming workloads before, though it's genuinely not a requirement.",
+    "responsibilities": "You'll basically own our infrastructure roadmap — deciding where our Kubernetes platform needs to evolve next, extending our Terraform setup as we add new services, and keeping our gRPC service mesh observable and debuggable as we scale past a few hundred services. You'll pair with product engineering teams to unblock them on infra, jump into gnarly production incidents when they happen, and push back (respectfully) when a proposed architecture is going to bite us later. There's no dedicated infra manager here — you'll be setting technical direction for the whole platform effort.",
+    "construction_rationale": "Grade 3: exact title and staff-level scope, full core stack present, startup-casual register in a media/streaming setting to vary tone and industry across the grade-3 set."
+  },
+  {
+    "grade": 3,
+    "title": "Staff Site Reliability Engineer",
+    "company": "Cargoflow Logistics",
+    "seniority": "staff",
+    "requirements": "This role requires substantial production experience with Go, Kubernetes, and Terraform, along with a solid understanding of gRPC as the primary inter-service communication pattern across our logistics platform. Candidates must be able to demonstrate ownership of observability tooling — Prometheus and Grafana experience is required, and experience with Istio or another service mesh is preferred. We expect candidates to have operated at a staff level previously, meaning you have set technical direction across multiple teams rather than working within a single team's backlog. Experience with high-throughput, latency-sensitive systems is valued, as our platform coordinates real-time tracking across a national logistics network.",
+    "responsibilities": "You will lead the technical strategy for platform reliability across our fulfillment, routing, and tracking engineering teams, setting standards for how services are built, deployed, and observed. Your day-to-day work includes evolving our Kubernetes platform and Terraform infrastructure-as-code library, improving the reliability of our gRPC service mesh, and driving incident response for our most critical systems. You will partner with engineering leads across the organization to plan infrastructure investments, review architecture proposals for new services, and mentor senior engineers on platform-level thinking.",
+    "construction_rationale": "Grade 3: staff-qualified title (not the bare, down-level 'SRE' title), full core stack, org-wide technical direction, in a logistics setting distinct from the other grade-3 postings."
+  },
+  {
+    "grade": 3,
+    "title": "Staff Cloud Platform Engineer",
+    "company": "Hexworks",
+    "seniority": "staff",
+    "requirements": "We're looking for someone who's spent years writing Go and running Kubernetes in anger — you should be able to talk through cluster upgrades, multi-tenancy tradeoffs, and workload isolation without blinking. You'll need real Terraform chops, ideally having built module libraries other teams actually adopt. Our services talk to each other over gRPC, so comfort there matters, and you should know Prometheus and Grafana well enough to build out observability from scratch. This is a staff-level role — we want someone who's already been the go-to infra voice at a previous company, driving technical direction across teams rather than just shipping their own tickets.",
+    "responsibilities": "You'll drive the roadmap for our internal platform — think Kubernetes architecture, Terraform module design, and keeping our gRPC-based microservices observable as we scale from dozens to hundreds of services. Expect to spend real time pairing with product teams on infra design reviews, leading incident retros, and making the call on tricky infrastructure tradeoffs that affect multiple teams at once. You'll also help us build out better observability practices org-wide and act as a technical mentor for our senior engineers as they grow into more infra-focused work.",
+    "construction_rationale": "Grade 3: exact staff scope and full core stack in a B2B SaaS setting, casual register, reinforcing that industry varies while stack and seniority carry the signal."
+  },
+  {
+    "grade": 3,
+    "title": "Platform Engineering Lead (Staff)",
+    "company": "Careline Health",
+    "seniority": "staff",
+    "requirements": "The ideal candidate has extensive experience with Go, Kubernetes, and Terraform in production, and has designed or operated gRPC-based service architectures at scale. Experience with observability tooling such as Prometheus and Grafana is required, and familiarity with Helm and Istio is strongly preferred. This position is staff-level: candidates should be able to point to concrete examples of setting technical direction across multiple engineering teams, not solely within their own team. Given the sensitivity of health data handled by our platform, experience operating infrastructure under strict compliance and security requirements is a meaningful plus, though not a strict requirement.",
+    "responsibilities": "You will define and drive the technical roadmap for our infrastructure platform, working closely with engineering leadership to align infrastructure investment with product priorities. On a daily basis, you will evolve our Kubernetes and Terraform-based infrastructure, ensure our gRPC service mesh remains observable and reliable, and lead incident response for platform-level outages. You will review architecture proposals from other teams, weigh in on cross-team infrastructure decisions, and mentor engineers looking to grow their infrastructure skills. You will also own decisions around infrastructure spend and long-term platform sustainability.",
+    "construction_rationale": "Grade 3: full core stack, staff-qualified title with genuine org-wide scope, fifth distinct industry (healthtech) rounding out the deliberately domain-varied grade-3 set."
+  },
+  {
+    "grade": 2,
+    "title": "Senior Infrastructure Engineer",
+    "company": "Trailhop Mobility",
+    "seniority": "senior",
+    "requirements": "We're looking for a senior engineer with strong Go experience and deep Kubernetes expertise — you should be comfortable managing multi-cluster environments and mentoring other engineers on container orchestration best practices. Solid Terraform skills are required, including experience building infrastructure modules that other teams can reuse. Our services primarily communicate over internal REST APIs and a message queue, so gRPC experience is a plus but not required. Experience with Prometheus and Grafana for observability is expected, and familiarity with Helm is a bonus. We're looking for someone who has already influenced infrastructure decisions beyond their immediate team, even if not formally in a staff role.",
+    "responsibilities": "You will help shape the direction of our Kubernetes platform, working with Terraform to expand our infrastructure-as-code coverage across new services. You'll partner with engineering teams building our dispatch and mapping services to improve reliability and observability, using Prometheus and Grafana to build out better monitoring. You'll be a key voice in infrastructure design reviews, weighing in on decisions that affect multiple teams, and you'll mentor other engineers as they take on more infrastructure responsibility. Incident response and postmortems for platform-level issues will also be part of your regular work.",
+    "construction_rationale": "Grade 2: adjacent title without a staff qualifier but staff-adjacent scope described, and gRPC is missing from an otherwise near-complete core stack."
+  },
+  {
+    "grade": 2,
+    "title": "Senior Site Reliability Engineer",
+    "company": "Pixelforge Games",
+    "seniority": "staff",
+    "requirements": "Candidates should bring strong Go and Kubernetes experience, including comfort operating multi-tenant clusters serving many internal teams. Our service architecture is built around gRPC, and experience designing or maintaining gRPC-based systems is required. Infrastructure provisioning at Pixelforge is currently handled through a mix of internal tooling and cloud console workflows rather than a formal Terraform practice, so Terraform experience is a plus but not a hard requirement. Prometheus, Grafana, and Istio experience are all valued, as observability and service mesh reliability are core to this role. We expect candidates to have set technical standards across more than one team previously, even without a formal staff title.",
+    "responsibilities": "You will own reliability for our multiplayer backend platform, setting standards for how services are deployed and observed across several game studio teams. Day to day, you'll evolve our Kubernetes platform, improve the resilience of our gRPC service mesh, and build out better observability using Prometheus and Grafana. You'll lead incident response for platform-wide outages, run blameless postmortems, and drive the resulting action items to completion. You'll also weigh in on infrastructure decisions for new game launches, advising individual teams on capacity planning and service architecture.",
+    "construction_rationale": "Grade 2: title reads senior rather than staff, but scope is genuinely staff-adjacent; Terraform is the missing core item, with gRPC and Kubernetes both intact."
+  },
+  {
+    "grade": 2,
+    "title": "Senior Platform Engineer",
+    "company": "Northlane EdTech",
+    "seniority": "senior",
+    "requirements": "This role requires strong hands-on experience with Go and Kubernetes, including designing deployment patterns used across multiple teams. Terraform experience is required, ideally including ownership of shared infrastructure modules. Our services mostly communicate over internal HTTP APIs rather than gRPC, so gRPC exposure is helpful but not necessary. We use Argo CD rather than Helm for our deployment workflows, so GitOps experience is valued. Prometheus and Grafana experience is expected for building and maintaining observability. We're looking for someone senior who has already taken on informal technical leadership — guiding infrastructure decisions for more than just their own team — even without a staff title.",
+    "responsibilities": "You will drive improvements to our Kubernetes platform and Terraform-managed infrastructure, working across our learning-platform and content-delivery teams to keep infrastructure consistent and reliable. You'll build and maintain Prometheus and Grafana dashboards, lead incident response for platform issues, and help other engineers adopt better infrastructure practices. You'll participate in architecture reviews for new services, providing infrastructure guidance beyond your immediate team, and help evolve our GitOps-based deployment workflows as we scale.",
+    "construction_rationale": "Grade 2: adjacent senior title with staff-adjacent scope, gRPC missing and one secondary tool swapped (Helm to Argo CD), core stack otherwise intact."
+  },
+  {
+    "grade": 2,
+    "title": "Infrastructure Engineer II",
+    "company": "Lumenbank",
+    "seniority": "staff",
+    "requirements": "We need an experienced engineer with strong Go and Kubernetes skills, comfortable operating a multi-tenant platform serving several product teams. Our gRPC-based service mesh is central to the platform, so hands-on gRPC experience is required. Infrastructure provisioning is largely managed by a dedicated cloud operations group rather than through Terraform on this team, so Terraform is a nice-to-have rather than a requirement here. We use Datadog rather than Grafana for observability, so experience with a comparable metrics and dashboarding platform is expected. Candidates should be comfortable setting technical direction across teams, even though this position does not carry a formal staff title.",
+    "responsibilities": "You will lead reliability and platform architecture efforts for our core banking services, working across multiple engineering teams to keep our Kubernetes platform and gRPC service mesh healthy and observable. You'll build out Datadog dashboards and alerting, drive incident response for platform-level issues, and represent infrastructure concerns in architecture reviews for new services. You'll also mentor other engineers on platform best practices and help shape how the wider engineering org thinks about service reliability, even though infrastructure provisioning itself sits with a separate cloud operations team.",
+    "construction_rationale": "Grade 2: no staff title but explicit cross-team direction; Terraform missing and Grafana swapped for Datadog, leaving Go, Kubernetes, and gRPC intact."
+  },
+  {
+    "grade": 2,
+    "title": "Senior Site Reliability Engineer",
+    "company": "Southrun Logistics",
+    "seniority": "senior",
+    "requirements": "The ideal candidate has strong Go and Kubernetes experience and has worked with Terraform to manage infrastructure as code across multiple services. Our platform is built primarily around asynchronous messaging rather than gRPC, so gRPC experience is not required, though a general understanding of RPC-style service communication is helpful. Experience with Prometheus, Grafana, and Helm is expected, and Istio experience is a plus. We're looking for a senior engineer who has already been the go-to infrastructure resource on past teams, comfortable making calls that affect more than one team's services, even without an official staff title.",
+    "responsibilities": "You will help evolve our Kubernetes platform and Terraform-based infrastructure as our logistics network grows, working closely with routing and warehouse-systems teams to keep shared infrastructure reliable. You'll build and maintain Prometheus and Grafana dashboards, lead incident response during high-volume shipping periods, and help standardize deployment patterns using Helm across teams. You'll also participate in infrastructure planning discussions that span multiple teams and mentor other engineers as they grow into more infrastructure-focused roles.",
+    "construction_rationale": "Grade 2: adjacent senior title with cross-team scope described, gRPC missing while Go, Kubernetes, and Terraform remain fully intact."
+  },
+  {
+    "grade": 1,
+    "title": "Staff Platform Engineer",
+    "company": "Voltaire Grid",
+    "seniority": "staff",
+    "requirements": "We're looking for a staff-level engineer with deep Go and Kubernetes expertise, capable of setting technical direction for platform reliability across the engineering organization. Strong experience with observability tooling is essential — Prometheus, Grafana, and distributed tracing should be second nature to you, and you should be comfortable designing alerting and SLOs from scratch. gRPC experience is expected, as our services communicate over a gRPC-based mesh. Infrastructure provisioning and Terraform are owned entirely by a dedicated cloud infrastructure team, so this role does not touch infrastructure-as-code directly. Candidates should have a track record of driving technical decisions across multiple teams, not just within their own.",
+    "responsibilities": "You will set technical direction for platform reliability, working across several product engineering teams to improve how services are deployed, monitored, and debugged on our Kubernetes platform. Day to day, you'll build and refine observability tooling using Prometheus and Grafana, improve the reliability of our gRPC service mesh, and lead incident response for platform-wide outages. You'll drive postmortems, mentor senior engineers on platform architecture, and represent platform concerns in cross-team planning. Infrastructure provisioning itself is handled by a separate cloud infrastructure team, so your focus stays on the Kubernetes platform layer and observability rather than Terraform.",
+    "construction_rationale": "Grade 1: exact staff-level title and scope match, but Terraform — one of Dave's four core-stack items — is explicitly out of scope here, owned by a separate team; the single missing-skill axis."
+  },
+  {
+    "grade": 1,
+    "title": "Staff Infrastructure Engineer",
+    "company": "Brightledger Systems",
+    "seniority": "staff",
+    "requirements": "We're hiring a staff infrastructure engineer to help set technical direction for our platform team. The majority of our services are built in Java on the JVM, so strong Java experience is expected; Go is used for a smaller set of internal tooling and CLI utilities, so some Go familiarity is helpful but not the primary skill this role is built around. Deep Kubernetes expertise is required, including experience operating multi-tenant clusters at scale. Solid Terraform experience is expected for managing shared infrastructure modules. Familiarity with Prometheus and Grafana for observability is required. Candidates should be able to demonstrate setting technical direction across multiple engineering teams, not just their own.",
+    "responsibilities": "You will set technical direction for our platform's infrastructure strategy, primarily supporting a large fleet of Java services alongside a smaller set of Go-based internal tools. You'll evolve our Kubernetes platform, extend our Terraform module library, and improve observability using Prometheus and Grafana across the organization. You'll lead incident response for platform-level outages, drive postmortems, and mentor senior engineers on infrastructure best practices. You'll also weigh in on architecture decisions for both our Java and Go services, though the bulk of the codebase you'll be supporting is JVM-based.",
+    "construction_rationale": "Grade 1: exact staff title, staff scope, and Kubernetes/Terraform/observability all intact, but the org's primary language is Java with Go relegated to a tooling subset — Go, Dave's defining skill, is the axis off."
+  },
+  {
+    "grade": 1,
+    "title": "Build & Release Engineer",
+    "company": "Fenwick Digital",
+    "seniority": "senior",
+    "requirements": "We're looking for an experienced Build & Release Engineer to own our CI/CD pipelines and release processes. Strong Kubernetes experience is required, as our deployment pipelines target a Kubernetes-based environment across several product teams. Some Terraform experience is expected for managing the infrastructure our pipelines depend on, though pipeline configuration is the main focus of this role rather than broader infrastructure design. Deep CI/CD tooling experience (Jenkins, GitHub Actions, or similar) is essential, along with strong scripting ability. Go experience is a plus for writing internal tooling, but is not central to the role. Experience with Helm for packaging deployments is expected.",
+    "responsibilities": "You will own and continuously improve our CI/CD pipelines, ensuring fast, reliable builds and deployments across product teams. You'll maintain our Kubernetes deployment tooling, manage Helm charts, and troubleshoot pipeline failures as they come up. You'll work with a Terraform-managed environment to keep build and deployment infrastructure healthy, though you won't be responsible for broader infrastructure architecture decisions, which sit with a separate platform team. You'll write internal tooling to streamline release processes and support product teams as they onboard new services to the pipeline.",
+    "construction_rationale": "Grade 1: real tooling overlap (Kubernetes, Terraform, CI/CD) but the role is narrowly scoped to pipeline and release engineering, not the broader platform-architecture ownership Dave's staff scope actually shows."
+  },
+  {
+    "grade": 1,
+    "title": "Principal Infrastructure Engineer",
+    "company": "Ironclad Systems",
+    "seniority": "principal",
+    "requirements": "We are hiring a Principal Infrastructure Engineer to own multi-year technical strategy for our infrastructure organization spanning several business units. This role requires deep expertise in Go, Kubernetes, Terraform, and gRPC-based service architectures, along with a demonstrated track record of setting infrastructure strategy across an entire engineering organization, not just several teams. You should have experience defining multi-year platform roadmaps, influencing infrastructure investment at the executive level, and setting standards that persist across reorganizations and shifting team boundaries. Experience with Prometheus, Grafana, and Istio is expected. We're looking for someone who has already operated as the final technical authority on infrastructure decisions company-wide.",
+    "responsibilities": "You will own the multi-year technical strategy for infrastructure across the entire engineering organization, setting direction that spans multiple business units and years-long planning horizons. You'll define company-wide standards for Kubernetes, Terraform, and service architecture, and act as the final technical authority when infrastructure decisions cross organizational boundaries. You'll represent infrastructure strategy to executive leadership, shape multi-year investment plans, and mentor staff-level engineers across the organization. This is a company-wide, long-horizon strategic role rather than a single-team or single-department infrastructure position.",
+    "construction_rationale": "Grade 1: full stack match, but the scope is explicitly one level above Dave's evidenced staff level — company-wide, multi-year technical strategy ownership beyond his cross-team (not cross-org) staff scope."
+  },
+  {
+    "grade": 1,
+    "title": "Senior Infrastructure Engineer",
+    "company": "Ferngrove Analytics",
+    "seniority": "senior",
+    "requirements": "We're hiring a Senior Infrastructure Engineer to join our platform team. Strong experience with Go and Kubernetes is required, along with solid Terraform skills for managing our infrastructure as code. Experience with gRPC and general service-to-service communication patterns is expected. Familiarity with Prometheus and Grafana for monitoring is a plus. This role works within our platform team on assigned infrastructure projects and improvements; it reports to a platform lead who sets overall technical direction. Candidates should be comfortable executing independently on well-scoped infrastructure work, but this is not a role that sets technical direction for other teams.",
+    "responsibilities": "You will implement and maintain infrastructure improvements assigned by the platform team lead, working primarily within the Kubernetes and Terraform stack. You'll contribute to service reliability by improving monitoring and alerting, and you'll take ownership of specific infrastructure projects such as migrating individual services to new deployment patterns. You'll participate in on-call rotation for platform issues and collaborate with other engineers on your team, but cross-team technical direction and architecture decisions are owned by the platform lead rather than by this role.",
+    "construction_rationale": "Grade 1: full stack overlap but explicitly no staff-level scope — no cross-team technical direction, reporting into a lead who owns that instead — a lateral-down from Dave's actual staff-level remit."
+  },
+  {
+    "grade": 0,
+    "title": "Senior Platform Engineer, Web",
+    "company": "Glimmer Retail Co",
+    "seniority": "senior",
+    "requirements": "We're looking for a senior front-end engineer to help build our internal design-system platform. Strong experience with React, TypeScript, and modern component architecture is required. Experience with build tooling such as Webpack or Vite is expected, along with a strong eye for UI performance and accessibility. Familiarity with GraphQL for consuming internal APIs is a plus. Experience with design tools like Figma and translating designs into pixel-perfect components is important. Some exposure to CI/CD pipelines for front-end deployments is helpful. This is a client-facing engineering role focused on the customer-facing web platform, not backend or infrastructure systems.",
+    "responsibilities": "You will build and maintain our internal component library and design-system platform, working closely with product designers to translate mockups into production-ready React components. You'll optimize front-end performance, improve accessibility across our web properties, and maintain our TypeScript codebase's type safety and testing coverage. You'll collaborate with product teams to roll out new UI patterns across the customer-facing platform and help junior front-end engineers grow their skills. You'll also contribute to front-end build tooling improvements as our component library scales.",
+    "construction_rationale": "Grade 0: uses 'platform' in the title but is a front-end/React role with none of Dave's actual stack — wrong role function, multiple axes off."
+  },
+  {
+    "grade": 0,
+    "title": "Senior Data Scientist, Analytics Platform",
+    "company": "Northfield Insights",
+    "seniority": "senior",
+    "requirements": "We are looking for a senior data scientist to join our analytics platform team. Strong experience with Python, pandas, and scikit-learn is required, along with a solid foundation in statistics and experimental design. Experience building and evaluating machine learning models — including feature engineering, model selection, and validation — is essential. Familiarity with SQL for data exploration and Jupyter notebooks for analysis is expected. Experience with A/B testing frameworks and causal inference methods is a strong plus. This role focuses on model development and analysis rather than the infrastructure that serves models in production, which is owned by a separate MLOps team.",
+    "responsibilities": "You will design and build machine learning models to power our recommendation and forecasting products, working closely with product managers to define success metrics. You'll run experiments, analyze results, and present findings to stakeholders across the business. You'll maintain and improve our feature engineering pipelines in Python, iterate on model architectures, and collaborate with the MLOps team when models are ready for production deployment. You'll also contribute to internal research on new modeling approaches and mentor junior data scientists on experimental design.",
+    "construction_rationale": "Grade 0: labeled a platform/infrastructure team role but is pure data-science and modeling work in Python — none of Dave's Go/Kubernetes/Terraform/gRPC stack, wrong role function."
+  },
+  {
+    "grade": 0,
+    "title": "IT Support Engineer",
+    "company": "Waypoint Office Supply",
+    "seniority": "junior",
+    "requirements": "We're hiring an IT Support Engineer to handle internal employee technology needs across the company. Experience troubleshooting laptops, VPN issues, and standard office software (Google Workspace, Slack, Zoom) is required. You should be comfortable managing user accounts, provisioning hardware, and resolving day-to-day IT tickets quickly and professionally. Some exposure to Kubernetes is helpful, since a few of our internal tools run on a small internal cluster maintained by another team, but you will not be responsible for operating or troubleshooting it directly. Strong communication skills and patience with non-technical employees are essential. Prior helpdesk or IT support experience is required.",
+    "responsibilities": "You will be the first point of contact for employee IT issues, resolving support tickets covering laptop setup, account access, printer problems, and software installation. You'll manage our internal ticketing queue, track recurring issues, and escalate anything beyond routine support to the appropriate team. You'll onboard new employees with their equipment and accounts, maintain our IT asset inventory, and occasionally assist with basic network troubleshooting in the office. You are not expected to operate or maintain the small Kubernetes cluster some internal tools run on — that responsibility sits with the infrastructure team.",
+    "construction_rationale": "Grade 0: superficial 'some Kubernetes exposure helpful' mention, but the role is IT helpdesk and ticketing support, not infrastructure engineering — unrelated role function."
+  },
+  {
+    "grade": 0,
+    "title": "DevOps Engineer, QA Automation",
+    "company": "Pathwell Software",
+    "seniority": "mid",
+    "requirements": "We're looking for a DevOps-minded QA Automation Engineer to maintain and expand our test automation pipelines. Strong experience with CI/CD tools (GitHub Actions or Jenkins) is required, along with solid Docker skills for containerizing test environments. Experience writing automated test suites (Selenium, Playwright, or similar) is essential. Familiarity with basic scripting in Python or JavaScript for test tooling is expected. Some exposure to Kubernetes is a plus for running test environments, but deep infrastructure experience is not required — this role focuses on test pipeline reliability, not production infrastructure. Attention to detail and a strong QA mindset are more important than infrastructure depth.",
+    "responsibilities": "You will maintain and improve our automated test pipelines, ensuring CI/CD runs stay fast and reliable across our test suites. You'll containerize test environments with Docker, troubleshoot flaky tests, and work with engineers to improve test coverage before releases. You'll manage test data setup and teardown, monitor pipeline health, and report on test reliability metrics to the broader engineering team. You'll occasionally coordinate with the infrastructure team when test environments need cluster resources, but you won't own production infrastructure or deployment architecture.",
+    "construction_rationale": "Grade 0: DevOps-titled with CI/CD and Docker keyword overlap, but fundamentally shallow test-pipeline maintenance — no Go, no Terraform, no real infrastructure ownership."
+  },
+  {
+    "grade": 0,
+    "title": "Build Engineer",
+    "company": "Kestrel Studios",
+    "seniority": "mid",
+    "requirements": "We're hiring a Build Engineer to own our game build pipeline. Strong experience with CI/CD systems (Jenkins, TeamCity, or similar) is required, along with solid scripting skills in Python or Bash for build automation. Experience with Docker for containerizing build environments is expected. Familiarity with version control workflows (Perforce or Git) and build artifact management is essential. Some Kubernetes exposure is helpful for running build agents at scale, but this role does not involve broader infrastructure design or production service architecture. Experience with game engines (Unreal or Unity) build processes is a strong plus. This role is focused entirely on build and packaging pipelines, not live service infrastructure.",
+    "responsibilities": "You will maintain and optimize our game build pipeline, ensuring fast, reliable builds across multiple platforms and branches. You'll manage build agent infrastructure, troubleshoot build failures, and work with engineers to keep compile times low as the codebase grows. You'll containerize build environments with Docker, maintain our CI/CD configuration, and manage build artifact storage and versioning. You'll coordinate with the live-services infrastructure team when build agents need cluster resources, but you won't be responsible for production infrastructure, service architecture, or deployment systems.",
+    "construction_rationale": "Grade 0: CI/CD and Docker keyword overlap under a build/DevOps-adjacent title, but shallow build-pipeline maintenance work — no Go, no Terraform, no Kubernetes/production infra ownership."
+  }
+]

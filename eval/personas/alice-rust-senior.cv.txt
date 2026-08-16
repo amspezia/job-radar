@@ -1,0 +1,27 @@
+Alice Renner
+alice.renner.dev@fictionmail.com | Berlin, Germany (open to remote)
+
+EXPERIENCE
+
+Senior Backend Engineer — Meridian Pay | Jan 2023 – Present
+Meridian Pay processes card and bank-transfer payments for mid-market merchants across the EU.
+- Redesigned the core transaction ledger service in Rust, cutting p99 write latency from 340ms to 40ms under peak settlement load.
+- Own the gRPC service mesh between the authorization, ledger, and reconciliation services (12 services, ~40k RPS peak).
+- Led the migration of the settlement pipeline off a monolithic Postgres writer onto a partitioned, Tokio-based async worker pool, eliminating the nightly reconciliation backlog.
+- Mentor two mid-level engineers; run the team's incident review process.
+
+Backend Engineer — Meridian Pay | Jun 2020 – Dec 2022
+- Built the merchant-facing dispute and chargeback service (Rust, PostgreSQL) from scratch, now handling ~9,000 disputes/month.
+- Introduced Kafka as the event backbone for cross-service settlement events, replacing a polling-based sync job.
+- On-call rotation for the payments-core team; wrote the team's first structured incident postmortem template.
+
+Junior Software Engineer — Kestrel Systems | Aug 2018 – May 2020
+Kestrel Systems builds fleet-management software for regional logistics companies.
+- Maintained a C++ telemetry ingestion service and a small internal Rust CLI tool for replaying device logs during debugging.
+- Shipped a Kubernetes-based deploy pipeline for the team's three internal services, replacing manual SSH deploys.
+
+SKILLS
+Rust, PostgreSQL, gRPC, Kubernetes, Docker, Kafka, distributed systems, async/Tokio
+
+EDUCATION
+B.Sc. Computer Science, Technical University of Munich, 2018

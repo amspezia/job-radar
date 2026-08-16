@@ -1,0 +1,46 @@
+{
+  "_comment": "Hand-derived ground truth for eval/personas/eve-data-junior.cv.txt — see eval/personas/README.md for the schema convention.",
+  "persona_id": "eve-data-junior",
+  "cv_file": "eve-data-junior.cv.txt",
+  "full_name": "Eve Tanaka",
+  "email": "eve.tanaka.data@fictionmail.com",
+  "seniority": "junior",
+  "seniority_notes": "Current title is literally 'Junior Data Engineer'; one internship, ~2 years total career, no prior full-time role. This is the easiest of the five seniority calls and the one most worth checking directly — the live parser returned null here on the first real run, despite the word 'Junior' being in her current title.",
+  "target_titles": {
+    "expected_any_of": ["Junior Data Engineer", "Data Engineer", "Data Engineer I", "Associate Data Engineer"],
+    "must_not_include": ["Senior Data Engineer", "Data Engineer II", "Data Analytics Intern", "Staff", "Lead"],
+    "notes": "Unlike the senior/staff personas, keeping 'Junior' in a target title is CORRECT here, not stale — she genuinely is junior. The rule being tested is 'don't copy a title inconsistent with current seniority', and her current title already matches her level, so it should survive. Her intern title (the actually-earlier, actually-lower one) is the one that should be excluded."
+  },
+  "tech_stack": ["SQL", "Python", "dbt", "Airflow", "pandas"],
+  "tech_stack_notes": "Exactly the SKILLS line.",
+  "domains": {
+    "expected_any_of": ["retail", "e-commerce"],
+    "must_not_include": [],
+    "notes": "Cartway Retail is explicitly described as operating e-commerce and in-store retail systems — same clean, low-ambiguity case as carol's."
+  },
+  "work_history": [
+    {
+      "role": "Junior Data Engineer",
+      "company": "Cartway Retail",
+      "start": "Jan 2025",
+      "end": null,
+      "years": null,
+      "years_note": "Ongoing (Present) — compute dynamically as (eval run date - Jan 2025)."
+    },
+    {
+      "role": "Data Analytics Intern",
+      "company": "Cartway Retail",
+      "start": "May 2024",
+      "end": "Dec 2024",
+      "years": 0.58
+    }
+  ],
+  "career_start": "May 2024",
+  "years_experience_note": "Continuous employment at one company, internship converted to full-time — compute dynamically as (eval run date - May 2024) in years.",
+  "search_preferences": {
+    "location_rules": { "allowed_keywords": ["Canada", "North America", "Remote"] },
+    "remote_required": true,
+    "salary_floor": null,
+    "currency": "CAD"
+  }
+}

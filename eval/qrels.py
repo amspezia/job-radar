@@ -66,9 +66,12 @@ class SearchConfig:
 # Standard configurations matching production search (2-arm: lexical + HyDE).
 # CV arm removed after ablation showed it consistently degrades all metrics
 # (backward-looking resume embedding conflicts with forward-looking HyDE).
-# pool=100 matches the production search() default.
+# pool=100 matches the production search() default. HYBRID stays equal-weight — it's
+# the ablation baseline (see run.py's hybrid/vector_only/keyword_only comparison and
+# test_eval_gate.py's golden config) — HYBRID_PROD is the one that actually mirrors
+# fit/pipeline.py's run_fit_pipeline() call, weights and limit included.
 HYBRID = SearchConfig(arms=["lexical", "hyde"], pool=100, limit=100)
-HYBRID_PROD = SearchConfig(arms=["lexical", "hyde"], pool=100, limit=50)
+HYBRID_PROD = SearchConfig(arms=["lexical", "hyde"], pool=100, limit=100, weights=[2.0, 1.0])
 HYDE_ONLY = SearchConfig(arms=["hyde"], pool=100, limit=100)
 KEYWORD_ONLY = SearchConfig(arms=["lexical"], pool=100, limit=100)
 
@@ -82,9 +85,7 @@ async def load_qrels(session: AsyncSession, profile_id: UUID) -> dict[UUID, int]
     """
     rows = (
         await session.execute(
-            select(EvalLabel.job_id, EvalLabel.label).where(
-                EvalLabel.profile_id == profile_id
-            )
+            select(EvalLabel.job_id, EvalLabel.label).where(EvalLabel.profile_id == profile_id)
         )
     ).all()
     result: dict[UUID, int] = {}

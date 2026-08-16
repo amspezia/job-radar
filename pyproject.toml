@@ -57,6 +57,9 @@ job-radar-fit = "job_radar.fit.cli:main"
 job-radar-eval-label = "eval.label:main"
 job-radar-eval-run = "eval.run:main"
 job-radar-eval-sweep = "eval.sweep:main"
+job-radar-eval-inject-synthetic = "eval.inject_synthetic:main"
+job-radar-eval-run-synthetic = "eval.run_synthetic:main"
+job-radar-eval-profile-parsing = "eval.eval_profile_parsing:main"
 
 [build-system]
 requires = ["hatchling"]

@@ -50,9 +50,7 @@ _DEFAULT_OUT = Path("eval/results")
 
 def _git_sha() -> str:
     try:
-        return subprocess.check_output(
-            ["git", "rev-parse", "--short", "HEAD"], text=True
-        ).strip()
+        return subprocess.check_output(["git", "rev-parse", "--short", "HEAD"], text=True).strip()
     except Exception:
         return "unknown"
 
@@ -125,8 +123,7 @@ def _ranx_compare(
         return
     try:
         ranx_runs = [
-            Run({q_key: {str(jid): s for jid, s in run.items()}}, name=name)
-            for name, run in runs
+            Run({q_key: {str(jid): s for jid, s in run.items()}}, name=name) for name, run in runs
         ]
         report = compare(
             ranx_qrels,
@@ -159,8 +156,8 @@ def _print_table(results: dict[str, dict]) -> None:
     print(header)
     print("-" * len(header))
     for label, key in metric_keys:
-        row = label + "  " + "  ".join(
-            f"{results[c].get(key, 0):.4f}".rjust(col_w) for c in configs
+        row = (
+            label + "  " + "  ".join(f"{results[c].get(key, 0):.4f}".rjust(col_w) for c in configs)
         )
         print(row)
     print()
@@ -176,9 +173,7 @@ async def _evaluate_one(
     hyde_embedding: list[float] | None,
     config_name: str,
 ) -> dict:
-    run = await build_run(
-        session, profile, config, query=query, hyde_embedding=hyde_embedding
-    )
+    run = await build_run(session, profile, config, query=query, hyde_embedding=hyde_embedding)
     _validate_ranx(run, qrels)
     result_metrics = _compute_metrics(run, qrels)
     return {
@@ -204,15 +199,19 @@ async def _run(args: argparse.Namespace) -> None:
     async with async_session_factory() as session:
         if args.profile_id:
             profile = (
-                await session.execute(
-                    select(Profile).where(Profile.id == UUID(args.profile_id))
-                )
-            ).scalars().first()
+                (await session.execute(select(Profile).where(Profile.id == UUID(args.profile_id))))
+                .scalars()
+                .first()
+            )
             if profile is None:
                 print(f"Profile {args.profile_id} not found.")
                 sys.exit(1)
         else:
-            profile = (await session.execute(select(Profile))).scalars().first()
+            profile = (
+                (await session.execute(select(Profile).where(Profile.source == "real")))
+                .scalars()
+                .first()
+            )
             if profile is None:
                 print("No profile found — run job-radar-profile first.")
                 sys.exit(1)
@@ -248,18 +247,20 @@ async def _run(args: argparse.Namespace) -> None:
         ]
 
         print("Evaluating all configs concurrently …")
-        results = await asyncio.gather(*[
-            _evaluate_one(
-                session,
-                profile,
-                config,
-                qrels,
-                query=lexical_q,
-                hyde_embedding=hyde_embedding,
-                config_name=name,
-            )
-            for name, config in configs
-        ])
+        results = await asyncio.gather(
+            *[
+                _evaluate_one(
+                    session,
+                    profile,
+                    config,
+                    qrels,
+                    query=lexical_q,
+                    hyde_embedding=hyde_embedding,
+                    config_name=name,
+                )
+                for name, config in configs
+            ]
+        )
         all_results: dict[str, dict] = {}
         for (name, _), result in zip(configs, results, strict=True):
             all_results[name] = result

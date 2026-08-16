@@ -1,0 +1,182 @@
+[
+  {
+    "grade": 3,
+    "title": "Full Stack Engineer",
+    "company": "Marketpoint",
+    "seniority": "mid",
+    "requirements": "We are looking for a Full Stack Engineer with 3-5 years of professional experience to join our B2C marketplace team. You should be proficient in React and TypeScript on the frontend, and comfortable building services in Node.js. Experience designing and consuming GraphQL APIs is required. Familiarity with PostgreSQL for relational data modeling is expected, and prior exposure to Next.js or Tailwind CSS is a plus. You should be comfortable owning a feature end to end, from database schema to shipped UI, and communicating trade-offs with product stakeholders. Experience working in a marketplace or e-commerce environment with real-time inventory and checkout flows is strongly preferred.",
+    "responsibilities": "You will build and maintain buyer-facing storefront features on our multi-vendor marketplace, working across the React/TypeScript frontend and our Node.js/GraphQL backend. Day to day, you will implement new checkout and cart experiences, extend our GraphQL schema to support new seller tools, and collaborate with design and product on search and discovery improvements. You will also participate in code review, write integration tests for critical purchase flows, and help triage production issues affecting buyers or sellers during peak shopping periods. Occasional on-call rotation is required to support checkout reliability during promotional events.",
+    "construction_rationale": "Grade 3: exact title, full core stack (React/TypeScript/Node.js/GraphQL), mid seniority, marketplace domain — squarely the role Carol searches for."
+  },
+  {
+    "grade": 3,
+    "title": "Full-Stack Developer, Wholesale Platform",
+    "company": "Craterworks Supply Co.",
+    "seniority": "mid",
+    "requirements": "Craterworks operates a B2B wholesale ordering platform connecting regional distributors with independent retailers. We're hiring a Full-Stack Developer with roughly 3+ years of experience to help scale our ordering and fulfillment tools. Required skills include React and TypeScript for our buyer-facing dashboard, Node.js for backend services, and hands-on experience building or consuming GraphQL APIs. Working knowledge of PostgreSQL is necessary for reporting and inventory queries. Bonus points for Next.js experience, since our newer dashboards are being migrated to it, and for comfort with Tailwind CSS in a component-driven design system. Wholesale, distribution, or B2B commerce background is a strong plus but not mandatory.",
+    "responsibilities": "You'll work on the retailer-facing ordering dashboard, adding bulk order features, price-tier logic, and delivery scheduling tools used by hundreds of retail partners daily. Expect to write React/TypeScript components, extend Node.js services that back our GraphQL API, and collaborate with the operations team to translate warehouse workflows into software. You will pair with a data engineer on inventory sync jobs, review pull requests from teammates, and take ownership of at least one subsystem — currently the returns and credit-memo flow — including its GraphQL resolvers and PostgreSQL schema.",
+    "construction_rationale": "Grade 3: exact-synonym title, full core stack present, mid seniority, B2B wholesale marketplace domain — a plausible alternate niche within e-commerce."
+  },
+  {
+    "grade": 3,
+    "title": "full stack engineer (subscriptions team) 🚀",
+    "company": "Loopcrate",
+    "seniority": "mid",
+    "requirements": "hey! we're loopcrate, a subscription-box commerce startup, and we need a full stack engineer to join our small subscriptions team. you'll fit right in if you've got a few years shipping production react + typescript apps and aren't scared of backend work in node.js. we lean hard on graphql for our api layer (apollo server + client), so you should be comfortable there or eager to get comfortable fast. postgres knows all our subscription state so sql chops matter. next.js and tailwind are bonus points since that's most of our frontend stack these days. we move fast, ship often, and don't do a ton of process — you should be the kind of person who's fine with that.",
+    "responsibilities": "you'll be heads-down on our subscription management experience — think plan upgrades, pause/skip logic, and the billing preview screen customers hit every renewal cycle. that means react/typescript components, graphql mutations against our node.js api, and the occasional gnarly postgres query when something's off in prod. you'll ship your own features from idea to deploy, pair with our one other full stack engineer on trickier bits, and jump on customer-reported bugs when support flags them. no big ceremony here — mostly slack threads, quick standups, and shipping.",
+    "construction_rationale": "Grade 3: startup-casual register, full core stack, mid seniority, subscription-commerce niche — same axes as the other grade-3 postings but deliberately different tone and formatting style."
+  },
+  {
+    "grade": 3,
+    "title": "Software Engineer, Full Stack — Storefront Team",
+    "company": "Meridian Trade Group",
+    "seniority": "mid",
+    "requirements": "Meridian Trade Group is seeking a Software Engineer to join our Storefront team, supporting the online marketplace used by over 40,000 independent sellers. Candidates should have a minimum of three years of professional software development experience, with demonstrated proficiency in TypeScript and React for building complex, stateful user interfaces. Backend experience with Node.js is required, along with practical experience designing GraphQL schemas and resolvers. A working knowledge of PostgreSQL, including query optimization, is expected. Experience with Next.js for server-rendered pages and Tailwind CSS for styling is preferred but not mandatory. Candidates should be comfortable operating with moderate autonomy and collaborating cross-functionally with product managers and designers.",
+    "responsibilities": "In this role, you will be responsible for developing and maintaining features across the seller storefront, including listing management, order history, and payout dashboards. Your daily work will involve writing React and TypeScript on the frontend, implementing GraphQL resolvers and Node.js services on the backend, and writing PostgreSQL migrations as our data model evolves. You will participate in sprint planning, provide input on technical design documents, and mentor junior contributors on the team informally through code review. You will also collaborate with the payments team to ensure seller payout accuracy during high-volume sales events.",
+    "construction_rationale": "Grade 3: formal register, plain 'Software Engineer' with explicit 'Full Stack' qualifier in the title, full core stack, mid seniority, marketplace domain — still an exact fit."
+  },
+  {
+    "grade": 3,
+    "title": "Full Stack Engineer II",
+    "company": "Harborline Goods",
+    "seniority": "mid",
+    "requirements": "Harborline Goods runs a direct-to-consumer marketplace for independent home goods makers. We're hiring a Full Stack Engineer II — our mid-level individual contributor track — to join the checkout and payments squad. You should bring at least three years of hands-on experience with React and TypeScript, along with solid Node.js backend development skills. Our API layer is built on GraphQL, so prior experience designing schemas, writing resolvers, or at minimum consuming GraphQL APIs in production is required. Comfort with PostgreSQL for transactional data is necessary. Exposure to Next.js and Tailwind CSS is a plus since parts of our storefront use both. Experience in e-commerce, retail tech, or marketplace platforms is preferred.",
+    "responsibilities": "You will work within the checkout and payments squad to build and improve the buyer purchase flow, from cart to order confirmation. This includes writing React/TypeScript components for the checkout UI, implementing GraphQL mutations and Node.js service logic for payment authorization, and writing PostgreSQL queries to support order reconciliation reporting. You will collaborate closely with a payments provider integration partner, participate in incident response for checkout outages, and contribute to technical design discussions for upcoming features like saved payment methods and installment billing.",
+    "construction_rationale": "Grade 3: title uses an internal leveling convention ('Full Stack Engineer II') that maps clearly to mid, full core stack present, marketplace domain — varies title phrasing from the other four."
+  },
+  {
+    "grade": 2,
+    "title": "Software Engineer",
+    "company": "Fenwick Digital",
+    "seniority": "mid",
+    "requirements": "Fenwick Digital is looking for a Software Engineer to join our web application team. The ideal candidate has 3+ years of experience building production web applications with React and TypeScript. Backend experience with Node.js is required, and you should be comfortable designing and consuming REST or GraphQL APIs. Experience with relational databases is expected; we primarily use MySQL, though familiarity with any SQL database transfers well. You'll work within an established design system and component library, so comfort with modern CSS tooling is helpful. We value engineers who can move fluidly between frontend and backend work depending on the sprint's needs.",
+    "responsibilities": "You will build and maintain features across our internal web application suite, writing React and TypeScript components for the frontend and Node.js services for the backend. Day to day work includes implementing new UI views, extending our API layer, and writing database migrations as our schema evolves. You will participate in code review, collaborate with a small team of engineers and one designer, and occasionally support production issues during business hours. There is room to grow into more backend-focused or more frontend-focused work depending on your interests.",
+    "construction_rationale": "Grade 2: plain 'Software Engineer' title with no full-stack qualifier, PostgreSQL swapped for MySQL (one secondary tech swapped), domain left unstated, mid seniority via implied years — adjacent-but-plausible match."
+  },
+  {
+    "grade": 2,
+    "title": "Web Application Engineer",
+    "company": "Northfield Systems",
+    "seniority": "mid",
+    "requirements": "Northfield Systems is hiring a Web Application Engineer with roughly 2-4 years of experience to join our product engineering group. Strong TypeScript and React skills are required for building our customer-facing dashboards. You should also be comfortable writing Node.js services and working with GraphQL, since our internal API gateway exposes most data through a unified GraphQL layer. Experience with PostgreSQL is a plus but not required, as our team primarily interacts with the database through an ORM. Prior experience with Next.js is welcome. This role sits within our platform group, which builds tools used by both internal teams and external customers.",
+    "responsibilities": "You will develop and maintain customer-facing dashboard features using React and TypeScript, working against a GraphQL API backed by Node.js services. Typical work includes building new dashboard widgets, extending GraphQL queries to surface new data, and fixing bugs reported by the support team. You will collaborate with a product manager and one other engineer, participate in weekly planning, and occasionally pair on trickier backend logic. There is no on-call requirement for this role, though timely bug fixes are expected during business hours.",
+    "construction_rationale": "Grade 2: adjacent title ('Web Application Engineer'), most of core stack present but PostgreSQL only indirectly touched via ORM (weakened, not absent), domain unstated/neutral, mid seniority — belongs on the results page but not an exact match."
+  },
+  {
+    "grade": 2,
+    "title": "Software Engineer II, Growth",
+    "company": "Ridgeline Retail Co.",
+    "seniority": "mid",
+    "requirements": "Ridgeline Retail is looking for a Software Engineer II to join our Growth team, focused on improving conversion across our online store. You should have several years of professional experience with React and TypeScript, along with solid Node.js skills for backend work. Our data layer uses PostgreSQL extensively, so comfort writing and optimizing SQL queries is important. Our API is REST-based rather than GraphQL, so prior GraphQL experience is not required, though it's a nice-to-have if you've used it elsewhere. Experience running or analyzing A/B tests is a plus. This role would suit someone who enjoys fast iteration and measurable impact on business metrics.",
+    "responsibilities": "You will build and iterate on experiments across our online store's checkout and onboarding flows, writing React/TypeScript components and Node.js API endpoints backed by PostgreSQL. Day to day, you will implement A/B test variants, analyze conversion data with the analytics team, and ship incremental improvements to signup and checkout funnels. You will also maintain existing REST endpoints, write tests for new experiment code, and present experiment results in a biweekly growth review meeting.",
+    "construction_rationale": "Grade 2: adjacent title, GraphQL swapped out for REST (one core-stack item missing), e-commerce domain present, mid seniority — most of the stack overlaps but GraphQL is absent."
+  },
+  {
+    "grade": 2,
+    "title": "Product Engineer",
+    "company": "Aldergate Labs",
+    "seniority": "mid",
+    "requirements": "Aldergate Labs is hiring a Product Engineer to work across our full application stack. We're looking for someone with around three years of experience who is comfortable in React and TypeScript for frontend work and Node.js for backend services. We use GraphQL for most internal and external API communication, so experience with GraphQL schema design is valuable. Our primary datastore is PostgreSQL. This is a generalist role — you may spend a given week mostly on frontend polish and the next mostly on backend data modeling. No specific industry background is required, though startup experience is helpful given our fast pace.",
+    "responsibilities": "You will work across the stack building product features end to end, from React/TypeScript UI to Node.js services and GraphQL resolvers backed by PostgreSQL. In a typical week you might redesign a settings page, add a new field to our GraphQL schema, and write the corresponding database migration. You will work closely with our founder and one designer, ship multiple times a week, and take ownership of small features from spec to production without much formal process.",
+    "construction_rationale": "Grade 2: adjacent title ('Product Engineer' rather than Full Stack Engineer), full core stack present, domain entirely unstated/neutral (generic startup) — relevant but not a domain match."
+  },
+  {
+    "grade": 2,
+    "title": "Software Engineer, Storefront Experience",
+    "company": "Vantable Commerce",
+    "seniority": "mid",
+    "requirements": "Vantable Commerce is looking for a Software Engineer to support our storefront experience team. We're seeking someone with 2-4 years of experience, strong in React and TypeScript, who is also comfortable writing Node.js services. Our platform is transitioning from GraphQL to a newer internal API framework, so while some legacy GraphQL knowledge is helpful, it is not a core requirement for this role going forward. PostgreSQL experience is required for working with our order and catalog data. Next.js familiarity is a plus for our newer storefront pages. Prior e-commerce experience is welcomed but not required.",
+    "responsibilities": "You will contribute to the storefront experience, including product listing pages, category navigation, and search filtering, using React and TypeScript on the frontend and Node.js on the backend. You will occasionally touch legacy GraphQL resolvers during the migration period, but most new work targets our newer internal API layer. You will write PostgreSQL queries for catalog and inventory data, participate in code review, and collaborate with a small cross-functional pod including a designer and a product manager.",
+    "construction_rationale": "Grade 2: adjacent plain 'Software Engineer' title, GraphQL present only as legacy/optional (weakened core-stack item), e-commerce domain stated, mid seniority — relevant but stack overlap is incomplete."
+  },
+  {
+    "grade": 1,
+    "title": "Full Stack Engineer",
+    "company": "Reelframe Media",
+    "seniority": "mid",
+    "requirements": "Reelframe Media, a streaming platform for independent film and documentary content, is hiring a Full Stack Engineer with 3+ years of experience. You should be proficient in React and TypeScript for our viewer-facing web player and browsing experience, and comfortable building Node.js services for our catalog and playback APIs. We use GraphQL as our primary API layer across web and mobile clients, so hands-on GraphQL experience is required. PostgreSQL experience is necessary for working with our content metadata and viewing history tables. Experience with video streaming technologies is a bonus but not expected — we will train on our specific playback stack.",
+    "responsibilities": "You will build and maintain features across our streaming platform's web experience, including browse and search pages, the video player shell, and watch-history tracking, using React, TypeScript, Node.js, and GraphQL. You'll write PostgreSQL queries and migrations to support new catalog features, collaborate with our content operations team on metadata display requirements, and participate in on-call rotation for playback-related incidents. You will also work with a data engineer to surface personalized recommendations in the browsing UI.",
+    "construction_rationale": "Grade 1: exact title, full core stack, mid seniority, but domain is streaming media rather than e-commerce — one axis (domain) deliberately off."
+  },
+  {
+    "grade": 1,
+    "title": "Full Stack Engineer",
+    "company": "Coinledger Financial",
+    "seniority": "mid",
+    "requirements": "Coinledger Financial, a consumer banking app for freelancers and gig workers, is looking for a Full Stack Engineer with around three to five years of experience. You will need strong React and TypeScript skills for our account dashboard and transaction views, as well as Node.js experience for backend services handling transaction processing. Our API layer is built on GraphQL, so experience designing and maintaining GraphQL schemas is required. PostgreSQL experience is necessary given the transactional nature of our data. Experience in fintech, banking, or payments is a plus but not required — we care more about engineering rigor given the regulatory environment we operate in.",
+    "responsibilities": "You will build features for our account dashboard and transaction history views using React, TypeScript, and our GraphQL API backed by Node.js and PostgreSQL. Day to day work includes implementing new account statement views, extending GraphQL resolvers for transaction categorization, and writing careful PostgreSQL migrations given the sensitivity of financial data. You will work closely with a compliance-focused product manager, write thorough tests for money-movement logic, and participate in a shared on-call rotation for the transactions team.",
+    "construction_rationale": "Grade 1: exact title, full core stack, mid seniority, but domain is consumer fintech/banking rather than e-commerce — one axis (domain) deliberately off, distinct alternate vertical from the streaming posting."
+  },
+  {
+    "grade": 1,
+    "title": "Full Stack Engineer",
+    "company": "Parcelwise Marketplace",
+    "seniority": "mid",
+    "requirements": "Parcelwise Marketplace, an online marketplace for local delivery and courier services, is hiring a Full Stack Engineer with 3+ years of experience. You should have strong React and TypeScript skills for our booking and tracking interfaces, and solid Node.js experience for backend services. We are looking for someone comfortable working with Vue.js as well, since one of our older internal tools is still built on it and is slated for gradual migration. PostgreSQL experience is required for our booking and courier assignment data. Experience with modern frontend frameworks generally, rather than deep specialization in one, is valued here given the mixed codebase.",
+    "responsibilities": "You will build features for our courier booking and live tracking experience, primarily in React and TypeScript, while also maintaining and gradually migrating an internal operations tool currently written in Vue.js. Backend work involves Node.js services and PostgreSQL queries for courier assignment logic. You will collaborate with the operations team on courier-facing tools, participate in the Vue-to-React migration planning, and write tests for booking and assignment logic to prevent regressions during the transition.",
+    "construction_rationale": "Grade 1: exact title, e-commerce/marketplace domain, mid seniority, full stack otherwise, but the posting asks for Vue.js instead of React as a core requirement — one key skill (React) deliberately swapped."
+  },
+  {
+    "grade": 1,
+    "title": "Full Stack Engineer",
+    "company": "Cartlington Goods",
+    "seniority": "mid",
+    "requirements": "Cartlington Goods, an online marketplace for refurbished electronics, is hiring a Full Stack Engineer with 3+ years of experience. You should have strong React and TypeScript skills for our buyer-facing storefront, and solid Node.js experience building our backend services. Our API is a straightforward REST API — we do not use GraphQL anywhere in our stack, and no GraphQL experience is expected. PostgreSQL experience is required for product listings and order data. Experience with e-commerce or marketplace platforms is preferred. We value engineers who write clean, well-tested REST endpoints and think carefully about API versioning as the product evolves.",
+    "responsibilities": "You will build and maintain buyer-facing storefront features using React and TypeScript, backed by a Node.js REST API and PostgreSQL. Day to day, you will design new REST endpoints for listing and order management, implement corresponding frontend views, and write PostgreSQL migrations as the product catalog grows. You will participate in API design reviews, write integration tests for critical purchase endpoints, and collaborate with a small backend-focused team on versioning strategy as new mobile clients are added.",
+    "construction_rationale": "Grade 1: exact title, e-commerce domain, mid seniority, full stack otherwise, but the role is explicitly REST-only with no GraphQL — one key skill (GraphQL) deliberately missing, a distinct kind of gap from the Vue.js posting."
+  },
+  {
+    "grade": 1,
+    "title": "Senior Full Stack Engineer",
+    "company": "Emporium Nexus",
+    "seniority": "senior",
+    "requirements": "Emporium Nexus, a large multi-category online marketplace, is hiring a Senior Full Stack Engineer to help lead architecture decisions across our storefront and checkout teams. You should have 6+ years of experience with deep expertise in React and TypeScript, along with strong Node.js backend skills. Extensive experience designing GraphQL schemas at scale is required, as you will be setting API conventions used by multiple teams. PostgreSQL experience, including schema design and performance tuning, is expected. This role involves significant cross-team coordination, so experience mentoring other engineers and driving technical decisions across team boundaries is essential.",
+    "responsibilities": "You will own architectural decisions for our GraphQL API layer, working across the storefront, checkout, and seller-tools teams to establish shared conventions for schema design, caching, and performance. You will write React, TypeScript, and Node.js code yourself, but a significant part of your role involves reviewing designs from other teams, mentoring mid-level engineers, and resolving cross-team technical disagreements. You will also lead the technical planning for a major checkout re-architecture spanning multiple quarters and multiple engineering pods.",
+    "construction_rationale": "Grade 1: exact title family, full core stack, e-commerce marketplace domain, but explicitly Senior with multi-team architecture ownership — one level above Carol's mid seniority, deliberately off-by-one."
+  },
+  {
+    "grade": 0,
+    "title": "Backend Engineer, Full Stack Platform",
+    "company": "Ironvale Systems",
+    "seniority": "mid",
+    "requirements": "Ironvale Systems is hiring a Backend Engineer to join our full stack platform team, though this is primarily a backend-focused role. You should have 3+ years of experience with Java and Spring Boot, building high-throughput services for internal enterprise clients. Experience with Kafka for event streaming is required, along with strong SQL skills against Oracle databases. Familiarity with microservice architecture and containerized deployment via Kubernetes is expected. While the team occasionally touches a legacy Angular admin panel, frontend work is not a core part of this role, and no specific frontend framework experience is required.",
+    "responsibilities": "You will design and build backend services in Java and Spring Boot that power internal enterprise tooling, working extensively with Kafka for event-driven communication between services. Day to day work includes writing and optimizing SQL queries against Oracle, deploying services via Kubernetes, and participating in on-call rotation for backend incidents. You will occasionally coordinate with a separate frontend team maintaining the Angular admin panel, but you will not be writing frontend code yourself in this role.",
+    "construction_rationale": "Grade 0: title loosely says 'full stack platform' but the role is Java/Spring Boot backend-only with none of Carol's actual stack — wrong stack entirely on multiple axes."
+  },
+  {
+    "grade": 0,
+    "title": "iOS Engineer, Shopping App",
+    "company": "Pouchmark Inc.",
+    "seniority": "mid",
+    "requirements": "Pouchmark is hiring an iOS Engineer to work on our native shopping app. You should have 3+ years of experience building production iOS applications in Swift and SwiftUI, with a solid understanding of UIKit for legacy screens still in the codebase. Experience with Core Data for local persistence and familiarity with Apple's App Store review process is required. You should be comfortable working with REST APIs consumed from the client side, and experience with push notifications and in-app purchase flows is a plus. This role is entirely focused on our iOS client; no web or backend work is involved.",
+    "responsibilities": "You will build and maintain features for our native iOS shopping app, writing Swift and SwiftUI code for browsing, cart, and checkout screens. Day to day work includes implementing new UI screens per design specs, optimizing app performance and launch time, fixing crashes reported through our crash analytics tool, and coordinating App Store releases. You will collaborate with a backend team that maintains the REST API your app consumes, but you will not be writing any backend or web code yourself.",
+    "construction_rationale": "Grade 0: 'shopping app' evokes e-commerce and title says 'engineer,' but this is a native iOS/Swift mobile role with none of Carol's web stack — wrong stack entirely, multiple axes wrong."
+  },
+  {
+    "grade": 0,
+    "title": "Product Designer, Checkout Experience",
+    "company": "Tallowmark Retail",
+    "seniority": "mid",
+    "requirements": "Tallowmark Retail is hiring a Product Designer to own the design of our checkout experience. You should have 3+ years of experience in product design for consumer web or mobile applications, with a strong portfolio demonstrating UX research, wireframing, and high-fidelity prototyping in Figma. Familiarity with design systems and component libraries is required. Some familiarity with React is a plus, as you will work closely with frontend engineers and it helps to understand implementation constraints when handing off designs, but you will not be writing production code. Experience conducting usability testing and synthesizing findings into design recommendations is essential.",
+    "responsibilities": "You will lead the end-to-end design process for our checkout experience, from user research and wireframing through high-fidelity prototypes and handoff to engineering. You will work closely with frontend engineers to ensure designs are implemented faithfully, review pull requests for visual accuracy rather than code quality, and run usability testing sessions with real customers. You will also maintain and extend our design system's checkout-related components in Figma, and present design proposals to stakeholders in weekly design reviews.",
+    "construction_rationale": "Grade 0: mentions React familiarity and works closely with frontend engineers, but the role itself is design work (Figma, UX research, prototyping), not engineering — unrelated role function."
+  },
+  {
+    "grade": 0,
+    "title": "E-Commerce Platform Administrator",
+    "company": "Shelfline Commerce Solutions",
+    "seniority": "mid",
+    "requirements": "Shelfline Commerce Solutions is hiring an E-Commerce Platform Administrator to manage client storefronts built on our no-code e-commerce platform. You should have 2+ years of experience configuring Shopify or similar hosted e-commerce platforms, including theme customization through the platform's visual editor and app marketplace. Experience writing basic Liquid template snippets is helpful but deep programming knowledge is not required. You should be comfortable managing product catalogs, configuring shipping and tax rules, and troubleshooting checkout configuration issues for non-technical clients. This role is client-facing and does not involve custom software development.",
+    "responsibilities": "You will manage e-commerce storefronts for multiple clients on our hosted platform, configuring themes through the visual page builder, setting up product catalogs, and adjusting shipping and payment gateway settings. Day to day work includes responding to client support tickets about storefront configuration, testing checkout flows after platform updates, and occasionally writing small Liquid snippets to customize theme behavior. You will also onboard new clients onto the platform and train them on managing their own storefronts going forward.",
+    "construction_rationale": "Grade 0: 'e-commerce' appears prominently and the domain matches, but the role is no-code platform administration with no real engineering stack — coincidental keyword overlap, no React/TypeScript/Node.js."
+  },
+  {
+    "grade": 0,
+    "title": "WordPress Content Engineer",
+    "company": "Bramblecart Media",
+    "seniority": "mid",
+    "requirements": "Bramblecart Media is hiring a WordPress Content Engineer to support our e-commerce content operations team. You should have 2+ years of experience managing WordPress and WooCommerce sites, including plugin configuration, theme customization via the WordPress admin, and basic PHP edits for minor customizations. Experience with SEO plugins, page builders like Elementor, and content scheduling workflows is required. Familiarity with basic HTML and CSS for content formatting is expected. This role focuses on publishing and maintaining e-commerce product content and landing pages rather than building new software features.",
+    "responsibilities": "You will manage and publish e-commerce content across our network of WooCommerce storefronts, including product descriptions, category landing pages, and seasonal promotional pages built with Elementor. Day to day work includes coordinating with the marketing team on content calendars, applying minor PHP customizations to WordPress themes when needed, monitoring page load performance and SEO metrics, and troubleshooting plugin conflicts. You will also train other content team members on WordPress workflows and maintain documentation for our content publishing process.",
+    "construction_rationale": "Grade 0: 'e-commerce' and 'engineer' both appear, but this is WordPress/WooCommerce content operations, not software engineering, and has none of Carol's stack — different field, coincidental keyword overlap."
+  }
+]

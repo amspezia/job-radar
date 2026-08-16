@@ -57,6 +57,11 @@ class Profile(Base):
     __tablename__ = "profile"
 
     id: Mapped[UUID] = mapped_column(PG_UUID(as_uuid=True), primary_key=True, default=uuid4)
+    # "real" (the single actual candidate) or "synthetic" (an eval persona, see
+    # eval/inject_synthetic.py) — every unscoped "find the profile" lookup (loader.py,
+    # fit/pipeline.py) must filter on this, since synthetic personas live in this same
+    # table and an unscoped `.first()` can otherwise silently return one of them.
+    source: Mapped[str] = mapped_column(String(50), nullable=False, server_default="real")
     full_name: Mapped[str] = mapped_column(String(255))
     email: Mapped[str] = mapped_column(String(255))
     links: Mapped[dict] = mapped_column(JSON)

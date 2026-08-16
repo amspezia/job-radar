@@ -1,0 +1,182 @@
+[
+  {
+    "grade": 3,
+    "title": "Machine Learning Engineer",
+    "company": "Halcyon Clinical Systems",
+    "seniority": "mid",
+    "requirements": "Candidates should have a degree in computer science, statistics, or a related quantitative field, along with roughly three to five years of production machine learning experience. Proficiency in Python is required, along with hands-on experience building and training models in PyTorch. Working knowledge of scikit-learn for baseline modeling and evaluation is expected, as is strong SQL for querying clinical and claims data warehouses. Prior exposure to healthcare or clinical data, including familiarity with HL7/FHIR-style records or hospital EHR exports, is preferred. Experience communicating model results to non-technical clinical stakeholders is a plus. This is a mid-level individual-contributor role reporting to the Director of Data Science.",
+    "responsibilities": "You will design, train, and validate predictive models that estimate a patient's risk of hospital readmission and clinical deterioration, using structured EHR data. You will collaborate with clinical informatics staff to define target outcomes and validate model behavior against real-world discharge cases. Day to day work includes building PyTorch training pipelines, evaluating model performance with scikit-learn utilities, and writing SQL queries against the clinical data warehouse to assemble training cohorts. You will also monitor deployed models for feature drift, document modeling decisions for internal review, and periodically present findings to clinical and product stakeholders.",
+    "construction_rationale": "Grade 3: ML Engineer title, full core stack (Python, PyTorch, scikit-learn, SQL), healthcare domain (hospital readmission risk), and mid seniority all align exactly with Bob's profile."
+  },
+  {
+    "grade": 3,
+    "title": "ML Engineer, Health Insurance Risk",
+    "company": "Northgate Assurance Group",
+    "seniority": "mid",
+    "requirements": "The ideal candidate holds a bachelor's or master's degree in a quantitative discipline and has three or more years of experience developing machine learning models in a production environment. Required skills include Python, PyTorch for deep learning model development, scikit-learn for feature engineering and classical modeling baselines, and strong SQL skills for extracting and transforming policyholder and claims data from enterprise data warehouses. Experience within health insurance, healthcare payer operations, or a closely related regulated industry is strongly preferred. Familiarity with model governance and actuarial review processes is a plus. This position sits at the mid-level of our engineering ladder and does not carry people-management responsibilities.",
+    "responsibilities": "In this role you will build and maintain machine learning models that estimate policyholder health risk and inform premium and underwriting decisions for our health insurance product lines. You will write PyTorch model code, validate baseline approaches using scikit-learn, and author SQL queries to pull claims and enrollment data for training and backtesting. You will partner with actuarial and compliance teams to ensure model outputs meet regulatory documentation standards, participate in quarterly model review sessions, and maintain production scoring pipelines that run against nightly claims feeds.",
+    "construction_rationale": "Grade 3: ML Engineer title, full core stack, health insurance domain (a healthtech niche), and mid seniority all align exactly with Bob's profile, in a formal corporate register distinct from the other grade-3 postings."
+  },
+  {
+    "grade": 3,
+    "title": "Machine Learning Engineer",
+    "company": "PulseGuard Wearables",
+    "seniority": "mid",
+    "requirements": "We're looking for someone who's comfortable getting their hands dirty across the whole ML stack: Python and PyTorch for model building, scikit-learn when a simpler model just works better, and solid SQL chops for pulling data out of our Postgres warehouse. You've probably got 3-5 years building models that actually ship, not just notebooks. Bonus points if you've worked with wearable sensor data, time-series vitals, or anything healthtech-adjacent before, but we'll take strong fundamentals over a perfect resume match. You like moving fast, pairing with product on what to build next, and you're not precious about rewriting a model from scratch when the data tells you to.",
+    "responsibilities": "You'll own the models that turn raw wearable sensor streams, heart rate, SpO2, motion, into early warning signals for our remote patient monitoring platform. That means building and iterating on PyTorch models, running quick scikit-learn baselines to sanity-check ideas, and writing the SQL to shape training sets from our device telemetry pipeline. You'll ship models into production, watch how they perform on real patient data, and work closely with our clinical advisor to make sure alerts are actually useful and not just noisy.",
+    "construction_rationale": "Grade 3: ML Engineer title, full core stack, remote patient monitoring domain (healthtech), and mid seniority all align exactly with Bob's profile, written in a startup-casual register."
+  },
+  {
+    "grade": 3,
+    "title": "ML Engineer — Imaging",
+    "company": "RadVista Diagnostics",
+    "seniority": "mid",
+    "requirements": "Applicants should have a minimum of three years of experience building machine learning models, with demonstrated proficiency in Python and PyTorch for model development. Experience with scikit-learn for pre- and post-processing pipelines is required, along with strong SQL skills to query imaging metadata and worklist databases. Prior experience in medical imaging, radiology workflow software, or diagnostic healthtech is preferred but not mandatory for a strong quantitative candidate. Understanding of DICOM metadata handling is a plus. This is a mid-level position within the imaging AI team, working alongside radiologists and imaging informatics specialists.",
+    "responsibilities": "You will develop and refine machine learning models that prioritize radiology worklists by estimating the urgency of incoming imaging studies, helping radiologists triage the most critical cases first. Daily work includes building and training PyTorch models on imaging feature sets, running scikit-learn baselines for comparison, and writing SQL against the imaging metadata store to construct evaluation cohorts. You will work with radiologists to validate model outputs against clinical judgment, maintain the inference service that scores incoming studies, and contribute to documentation supporting regulatory submissions.",
+    "construction_rationale": "Grade 3: ML Engineer title, full core stack, medical imaging triage domain (healthtech), and mid seniority all align exactly with Bob's profile, in a formal clinical register."
+  },
+  {
+    "grade": 3,
+    "title": "Machine Learning Engineer, Care Analytics",
+    "company": "Solace Care Networks",
+    "seniority": "mid",
+    "requirements": "You've got a few years, think 3 to 5, of shipping ML models that real users depend on, and you're fluent in Python and PyTorch as your daily tools. You know when scikit-learn is the right call instead of reaching for a deep net, and you can write SQL well enough to pull your own training data without waiting on a data engineer. Healthtech experience is a big plus since our whole product is about closing care gaps for chronic disease patients, but we mostly care that you can take a fuzzy problem and turn it into a working model. We're a small team, so you'll wear a few hats.",
+    "responsibilities": "You'll build the models that flag which chronic disease patients are falling through the cracks, missed screenings, lapsed medication refills, overdue follow-ups, so our care coordinators know who to call first. That means training and evaluating PyTorch and scikit-learn models on patient engagement data, writing your own SQL to assemble features from our care management database, and shipping models into our production scoring service. You'll iterate quickly based on what coordinators tell you is actually useful in the field, and you'll help shape what we build next.",
+    "construction_rationale": "Grade 3: ML Engineer title, full core stack, chronic disease care-gap domain (healthtech), and mid seniority all align exactly with Bob's profile, in a startup-casual register."
+  },
+  {
+    "grade": 2,
+    "title": "Data Scientist",
+    "company": "Bridgeway Health Partners",
+    "seniority": "mid",
+    "requirements": "We're seeking a data scientist with strong Python skills and hands-on experience building models in both PyTorch and scikit-learn. You should be comfortable owning a modeling problem end to end, from exploratory analysis through to a deployable model. Experience working with healthcare data, patient outcomes, or clinical operations datasets is a strong plus. We expect a few years of applied modeling experience; you've shipped models before, not just built them in a notebook for a class project. Familiarity with experiment tracking tools and basic model evaluation practices is expected. Strong written communication for sharing findings with non-technical partners rounds out the role.",
+    "responsibilities": "You will build predictive models supporting our care management platform, using PyTorch for deep learning approaches and scikit-learn for simpler, more interpretable baselines depending on the problem. You will work closely with clinical operations staff to understand what questions matter, translate those into modeling tasks, and iterate on features and model architecture. You will present findings to product and clinical stakeholders, help decide which models are ready to move toward production, and contribute to internal documentation describing model assumptions and limitations for future maintainers.",
+    "construction_rationale": "Grade 2: adjacent title (Data Scientist) with PyTorch and scikit-learn present but SQL never mentioned, healthtech domain, mid seniority implied by 'a few years' of experience rather than stated outright."
+  },
+  {
+    "grade": 2,
+    "title": "Applied Scientist",
+    "company": "Ferrous Labs",
+    "seniority": "mid",
+    "requirements": "Ferrous Labs is looking for an applied scientist with strong Python and SQL skills and deep experience with scikit-learn for building, tuning, and evaluating classical machine learning models. You should have a solid grounding in statistics and feature engineering, and be comfortable writing efficient SQL to pull and shape data from large relational tables. Around two to four years of hands-on modeling experience is expected. Experience with experimentation frameworks or A/B testing methodology is a plus. We're open to candidates from a range of industries; what matters most is a track record of shipping models that hold up in production, not just in offline evaluation.",
+    "responsibilities": "You will design and build machine learning models using scikit-learn to support decision-making across several internal product teams, working from raw data through to a validated, production-ready model. You will write SQL to construct training datasets from our internal analytics warehouse, run offline evaluations, and collaborate with engineers to get models into production scoring pipelines. You will also design experiments to measure model impact once deployed, document modeling choices, and periodically revisit older models to check whether they still perform well as the underlying data shifts.",
+    "construction_rationale": "Grade 2: adjacent title (Applied Scientist) with Python, scikit-learn, and SQL present but PyTorch never mentioned, domain left unstated, mid seniority implied by 'two to four years' scope."
+  },
+  {
+    "grade": 2,
+    "title": "Data Scientist",
+    "company": "Kestrel Wellness",
+    "seniority": "mid",
+    "requirements": "We're looking for a data scientist who is fluent in Python and has real experience training models in PyTorch, plus strong SQL for working with our event and user-activity data warehouse. You should have around three years of experience building models that ship into a live product, not just research prototypes. Experience with consumer health, fitness tracking, or wellness applications is helpful given our product space, though not required if your modeling fundamentals are strong. Comfort working with noisy, real-world user behavior data and communicating uncertainty in results to product managers is important for this role.",
+    "responsibilities": "You will build and train PyTorch models that personalize workout and habit recommendations based on each user's activity history and engagement patterns. You will write SQL to extract and transform behavioral event data from our warehouse into model-ready training sets, and work with the product team to define what a successful recommendation looks like. You will run offline evaluations of new model versions, help design lightweight production experiments to test them with real users, and communicate results back to the broader product organization in plain language.",
+    "construction_rationale": "Grade 2: adjacent title (Data Scientist) with Python, PyTorch, and SQL present but scikit-learn never mentioned, healthtech-adjacent wellness domain, mid seniority stated via 'around three years'."
+  },
+  {
+    "grade": 2,
+    "title": "Applied Scientist",
+    "company": "Anchorline Analytics",
+    "seniority": "mid",
+    "requirements": "Anchorline Analytics is hiring an applied scientist with strong Python skills and hands-on experience in both PyTorch and scikit-learn for building predictive models across a range of problem types. Candidates should have several years of applied experience taking models from prototype to production, with a solid understanding of model evaluation, cross-validation, and avoiding common pitfalls like data leakage. Experience presenting technical findings to non-technical audiences is expected. We don't require experience in any particular industry vertical, but we do expect genuine ownership of past modeling work; be ready to talk through decisions you made and what you'd do differently.",
+    "responsibilities": "You will develop machine learning models using PyTorch for more complex problems and scikit-learn where a simpler, faster model is the better engineering choice, working across several client-facing projects. You will collaborate with analysts to understand each project's data and constraints, build and evaluate candidate models, and prepare the strongest option for handoff into production. You will document model behavior and limitations for client-facing teams, support troubleshooting when a deployed model's performance drifts, and contribute to internal best-practice guides for model development.",
+    "construction_rationale": "Grade 2: adjacent title (Applied Scientist) with Python, PyTorch, and scikit-learn present but SQL never mentioned, domain unstated (client-facing projects, no vertical named), mid seniority implied via 'several years' scope."
+  },
+  {
+    "grade": 2,
+    "title": "Data Scientist",
+    "company": "Vitalis Care Networks",
+    "seniority": "mid",
+    "requirements": "We're seeking a data scientist with strong Python and SQL skills and solid experience building predictive models with scikit-learn. You should be comfortable owning the full modeling lifecycle, from writing SQL to assemble a training set, through feature engineering, model selection, and evaluation. Experience with healthcare, care management, or population health data is a strong plus given our product focus. We expect roughly three years of hands-on experience applying classical machine learning techniques to real business problems, along with the judgment to know when a simpler model is the right choice over a more complex one.",
+    "responsibilities": "You will build scikit-learn models that predict which patients are at elevated risk of missing scheduled care or lapsing on treatment plans, using data from our care coordination platform. You will write SQL to pull and shape patient engagement and outcomes data from our warehouse, engineer features, and iterate on model versions based on offline evaluation results. You will work with the care operations team to understand which predictions are actually actionable, document model assumptions clearly, and help monitor deployed models for degrading performance over time.",
+    "construction_rationale": "Grade 2: adjacent title (Data Scientist) with Python, scikit-learn, and SQL present but PyTorch never mentioned, healthtech domain, mid seniority stated via 'roughly three years'."
+  },
+  {
+    "grade": 1,
+    "title": "Machine Learning Engineer",
+    "company": "Cobalt Ledger Financial",
+    "seniority": "mid",
+    "requirements": "We're hiring a machine learning engineer with strong Python skills and hands-on experience building models in PyTorch, along with solid scikit-learn experience for baseline and ensemble modeling. Strong SQL is required for querying transaction and account data at scale. Candidates should have roughly three to five years of production ML experience, ideally including exposure to imbalanced classification problems. Experience in fintech, payments, or fraud detection is a plus but not required. This is a mid-level individual-contributor role on our risk engineering team, working closely with fraud analysts and platform engineers.",
+    "responsibilities": "You will build and maintain machine learning models that detect fraudulent transactions in real time across our payments platform, using PyTorch for our primary detection models and scikit-learn for rapid baseline experiments. You will write SQL to construct training and evaluation datasets from our transaction warehouse, tune models against tight latency requirements, and work with fraud analysts to understand emerging fraud patterns. You will also monitor deployed models for performance drift as fraud tactics evolve and contribute to post-incident reviews when new fraud patterns slip past existing models.",
+    "construction_rationale": "Grade 1: full core stack, ML Engineer title, and mid seniority all match, but the domain is fintech fraud detection rather than healthcare, one axis (domain) deliberately off."
+  },
+  {
+    "grade": 1,
+    "title": "Machine Learning Engineer",
+    "company": "CartLoop Commerce",
+    "seniority": "mid",
+    "requirements": "CartLoop is looking for a machine learning engineer with strong Python and PyTorch experience for building recommendation and ranking models, plus scikit-learn experience for feature engineering and simpler baseline models. Strong SQL skills are required to work with our product catalog and clickstream data warehouses. We expect around three to five years of experience building and shipping ML models in production. Experience with recommender systems or ranking problems is a plus. This is a mid-level role on our personalization team, reporting to the engineering lead for search and discovery.",
+    "responsibilities": "You will build and iterate on the machine learning models that power product recommendations across our e-commerce platform, primarily using PyTorch for ranking models and scikit-learn for quicker baseline comparisons. You will write SQL to build training datasets from clickstream and purchase history data, run offline evaluations against historical data, and design online experiments to measure impact on conversion and engagement. You will work closely with the search and discovery engineering team to get new model versions into production and monitor their performance after launch.",
+    "construction_rationale": "Grade 1: full core stack, ML Engineer title, and mid seniority all match, but the domain is e-commerce recommendation systems rather than healthcare, one axis (domain) deliberately off."
+  },
+  {
+    "grade": 1,
+    "title": "Machine Learning Engineer",
+    "company": "Harborlight Health",
+    "seniority": "mid",
+    "requirements": "We are looking for a machine learning engineer with strong Python skills and hands-on experience building and training deep learning models in TensorFlow. Strong SQL skills are required to query clinical and operational data from our data warehouse. Candidates should have three to five years of experience developing and deploying machine learning models in production healthcare environments. Experience with patient risk modeling or clinical decision support is a strong plus. This is a mid-level individual-contributor position on our modeling team, working alongside clinical data analysts and product managers.",
+    "responsibilities": "You will build and train TensorFlow models that predict patient risk of adverse clinical events, using structured data drawn from electronic health records. You will write SQL to assemble training and evaluation cohorts from the clinical data warehouse, iterate on model architecture based on offline evaluation results, and work with clinical stakeholders to validate that model predictions align with real-world outcomes. You will also maintain the production inference pipeline that scores new patient records daily and help investigate any unexpected drops in model performance.",
+    "construction_rationale": "Grade 1: ML Engineer title, healthtech domain, and mid seniority all match, but the required deep learning framework is TensorFlow with no PyTorch or scikit-learn mentioned, one axis (core stack: modeling framework) deliberately off."
+  },
+  {
+    "grade": 1,
+    "title": "Machine Learning Engineer",
+    "company": "Carewell Analytics",
+    "seniority": "mid",
+    "requirements": "Carewell Analytics is hiring a machine learning engineer to strengthen our data infrastructure supporting predictive analytics for care management. Strong Python and SQL skills are required, along with experience building and maintaining data pipelines using tools like Airflow. Candidates should have three to five years of experience working on production data and modeling systems within a healthcare or healthtech setting. Experience collaborating with data science teams to productionize their work is important, as is a strong sense of data quality and pipeline reliability. This is a mid-level role on our data platform team.",
+    "responsibilities": "You will build and maintain the data pipelines that feed our care management platform's predictive models, using Python and Airflow to orchestrate data extraction, transformation, and loading from clinical and operational source systems. You will write SQL to validate data quality and catch malformed records before they reach downstream models, and work closely with the data science team to understand what data their models need and in what shape. You will also monitor pipeline health, troubleshoot failures, and improve the reliability and runtime of existing data workflows.",
+    "construction_rationale": "Grade 1: ML Engineer title, healthtech domain, and mid seniority all match, but the role is framed entirely around generic data-pipeline work with no PyTorch or scikit-learn modeling-library specificity, one axis (core stack: modeling evidence) deliberately off."
+  },
+  {
+    "grade": 1,
+    "title": "Senior Machine Learning Engineer",
+    "company": "Meridian Health Systems",
+    "seniority": "senior",
+    "requirements": "We are hiring a senior machine learning engineer with deep expertise in Python and PyTorch, along with strong scikit-learn skills for baseline and ensemble modeling, and excellent SQL for working with large clinical and claims datasets. Candidates should have at least six years of experience, including a demonstrated track record of independently leading model deployments to production at scale, from design through monitoring. Experience mentoring more junior engineers and setting technical direction for a modeling team is required. Deep familiarity with healthcare or healthtech data and the regulatory considerations that come with it is expected.",
+    "responsibilities": "You will lead the design, training, and deployment of machine learning models that drive clinical risk prediction across multiple product lines, using PyTorch and scikit-learn as your primary tools and SQL to work directly with large-scale clinical data warehouses. You will independently own model deployments end to end, from initial design through production monitoring and iteration, without needing close oversight. You will set technical direction for how the team approaches new modeling problems, mentor less experienced engineers on the team, and represent the modeling function in cross-functional planning discussions.",
+    "construction_rationale": "Grade 1: full core stack and healthtech domain match, but seniority is explicitly Senior with independent large-scale deployment leadership expected, one level above Bob's mid, one axis (seniority) deliberately off."
+  },
+  {
+    "grade": 0,
+    "title": "Python Backend Developer",
+    "company": "Corestack Software",
+    "seniority": "mid",
+    "requirements": "We are looking for a backend developer with strong Python skills and hands-on experience building REST APIs using Django or Flask. Experience designing relational database schemas and writing efficient SQL queries against PostgreSQL is required. Familiarity with containerization using Docker and deploying services to cloud infrastructure is a plus. Candidates should have three or more years of professional backend development experience, including building and maintaining production APIs consumed by web and mobile clients. Experience with authentication, API versioning, and writing automated tests for backend services is expected. No machine learning or data science background is required for this role.",
+    "responsibilities": "You will design, build, and maintain REST APIs in Django that power our web and mobile applications, working closely with frontend engineers to define clean API contracts. You will write and optimize SQL queries against our PostgreSQL database, manage database migrations, and ensure our services scale reliably as traffic grows. You will participate in code review, write automated tests for new endpoints, and help troubleshoot production issues when they arise. You will also containerize services with Docker and work with the platform team on deployment pipelines.",
+    "construction_rationale": "Grade 0: wrong stack entirely, a generic Django REST API backend role with zero ML or modeling content despite prominent Python and SQL mentions."
+  },
+  {
+    "grade": 0,
+    "title": "Software Engineer, Python",
+    "company": "Trellis Web Systems",
+    "seniority": "junior",
+    "requirements": "Trellis Web Systems is hiring a software engineer to join our backend team building customer-facing web applications. Strong Python programming skills are required, along with practical experience using Flask or a similar framework to build and maintain REST APIs. Solid SQL skills for working with a relational database are expected, as is experience writing unit and integration tests. Candidates should have at least two years of professional software engineering experience. Familiarity with Git-based workflows and code review practices is expected. This role does not involve machine learning, data science, or predictive modeling work of any kind.",
+    "responsibilities": "You will build and maintain backend services and REST APIs in Python that support our web application, working alongside frontend and product teams to ship new features. You will write SQL queries and manage schema changes for our relational database, write automated tests to keep the codebase reliable, and participate in regular code reviews with the rest of the engineering team. You will also help triage and fix production bugs, contribute to technical design discussions for new features, and improve the performance and maintainability of existing backend code.",
+    "construction_rationale": "Grade 0: wrong stack entirely, a generic Flask REST API backend role with zero ML or modeling content despite prominent Python and SQL mentions."
+  },
+  {
+    "grade": 0,
+    "title": "Technical Support Analyst",
+    "company": "ClearPath Support Services",
+    "seniority": "junior",
+    "requirements": "ClearPath Support Services is looking for a technical support analyst to join our customer support team. Candidates should have strong troubleshooting skills and be comfortable working directly with customers over phone, chat, and email to resolve technical issues. Basic familiarity with SQL is helpful for looking up account and order records when investigating a customer's issue, and some exposure to Python scripting is a plus for automating repetitive diagnostic tasks. Prior experience in a customer-facing support or helpdesk role is required. Strong written communication skills and patience when working through frustrating issues with customers are essential for success in this role.",
+    "responsibilities": "You will handle inbound support tickets from customers experiencing issues with our platform, diagnosing problems and walking customers through solutions over chat, email, and occasional phone calls. You will run simple SQL queries to look up account, order, and transaction records while investigating reported issues, and occasionally use small Python scripts that other team members have written to speed up repetitive diagnostic checks. You will document recurring issues for the product team, escalate bugs that require engineering attention, and help maintain our internal knowledge base of common troubleshooting steps.",
+    "construction_rationale": "Grade 0: unrelated role function, a technical support/helpdesk role with only superficial Python-scripting and SQL mentions, not an engineering or ML role."
+  },
+  {
+    "grade": 0,
+    "title": "Business Intelligence Analyst",
+    "company": "Lumen BI Solutions",
+    "seniority": "junior",
+    "requirements": "Lumen BI Solutions is hiring a business intelligence analyst to support reporting and dashboarding across the company. Strong SQL skills are required for querying and joining data across multiple relational data sources. Experience with Python for lightweight data cleaning and automation of recurring reports is a plus, though most work will be done in our BI tooling rather than in code. Experience building dashboards in tools like Looker, Tableau, or Power BI is required. Candidates should have at least two years of experience in a reporting or analytics role. No machine learning, statistical modeling, or predictive analytics experience is required.",
+    "responsibilities": "You will build and maintain dashboards that give business stakeholders visibility into key operational and financial metrics, writing SQL to pull and join data from several source systems. You will use Python occasionally to clean up messy data exports or automate a recurring report, though the bulk of your day-to-day work happens in our BI tooling rather than in a modeling environment. You will meet with stakeholders across departments to understand their reporting needs, iterate on dashboard design based on feedback, and maintain documentation describing what each report measures and where its data comes from.",
+    "construction_rationale": "Grade 0: different field with coincidental keyword overlap, a BI/reporting role using SQL and Python only for dashboards, no modeling or ML work whatsoever."
+  },
+  {
+    "grade": 0,
+    "title": "Data Analyst",
+    "company": "Insight Metrics Co",
+    "seniority": "junior",
+    "requirements": "Insight Metrics Co is looking for a data analyst to support our operations and marketing teams with regular reporting and ad hoc analysis. Strong SQL skills are required for querying our data warehouse, and familiarity with Python and pandas for data cleaning and lightweight analysis is preferred. Experience building charts and summary reports in spreadsheet tools or a BI platform is expected. Candidates should have one to three years of experience in an analytics or reporting role. Strong attention to detail and the ability to clearly present findings to non-technical stakeholders are important. No machine learning or model-building experience is required for this position.",
+    "responsibilities": "You will write SQL queries against our data warehouse to answer recurring business questions and build reports tracking key operational metrics for the marketing and operations teams. You will use Python and pandas to clean and reshape data for ad hoc analyses when a question can't be answered directly from existing dashboards, and you will build simple visualizations and summary tables to communicate findings clearly. You will meet regularly with stakeholders to understand what questions they need answered, prioritize incoming analysis requests, and keep existing reports up to date as business needs change.",
+    "construction_rationale": "Grade 0: different field with coincidental keyword overlap, a data-analyst reporting role using SQL and Python only for dashboards and ad hoc analysis, no modeling or ML work whatsoever."
+  }
+]

@@ -1,3 +1,4 @@
+import uuid
 from datetime import UTC, datetime, timedelta
 
 import pytest
@@ -18,6 +19,10 @@ def _row(**over: object) -> metrics.JobRow:
         "location": "Remote",
         "job_type": "Full-Time",
         "published_at": _NOW - timedelta(days=10),
+        "company": "Acme",
+        "requirements": "5 years Python",
+        "responsibilities": "Build APIs",
+        "content_hash": str(uuid.uuid4()),
     }
     base.update(over)
     return metrics.JobRow(**base)
@@ -50,6 +55,8 @@ def test_compute_per_source_metrics() -> None:
             location=None,
             job_type=None,
             published_at=_NOW + timedelta(days=1),  # future
+            requirements=None,
+            responsibilities=None,  # extraction failed for this posting
         ),
         _row(
             source="remotive",
@@ -76,14 +83,26 @@ def test_compute_per_source_metrics() -> None:
     assert gh.published_future_pct == 50.0
     assert gh.published_null_pct == 0.0
     assert gh.dev_title_pct == 50.0  # engineer yes, sales no
+    assert gh.extraction_null_pct == 50.0  # only the Sales Manager row
 
     rem = by_source["remotive"]
     assert rem.count == 1
     assert rem.salary_pct == 0.0
     assert rem.published_null_pct == 100.0
     assert rem.dev_title_pct == 100.0
+    assert rem.extraction_null_pct == 0.0
 
     assert by_source["ALL"].count == 3
+
+
+def test_extraction_null_counts_only_when_both_fields_are_empty() -> None:
+    rows = [
+        _row(requirements="", responsibilities=""),  # both empty -> null
+        _row(requirements="present", responsibilities=None),  # one present -> not null
+        _row(requirements=None, responsibilities="present"),  # one present -> not null
+    ]
+    all_row = next(q for q in metrics.compute(rows, now=_NOW) if q.source == "ALL")
+    assert all_row.extraction_null_pct == round(100 / 3, 1)
 
 
 def test_compute_empty_rows_yields_no_all_row() -> None:
@@ -116,6 +135,7 @@ def _quality(source: str, count: int) -> metrics.SourceQuality:
         desc_html_pct=0.0,
         salary_invalid_pct=0.0,
         dev_title_pct=0.0,
+        extraction_null_pct=0.0,
     )
 
 
@@ -143,3 +163,44 @@ def test_merge_attaches_relevance_and_renders() -> None:
     table = cli.render_table(columns)
     assert "greenhouse" in table
     assert "relevance mean" in table
+
+
+def test_duplicate_rate_flags_same_company_title_different_hash() -> None:
+    # Same role, two sources, location string differs enough that content_hash
+    # (company+title+location) didn't collapse them -> a likely-duplicate cluster.
+    rows = [
+        _row(source="greenhouse", company="Acme", title="Backend Engineer", location="Remote"),
+        _row(
+            source="remotive",
+            company="Acme",
+            title="Backend Engineer",
+            location="Remote - US",
+        ),
+        _row(source="greenhouse", company="Other Co", title="Frontend Engineer"),
+    ]
+    # 2 of 3 rows sit in the Acme/Backend Engineer cluster.
+    assert metrics.duplicate_rate(rows) == round(100 * 2 / 3, 1)
+
+
+def test_duplicate_rate_ignores_same_hash_within_a_group() -> None:
+    # content_hash already dedups exact matches at ingest, so a same-hash "group"
+    # never actually reaches this function with >1 row in practice; confirm it's
+    # a no-op if it ever did (nothing to flag — the hash already caught it).
+    same_hash = str(uuid.uuid4())
+    rows = [
+        _row(company="Acme", title="Backend Engineer", content_hash=same_hash),
+        _row(company="Acme", title="Backend Engineer", content_hash=same_hash),
+    ]
+    assert metrics.duplicate_rate(rows) == 0.0
+
+
+def test_duplicate_rate_normalizes_company_and_title_case_and_whitespace() -> None:
+    rows = [
+        _row(company="Acme", title="Backend  Engineer"),
+        _row(company="  acme", title="backend engineer"),
+    ]
+    assert metrics.duplicate_rate(rows) == 100.0
+
+
+def test_duplicate_rate_empty_corpus_is_zero() -> None:
+    assert metrics.duplicate_rate([]) == 0.0

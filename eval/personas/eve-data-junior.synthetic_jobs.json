@@ -1,0 +1,182 @@
+[
+  {
+    "grade": 3,
+    "title": "Junior Data Engineer",
+    "company": "Groundwell Grocers",
+    "seniority": "junior",
+    "requirements": "We're looking for a junior data engineer to join our small analytics platform team supporting grocery retail operations. You should be comfortable writing SQL for everyday reporting and ad hoc questions from merchandising and store ops. Proficiency in Python for scripting and light ETL work is expected. Experience with dbt for building and testing transformation models is required, even if gained through coursework, internships, or personal projects. Familiarity with Airflow or a similar orchestration tool for scheduling pipelines is a must. This is an entry-level role: 0-2 years of professional experience is fine, and we're happy to mentor someone early in their data career. A degree in computer science, data science, or a related field is preferred but not mandatory.",
+    "responsibilities": "You will build and maintain dbt models that power weekly sales and inventory dashboards used by store planning and merchandising teams. You'll write and maintain Airflow DAGs that move point-of-sale and inventory data from source systems into our warehouse on a nightly schedule. Day to day, you'll troubleshoot failed pipeline runs, add data-quality tests to catch bad joins or duplicate records before they reach dashboards, and respond to SQL questions from category managers. You'll pair with a senior engineer on larger schema changes and gradually take ownership of specific pipelines as you ramp up. Some weeks include documenting existing pipelines so other teams can self-serve basic queries.",
+    "construction_rationale": "Grade 3: exact title/level match, full core stack (SQL, Python, dbt, Airflow), grocery-retail domain, junior seniority \u2014 squarely the role Eve searches for."
+  },
+  {
+    "grade": 3,
+    "title": "Data Engineer I",
+    "company": "Threadline Apparel Co.",
+    "seniority": "junior",
+    "requirements": "Threadline is hiring a Data Engineer I to support our fashion e-commerce data platform. Candidates need solid SQL skills for querying and validating data across our order, inventory, and customer tables, plus working Python skills for scripting transformations and light automation. Hands-on experience with dbt, including writing models and tests, is required. Experience scheduling and monitoring jobs with Airflow is also required. This is a Level I role intended for engineers early in their career, roughly 1-2 years of relevant experience, including internships. We value curiosity and a willingness to learn our stack over years of tenure. Retail or e-commerce industry exposure is a plus but not required.",
+    "responsibilities": "In this role you will maintain dbt models that transform raw order and inventory events into clean tables used by demand planning and marketing analytics. You will write Airflow DAGs to orchestrate daily ingestion from our e-commerce platform and third-party logistics feeds, and monitor those DAGs for failures. You'll write SQL to investigate data discrepancies flagged by business stakeholders and fix root causes in the transformation layer. You will also contribute to dbt test coverage so that seasonal sales spikes don't silently break downstream reports. Expect to work closely with a senior data engineer who reviews your pull requests and helps you scope larger projects.",
+    "construction_rationale": "Grade 3: entry-level Data Engineer I title, full core stack (SQL, Python, dbt, Airflow), fashion e-commerce domain, junior seniority."
+  },
+  {
+    "grade": 3,
+    "title": "Associate Data Engineer",
+    "company": "Marketway Exchange",
+    "seniority": "junior",
+    "requirements": "Marketway operates an online marketplace connecting independent sellers with shoppers, and we're hiring an Associate Data Engineer for our data platform team. You'll need strong SQL skills for exploring transactional and catalog data, and working knowledge of Python for pipeline scripting. dbt experience is required, including building models and writing tests. You should also have hands-on experience with Airflow for scheduling and monitoring workflows. We expect candidates to have around one to two years of experience, whether from a prior junior role, internship, or bootcamp plus project work. This role reports to a senior data engineer and is designed as a growth path toward more autonomous ownership over time.",
+    "responsibilities": "You will build dbt models that transform raw marketplace transaction and listing data into tables used by seller-payout and demand-forecasting teams. You will write and maintain Airflow DAGs that pull data from our order and seller APIs on a daily cadence, and you'll be the first responder when a DAG fails overnight. Using SQL, you'll investigate anomalies such as missing seller payouts or mismatched order counts and propose fixes. You will add dbt tests to guard against these issues recurring. You'll also help document data lineage for new tables so analysts across the company can trust and reuse them.",
+    "construction_rationale": "Grade 3: Associate Data Engineer is a synonym junior title, full core stack present, online marketplace (e-commerce) domain, junior seniority."
+  },
+  {
+    "grade": 3,
+    "title": "jr. data engineer (retail data team)",
+    "company": "Basket & Co",
+    "seniority": "junior",
+    "requirements": "hey! we're basket & co, a scrappy online grocery delivery startup, and we need a jr. data engineer to help us keep our data pipelines from falling over. you should know sql well enough to debug a gnarly join at 2am (kidding, we don't do that, but you get the idea), and be comfortable writing python for glue scripts. we build everything in dbt so you'll need real hands-on experience there, not just \"i read about it once.\" airflow runs our whole pipeline schedule so you should know your way around dags, sensors, and retries. we're not fussy about years of experience, more about whether you can actually ship things. 0-2 years is the sweet spot. bonus points if you've worked on anything retail or e-commerce flavored before.",
+    "responsibilities": "day to day you'll be building and fixing dbt models that turn our raw order and delivery data into stuff the ops team actually trusts. you'll write airflow dags to pull inventory feeds from our warehouse partners every night and page yourself (well, us) when something breaks. you'll spend a good chunk of time writing sql to chase down why a dashboard number looks wrong, then fixing it upstream instead of patching it downstream. you'll add tests in dbt so the same bug doesn't come back next sprint. you'll pair with our one senior engineer pretty often at first, less so as you get comfortable owning your own pipelines.",
+    "construction_rationale": "Grade 3: startup-casual register, junior title, full core stack (SQL, Python, dbt, Airflow), online grocery delivery domain, junior seniority."
+  },
+  {
+    "grade": 3,
+    "title": "Data Engineer, Entry Level",
+    "company": "Northfield Home Retail",
+    "seniority": "junior",
+    "requirements": "Northfield Home Retail, an omnichannel home goods retailer, seeks an entry-level Data Engineer to join our analytics engineering group. The successful candidate will demonstrate proficiency in SQL for data exploration and validation, and working knowledge of Python for pipeline development and automation tasks. Experience building transformation models and tests in dbt is required. Familiarity with orchestrating and monitoring data workflows in Airflow is required. This position is aimed at candidates in the early stage of their career, typically zero to two years post-graduation, including relevant internship experience. Exposure to retail, e-commerce, or supply chain data is preferred. A bachelor's degree in a quantitative field is preferred but relevant project experience will also be considered.",
+    "responsibilities": "The Data Engineer will develop and maintain dbt models that transform point-of-sale, e-commerce, and inventory data into curated tables for merchandising and finance reporting. Daily tasks include monitoring Airflow DAGs that ingest data from store systems and our e-commerce platform, resolving failed tasks, and escalating persistent issues. The role involves writing SQL queries to validate data accuracy after upstream schema changes and building automated tests in dbt to catch regressions early. The engineer will collaborate with senior team members on pipeline design decisions and will gradually take on independent ownership of specific data domains as proficiency grows.",
+    "construction_rationale": "Grade 3: formal register, entry-level title, full core stack, omnichannel home-goods retail domain, junior seniority."
+  },
+  {
+    "grade": 2,
+    "title": "Data Analyst",
+    "company": "Cascade Outfitters",
+    "seniority": "junior",
+    "requirements": "Cascade Outfitters, an outdoor apparel retailer, is looking for a Data Analyst to support our merchandising and marketing teams. Strong SQL skills are essential for querying our warehouse and building recurring reports. Working proficiency in Python is expected for data cleaning and lightweight automation of recurring analyses. Experience with dbt is a plus, as our small analytics team uses it for shared transformation logic, but it is not a strict requirement if you're a fast learner. Comfort with pandas for exploratory analysis is expected. Candidates typically have zero to three years of experience in an analyst or junior data role. Familiarity with retail sales or inventory data is helpful.",
+    "responsibilities": "You will write SQL queries to answer recurring business questions from merchandising and marketing stakeholders, such as sell-through rates by category or campaign performance. You'll use Python and pandas to clean and reshape data pulled from our warehouse before building reports. You will occasionally contribute simple dbt models when the analytics engineering team needs an extra pair of hands, under their guidance. You'll present findings in weekly syncs with merchandising, and maintain a handful of recurring SQL-based reports. Over time you may take on small automation projects to reduce manual reporting work.",
+    "construction_rationale": "Grade 2: adjacent title (Data Analyst, no 'junior' qualifier) with entry-level scope, most of core stack (dbt only a nice-to-have, no Airflow ownership), retail domain, junior/mid band."
+  },
+  {
+    "grade": 2,
+    "title": "Analytics Engineer",
+    "company": "Portside Distribution",
+    "seniority": "junior",
+    "requirements": "Portside is hiring an Analytics Engineer to help build out our data transformation layer. We're looking for someone comfortable writing SQL for both analysis and transformation logic, with experience in dbt for building and testing models. Python skills are expected for occasional scripting, though most day-to-day work happens in SQL and dbt. This role does not directly own our orchestration layer; a separate platform team manages Airflow, so prior Airflow experience is nice to have but not required. We're open to candidates with one to three years of experience, including those coming from an analyst background who want to move toward engineering. Any prior exposure to retail, logistics, or supply chain data is a plus.",
+    "responsibilities": "You will design and build dbt models that transform raw operational data into analysis-ready tables for the finance and operations teams. You'll write SQL to validate transformation logic and investigate discrepancies reported by stakeholders. You will collaborate with the platform team to understand how your dbt models fit into the broader Airflow-orchestrated pipeline, occasionally proposing scheduling changes to them rather than implementing those changes yourself. You'll document model logic and column definitions so downstream analysts can self-serve. You'll also review pull requests from other analytics engineers on the team as you gain experience.",
+    "construction_rationale": "Grade 2: adjacent title (Analytics Engineer), core stack minus Airflow (owned by a separate platform team), domain unstated/adjacent (logistics/supply chain), junior-to-mid band."
+  },
+  {
+    "grade": 2,
+    "title": "Junior Data Analyst / Data Engineer",
+    "company": "Harborlight Retail Group",
+    "seniority": "mid",
+    "requirements": "Harborlight Retail Group is hiring for a hybrid data analyst / data engineer position supporting our store operations and e-commerce reporting. You should have strong SQL skills and comfort with Python for scripting and data manipulation, including pandas for exploratory work. Experience with dbt for transformation modeling is expected, though we're flexible on depth if your SQL and Python fundamentals are strong. This role does not touch our Airflow scheduling directly, since a central data platform team owns orchestration; you'll instead request pipeline changes through them. Candidates should have roughly two to four years of experience across analyst and engineering-adjacent roles. Retail sales, inventory, or customer data experience is a plus.",
+    "responsibilities": "You will split your time between ad hoc SQL analysis for store operations leadership and building dbt models to formalize recurring reporting logic. You'll use Python and pandas for one-off data cleaning tasks and small automation scripts that save the team manual work. When existing pipelines produce unexpected results, you'll investigate using SQL and coordinate with the platform team on any needed changes to scheduled jobs. You will also help maintain documentation for the growing library of dbt models the team has built, and mentor newer analysts on writing cleaner SQL.",
+    "construction_rationale": "Grade 2: adjacent hybrid title without 'junior' qualifier, core stack minus Airflow (central team owns orchestration), retail domain, seniority bumped to mid (still within accepted band)."
+  },
+  {
+    "grade": 2,
+    "title": "Junior Data Engineer",
+    "company": "Solace Wellness Retail",
+    "seniority": "junior",
+    "requirements": "Solace Wellness Retail is looking for a Junior Data Engineer to join our small but growing data team. You'll need strong SQL skills for querying and validating data, plus Python experience for building lightweight ETL scripts and automation. We use dbt lightly today and are actively expanding our usage, so prior dbt exposure is a plus but a fast learner without direct dbt experience will still be considered. Airflow experience is required, since our nightly pipelines all run through it and you'll be responsible for keeping them healthy. This is a true entry-level opening: zero to two years of experience is expected, and we're happy to train the right person on our specific stack.",
+    "responsibilities": "You will write and maintain Airflow DAGs that move sales, subscription, and inventory data into our warehouse each night, and you'll be the first line of defense when a DAG fails. You'll write SQL to investigate and resolve data quality issues flagged by the customer success and finance teams. As we expand our dbt usage, you'll help migrate a handful of legacy SQL scripts into dbt models under guidance from a contractor who set up our initial dbt project. You'll also build small Python scripts to automate recurring manual data pulls for the finance team.",
+    "construction_rationale": "Grade 2: exact junior title but core stack minus dbt (only lightly used, still developing), retail/wellness domain, junior seniority."
+  },
+  {
+    "grade": 2,
+    "title": "Data Engineer",
+    "company": "Fenwick Digital Goods",
+    "seniority": "junior",
+    "requirements": "Fenwick, a digital marketplace for downloadable creative assets, is hiring a Data Engineer for our small data team. You should be proficient in SQL for querying and Python for pipeline development. Experience with Airflow is required, as it orchestrates all of our scheduled data jobs. We're currently evaluating dbt for our transformation layer but haven't adopted it company-wide yet, so dbt experience is a nice-to-have rather than a requirement; strong SQL-based transformation skills are an acceptable substitute for now. Candidates should have zero to two years of experience in a data engineering or closely related role. We're a digital goods marketplace, not physical retail, though our data problems (catalog, transactions, fulfillment) will feel familiar to anyone from an e-commerce background.",
+    "responsibilities": "You will build and maintain Airflow DAGs that ingest transaction and catalog data from our marketplace platform into the warehouse nightly. You'll write SQL-based transformation scripts to shape raw data into tables used by finance and product analytics, since our dbt adoption is still in progress. You'll troubleshoot pipeline failures and investigate data quality issues raised by stakeholders. As we roll out dbt more broadly this year, you'll help port some of these SQL scripts into dbt models alongside a senior engineer leading that migration.",
+    "construction_rationale": "Grade 2: exact title match but core stack minus dbt (not yet adopted, SQL substitutes), digital-goods e-commerce domain (adjacent to physical retail), junior seniority."
+  },
+  {
+    "grade": 1,
+    "title": "Junior Data Engineer",
+    "company": "Waypoint Freight Systems",
+    "seniority": "junior",
+    "requirements": "Waypoint Freight Systems, a logistics and freight brokerage company, is hiring a Junior Data Engineer for our data platform team. You should have strong SQL skills for querying shipment and carrier data, and working Python skills for pipeline scripting. Experience with dbt for building and testing transformation models is required. Familiarity with Airflow for scheduling and monitoring data workflows is also required. This is an entry-level position suited to candidates with zero to two years of experience, including relevant internships. Prior exposure to logistics, freight, or supply chain data is a plus but not required; we're happy to onboard someone whose experience comes from a different industry.",
+    "responsibilities": "You will build and maintain dbt models that transform raw shipment tracking and carrier billing data into tables used by operations and finance teams. You will write Airflow DAGs to ingest data from carrier APIs and EDI feeds on a daily schedule, and monitor those pipelines for failures. Using SQL, you'll investigate discrepancies between expected and actual shipment counts and fix root causes in the transformation layer. You'll add dbt tests to catch data quality issues before they reach downstream dashboards, and pair with a senior engineer on larger pipeline redesigns.",
+    "construction_rationale": "Grade 1 domain-adjacent: full core stack and junior seniority match, but the domain is logistics/freight brokerage instead of retail/e-commerce \u2014 one axis (domain) off."
+  },
+  {
+    "grade": 1,
+    "title": "Junior Data Engineer",
+    "company": "Ledgerline Financial",
+    "seniority": "junior",
+    "requirements": "Ledgerline Financial, a consumer fintech company, is hiring a Junior Data Engineer to support our data infrastructure. You should have strong SQL skills for querying transactional and account data, and solid Python skills for pipeline development. Experience with dbt for transformation modeling and testing is required. Familiarity with Airflow for orchestrating scheduled jobs is also required. We're looking for candidates with zero to two years of experience, whether from a prior junior role, internship, or strong personal project portfolio. No prior fintech experience is necessary; we provide domain training on financial data handling and compliance basics during onboarding.",
+    "responsibilities": "You will build and maintain dbt models that transform raw transaction and account event data into tables used by risk and product analytics teams. You will write Airflow DAGs to orchestrate nightly ingestion from our core banking partner APIs and monitor them for failures. You'll use SQL to investigate data discrepancies flagged by the risk team and fix issues in the transformation layer. You'll add dbt tests to guard against regressions, particularly around balance and transaction reconciliation logic, and work closely with a senior engineer who reviews your changes before they reach production.",
+    "construction_rationale": "Grade 1 domain-adjacent: full core stack and junior seniority match, but the domain is consumer fintech instead of retail/e-commerce \u2014 one axis (domain) off, a different alternate vertical than the freight posting."
+  },
+  {
+    "grade": 1,
+    "title": "Junior Data Engineer (Reporting & Dashboards)",
+    "company": "Brightaisle Retail",
+    "seniority": "junior",
+    "requirements": "Brightaisle Retail is looking for a Junior Data Engineer focused on reporting and dashboarding for our e-commerce and in-store business. You should have strong SQL skills for querying our data warehouse and building efficient queries behind dashboards. Hands-on experience with Looker, including building LookML models and explores, is required. Some Python experience for occasional data cleaning is a plus. This is an entry-level role suited to candidates with zero to two years of experience in a reporting, BI, or junior data role. Retail or e-commerce reporting experience is a plus. Experience with data pipeline tools is not required for this role, as our upstream data is prepared by a separate engineering team.",
+    "responsibilities": "You will build and maintain Looker dashboards used by merchandising, marketing, and store operations teams to track sales, inventory, and campaign performance. You'll write SQL queries and LookML to model warehouse data for self-service reporting. You'll respond to ad hoc requests from business stakeholders for new metrics or dashboard views, and troubleshoot cases where a dashboard number looks wrong by tracing it back through the SQL. You will maintain a shared library of Looker explores and provide light training to non-technical stakeholders on using them. You do not own or modify the upstream data pipelines that feed the warehouse.",
+    "construction_rationale": "Grade 1 skill-missing: title, retail/e-commerce domain, and junior seniority all match, but the role is BI/dashboard-focused around Looker with no dbt or Airflow \u2014 one key skill axis (pipeline stack) off."
+  },
+  {
+    "grade": 1,
+    "title": "Junior Data & Reporting Analyst",
+    "company": "Millhaven General Store Co.",
+    "seniority": "junior",
+    "requirements": "Millhaven General Store Co. is hiring a Junior Data & Reporting Analyst to support weekly and monthly business reporting across our retail locations. Strong Excel skills, including pivot tables, lookups, and dashboard-style workbooks, are required. Working knowledge of SQL for pulling data from our point-of-sale system is required. Familiarity with Tableau for building shareable dashboards is a strong plus. This is an entry-level position, zero to two years of experience, well suited to a recent graduate comfortable with numbers and spreadsheets. No experience with data pipeline or orchestration tools is expected for this role, as our IT team handles data extraction and loading.",
+    "responsibilities": "You will build and maintain weekly sales and inventory reports in Excel and Tableau for store managers and regional leadership. You'll write basic SQL queries to pull data from our point-of-sale system when a report requires a custom cut of data. You will consolidate data from multiple store locations into a single reporting workbook, checking for and correcting obvious data entry errors along the way. You'll respond to requests from store managers for one-off analyses, such as comparing promotion performance across regions. You will occasionally present summary findings in monthly operations meetings.",
+    "construction_rationale": "Grade 1 skill-missing: retail domain and junior/entry level match, but the role centers on Excel/Tableau spreadsheet-heavy reporting instead of a real data pipeline, with no dbt or Airflow \u2014 same skill-missing axis as the Looker posting, different angle."
+  },
+  {
+    "grade": 1,
+    "title": "Data Engineer",
+    "company": "Hearthstone Home & Garden",
+    "seniority": "mid",
+    "requirements": "Hearthstone Home & Garden, a home improvement retailer with both physical stores and an online storefront, is hiring a Data Engineer to own key parts of our data platform. Strong SQL and Python skills are required. Deep hands-on experience with dbt, including designing model layers and writing comprehensive tests, is required. Solid experience with Airflow, including designing DAGs from scratch and handling complex dependencies, is required. We're looking for candidates with three to five years of experience who can operate independently: you should be able to take a pipeline from initial design through production ownership with minimal oversight. Retail or e-commerce data experience is preferred.",
+    "responsibilities": "You will independently design, build, and own dbt models that transform point-of-sale, e-commerce, and supply chain data into tables used across the company. You will design and maintain Airflow DAGs for complex multi-source pipelines, making architectural decisions about dependencies, retries, and backfills without needing sign-off from a more senior engineer. You'll use SQL to diagnose and resolve data issues end to end, from root cause to production fix. You will set technical direction for how new data sources get modeled, and you'll be expected to work with minimal supervision, escalating only genuinely ambiguous business questions rather than technical ones.",
+    "construction_rationale": "Grade 1 off-by-one seniority: full core stack and retail/home-improvement domain match exactly, but seniority is explicitly mid (one level above Eve, still within her accepted retrieval range) and asks for unsupervised end-to-end pipeline ownership."
+  },
+  {
+    "grade": 0,
+    "title": "Junior Frontend Engineer",
+    "company": "Pixelloop Studios",
+    "seniority": "junior",
+    "requirements": "Pixelloop Studios is hiring a Junior Frontend Engineer to help build our consumer-facing web app. You should have solid experience with JavaScript and TypeScript, and hands-on experience with React for building UI components. Familiarity with CSS and responsive design principles is required. Experience with REST or GraphQL APIs for consuming backend data is expected. This is an entry-level role for candidates with zero to two years of professional experience, including internships or significant personal projects. Comfort with Git and collaborative code review workflows is required. No backend or data engineering experience is necessary for this role.",
+    "responsibilities": "You will build and maintain UI components in React for our consumer web app, working closely with designers to implement pixel-accurate layouts. You'll write TypeScript to wire up frontend state management and connect components to backend APIs. You will fix bugs reported by QA and users, and contribute to our component library used across multiple product surfaces. You'll participate in code review, both giving and receiving feedback on pull requests. You will occasionally pair with backend engineers to define API contracts for new features, but you will not be working with data pipelines or warehouses.",
+    "construction_rationale": "Grade 0 wrong stack: 'Junior' and 'Engineer' in the title but frontend/React/JavaScript stack with none of Eve's data stack (SQL, Python, dbt, Airflow) \u2014 multiple axes wrong."
+  },
+  {
+    "grade": 0,
+    "title": "Mobile Engineering Intern",
+    "company": "Loopstitch Apps",
+    "seniority": "intern",
+    "requirements": "Loopstitch Apps is looking for a Mobile Engineering Intern to join our small iOS team for a summer internship. You should have experience with Swift and a basic understanding of iOS app architecture patterns like MVVM. Familiarity with Xcode and Git is required. Some exposure to REST APIs for fetching app data is helpful. This internship is open to current students or recent graduates and requires no prior professional experience, just a solid grasp of mobile development fundamentals from coursework or personal apps. No knowledge of SQL, data pipelines, or backend data systems is required for this role.",
+    "responsibilities": "You will work on small, well-scoped features for our iOS app under the guidance of a mentor engineer, such as improving an onboarding flow or fixing UI bugs. You'll write Swift code following our existing architecture patterns and submit changes through code review. You will help write unit tests for the features you build. You'll participate in daily standups with the mobile team and present your work at the end of the internship. This role is focused entirely on the mobile app layer and does not involve working with our data or analytics systems.",
+    "construction_rationale": "Grade 0 wrong stack: 'Engineer' internship title but iOS/Swift mobile stack with none of Eve's data stack, and explicitly no SQL or data pipeline knowledge required \u2014 multiple axes wrong."
+  },
+  {
+    "grade": 0,
+    "title": "Merchandising Coordinator",
+    "company": "Rowan & Birch Retail",
+    "seniority": "junior",
+    "requirements": "Rowan & Birch Retail is hiring a Merchandising Coordinator to support our category management team. Strong organizational skills and attention to detail are essential. Comfortable with spreadsheets and basic SQL is a plus, as you'll occasionally pull simple reports from our reporting tool, but deep technical skill is not the focus of this role. Experience coordinating with vendors, tracking purchase orders, and maintaining product catalog listings is preferred. This role suits candidates with zero to two years of experience in retail operations, merchandising, or a related coordination role. Strong communication skills for working with buyers, vendors, and store teams are required.",
+    "responsibilities": "You will coordinate the intake and setup of new products into our merchandising system, working with vendors to confirm pricing, packaging, and delivery timelines. You'll maintain purchase order trackers and follow up with vendors on delays or discrepancies. You will occasionally pull simple sales reports using our internal reporting tool to help buyers make restocking decisions. You'll assist with seasonal planning by compiling product assortment lists and updating catalog information. Most of your day is spent on vendor coordination, email communication, and administrative upkeep of merchandising systems rather than any technical data work.",
+    "construction_rationale": "Grade 0 unrelated function: mentions spreadsheets and basic SQL superficially, but the job is in-store merchandising/vendor coordination, not data engineering \u2014 wrong role function despite retail domain."
+  },
+  {
+    "grade": 0,
+    "title": "Senior Data Engineer",
+    "company": "Cobblestone Retail Group",
+    "seniority": "senior",
+    "requirements": "Cobblestone Retail Group is hiring a Senior Data Engineer to lead the evolution of our retail data platform. Expert-level SQL and Python skills are required. Deep, extensive experience with dbt, including establishing modeling standards and mentoring others, is required. Extensive experience architecting and operating Airflow at scale, including custom operators and complex DAG dependency management, is required. We require a minimum of five years of experience in data engineering, with a track record of leading platform initiatives and setting technical direction. Retail or e-commerce domain experience is strongly preferred. This role will mentor junior engineers and represent the data platform in cross-functional planning.",
+    "responsibilities": "You will lead the architecture and long-term roadmap for our dbt and Airflow-based data platform, setting standards that other engineers follow. You will design and review complex Airflow DAGs spanning dozens of interdependent data sources, and make final calls on architectural tradeoffs. You'll use SQL and Python to solve the hardest data quality and performance problems on the team, often ones other engineers have escalated to you. You will mentor junior and mid-level data engineers, reviewing their pull requests and helping them grow. You'll represent the data platform team in planning discussions with senior leadership across merchandising, finance, and engineering.",
+    "construction_rationale": "Grade 0 seniority-gated: Eve's exact stack and retail domain, but seniority is explicitly senior with a 5+ years / platform-leadership requirement \u2014 outside a junior candidate's retrieval range (junior+1 = mid at most)."
+  },
+  {
+    "grade": 0,
+    "title": "Staff Data Engineer",
+    "company": "Ridgemont Retail Holdings",
+    "seniority": "staff",
+    "requirements": "Ridgemont Retail Holdings is hiring a Staff Data Engineer to set technical direction across our entire retail data organization. Expert SQL and Python skills are required, along with deep architectural experience in dbt and Airflow spanning multiple teams and dozens of pipelines. You should have a track record of leading company-wide data platform initiatives, not just owning individual pipelines. A minimum of eight years of experience in data engineering is required, including experience influencing technical strategy at the organization level and mentoring senior and mid-level engineers. Retail or e-commerce domain experience across multiple business units is strongly preferred.",
+    "responsibilities": "You will set the technical vision for data engineering across all of Ridgemont's retail business units, working with multiple teams that each own their own dbt and Airflow pipelines. You will define company-wide standards for data modeling, testing, and orchestration, and drive adoption across teams that don't currently follow them. You'll use SQL and Python to diagnose the most complex, cross-team data issues, and you'll be the final escalation point when other senior engineers are stuck. You will mentor senior and staff-track engineers, and represent data engineering in executive planning conversations about platform investment.",
+    "construction_rationale": "Grade 0 seniority-gated: Eve's exact stack and retail domain, but seniority is explicitly staff with an 8+ years / org-wide technical leadership requirement \u2014 even further outside a junior candidate's retrieval range than the senior posting."
+  }
+]

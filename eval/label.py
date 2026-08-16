@@ -82,10 +82,10 @@ def _show_job(job: Job, seed_grade: int | None, current_grade: int | None = None
 
 async def _already_labeled_ids(session: AsyncSession, profile_id: UUID) -> set[UUID]:
     rows = (
-        await session.execute(
-            select(EvalLabel.job_id).where(EvalLabel.profile_id == profile_id)
-        )
-    ).scalars().all()
+        (await session.execute(select(EvalLabel.job_id).where(EvalLabel.profile_id == profile_id)))
+        .scalars()
+        .all()
+    )
     return set(rows)
 
 
@@ -114,7 +114,7 @@ async def _prompt_grade(job: Job, seed_grade: int | None) -> tuple[int, str] | N
         print("  Enter 0, 1, 2, 3, s, or q.")
 
 
-async def _upsert_label(
+async def upsert_label(
     session: AsyncSession,
     profile_id: UUID,
     job_id: UUID,
@@ -123,13 +123,17 @@ async def _upsert_label(
     notes: str | None = None,
 ) -> None:
     existing = (
-        await session.execute(
-            select(EvalLabel).where(
-                EvalLabel.profile_id == profile_id,
-                EvalLabel.job_id == job_id,
+        (
+            await session.execute(
+                select(EvalLabel).where(
+                    EvalLabel.profile_id == profile_id,
+                    EvalLabel.job_id == job_id,
+                )
             )
         )
-    ).scalars().first()
+        .scalars()
+        .first()
+    )
 
     if existing is not None:
         existing.label = str(grade)
@@ -188,7 +192,7 @@ async def _label_jobs(
             if grade is None:
                 print(f"  [skip] {job.title} @ {job.company} — analyze_fit failed")
                 continue
-            await _upsert_label(session, profile.id, job.id, grade, labeled_by)
+            await upsert_label(session, profile.id, job.id, grade, labeled_by)
             count += 1
             print(f"  [{count}/{len(pending)}] {job.title} @ {job.company} → grade {grade}")
         return count
@@ -213,7 +217,7 @@ async def _label_jobs(
             print("  Skipped.")
             continue
 
-        await _upsert_label(session, profile.id, job.id, grade, labeled_by, notes or None)
+        await upsert_label(session, profile.id, job.id, grade, labeled_by, notes or None)
         count += 1
         print(f"  Saved grade {grade}.")
 
@@ -226,10 +230,10 @@ async def _review_labels(
     labeled_by: str,
 ) -> int:
     labels = (
-        await session.execute(
-            select(EvalLabel).where(EvalLabel.profile_id == profile.id)
-        )
-    ).scalars().all()
+        (await session.execute(select(EvalLabel).where(EvalLabel.profile_id == profile.id)))
+        .scalars()
+        .all()
+    )
 
     if not labels:
         print("No labeled jobs found for this profile.")
@@ -238,17 +242,14 @@ async def _review_labels(
     job_ids = [lbl.job_id for lbl in labels]
     jobs_by_id: dict[UUID, Job] = {
         j.id: j
-        for j in (
-            await session.execute(select(Job).where(Job.id.in_(job_ids)))
-        ).scalars().all()
+        for j in (await session.execute(select(Job).where(Job.id.in_(job_ids)))).scalars().all()
     }
     grade_by_job: dict[UUID, int] = {
         lbl.job_id: int(lbl.label) for lbl in labels if lbl.label.isdigit()
     }
 
     print(
-        f"\nReviewing {len(labels)} labeled jobs."
-        " Enter to keep current grade, or type a new one.\n"
+        f"\nReviewing {len(labels)} labeled jobs. Enter to keep current grade, or type a new one.\n"
     )
     changed = 0
     for lbl in labels:
@@ -276,7 +277,7 @@ async def _review_labels(
             if raw in {"0", "1", "2", "3"}:
                 new_grade = int(raw)
                 if new_grade != current:
-                    await _upsert_label(session, profile.id, job.id, new_grade, labeled_by)
+                    await upsert_label(session, profile.id, job.id, new_grade, labeled_by)
                     changed += 1
                     print(f"  Updated: {current} → {new_grade}")
                 else:
@@ -289,7 +290,9 @@ async def _review_labels(
 
 
 async def _load_profile(session: AsyncSession) -> Profile | None:
-    return (await session.execute(select(Profile))).scalars().first()
+    return (
+        (await session.execute(select(Profile).where(Profile.source == "real"))).scalars().first()
+    )
 
 
 async def _run(args: argparse.Namespace) -> None:
@@ -310,18 +313,18 @@ async def _run(args: argparse.Namespace) -> None:
 
         # Union pool from all three system configs so labels cover the full
         # relevant document space, not just what one config surfaces (pool bias).
-        print(
-            f"Building union pool from 3 retrieval configs (pool={args.pool} each) …"
-        )
+        print(f"Building union pool from 3 retrieval configs (pool={args.pool} each) …")
         pool_configs = [
             SearchConfig(arms=["lexical", "hyde"], pool=args.pool, limit=args.pool),
             SearchConfig(arms=["hyde"], pool=args.pool, limit=args.pool),
             SearchConfig(arms=["lexical"], pool=args.pool, limit=args.pool),
         ]
-        pool_runs = await asyncio.gather(*[
-            build_run(session, profile, cfg, query=lexical_q, hyde_embedding=hyde_embedding)
-            for cfg in pool_configs
-        ])
+        pool_runs = await asyncio.gather(
+            *[
+                build_run(session, profile, cfg, query=lexical_q, hyde_embedding=hyde_embedding)
+                for cfg in pool_configs
+            ]
+        )
         run_scores: dict[UUID, float] = {}
         for pr in pool_runs:
             for jid, score in pr.items():
@@ -337,9 +340,9 @@ async def _run(args: argparse.Namespace) -> None:
         ranked_ids = sorted(run_scores, key=lambda jid: -run_scores[jid])
         jobs_by_id: dict[UUID, Job] = {
             j.id: j
-            for j in (
-                await session.execute(select(Job).where(Job.id.in_(ranked_ids)))
-            ).scalars().all()
+            for j in (await session.execute(select(Job).where(Job.id.in_(ranked_ids))))
+            .scalars()
+            .all()
         }
         jobs = [jobs_by_id[jid] for jid in ranked_ids if jid in jobs_by_id]
 

@@ -59,10 +59,10 @@ async def _main(run_path: Path) -> None:
         from uuid import UUID
 
         profile = (
-            await session.execute(
-                select(Profile).where(Profile.id == UUID(profile_id_str))
-            )
-        ).scalars().first()
+            (await session.execute(select(Profile).where(Profile.id == UUID(profile_id_str))))
+            .scalars()
+            .first()
+        )
         if profile is None:
             raise RuntimeError(
                 f"Profile {profile_id_str} not found in DB. "
