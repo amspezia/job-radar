@@ -46,7 +46,7 @@ def _make_client(captured: dict, client_cls: type = _FakeClient):
 
 async def test_generate_parses_the_schema(monkeypatch: pytest.MonkeyPatch) -> None:
     captured: dict = {}
-    monkeypatch.setattr("job_radar.adapters.generation.httpx.AsyncClient", _make_client(captured))
+    monkeypatch.setattr("job_radar.adapters.providers.httpx.AsyncClient", _make_client(captured))
 
     result = await generate("a prompt", _Schema)
 
@@ -55,7 +55,7 @@ async def test_generate_parses_the_schema(monkeypatch: pytest.MonkeyPatch) -> No
 
 async def test_generate_sends_schema_constrained_format(monkeypatch: pytest.MonkeyPatch) -> None:
     captured: dict = {}
-    monkeypatch.setattr("job_radar.adapters.generation.httpx.AsyncClient", _make_client(captured))
+    monkeypatch.setattr("job_radar.adapters.providers.httpx.AsyncClient", _make_client(captured))
 
     await generate("a prompt", _Schema)
 
@@ -67,7 +67,7 @@ async def test_generate_sends_schema_constrained_format(monkeypatch: pytest.Monk
 
 async def test_generate_uses_explicit_model_over_default(monkeypatch: pytest.MonkeyPatch) -> None:
     captured: dict = {}
-    monkeypatch.setattr("job_radar.adapters.generation.httpx.AsyncClient", _make_client(captured))
+    monkeypatch.setattr("job_radar.adapters.providers.httpx.AsyncClient", _make_client(captured))
 
     await generate("a prompt", _Schema, model="custom-model")
 
@@ -90,7 +90,7 @@ async def test_generate_raises_truncated_generation_on_length_limit(
 
     captured: dict = {}
     monkeypatch.setattr(
-        "job_radar.adapters.generation.httpx.AsyncClient",
+        "job_radar.adapters.providers.httpx.AsyncClient",
         _make_client(captured, _TruncatingClient),
     )
 
@@ -113,7 +113,7 @@ async def test_generate_retries_transient_failure_then_succeeds(
             return await super().post(url, json)
 
     monkeypatch.setattr(
-        "job_radar.adapters.generation.httpx.AsyncClient",
+        "job_radar.adapters.providers.httpx.AsyncClient",
         _make_client({}, _FlakyClient),
     )
 

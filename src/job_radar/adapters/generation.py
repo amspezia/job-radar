@@ -1,28 +1,12 @@
 import logging
 
-import httpx
 from pydantic import BaseModel
 
-from job_radar.adapters.retry import with_retry
+from job_radar.adapters.providers import TruncatedGeneration as TruncatedGeneration
+from job_radar.adapters.providers import get_provider
 from job_radar.config import settings
 
 logger = logging.getLogger(__name__)
-
-# Prompt + output must both fit here. Measured over 300 random jobs, fit prompts
-# run p50 2719 / p90 2968 / max 4404 tokens; with a typical ~1100-token judgment,
-# 10% of jobs overflowed the previous 4096 and the longest prompt did not fit at
-# all (Ollama then silently drops the *front* of the prompt — the profile and CV).
-# 8192 clears the whole corpus with room for a 1500-token answer.
-_NUM_CTX = 8192
-
-
-class TruncatedGeneration(Exception):
-    """The model hit the token ceiling mid-answer, so its output is incomplete.
-
-    Worth its own type because schema-constrained decoding cannot emit malformed
-    JSON — if parsing fails, the cause is almost always truncation, and saying so
-    beats a downstream pydantic error about an unexpected EOF.
-    """
 
 
 async def generate[ModelT: BaseModel](
@@ -39,26 +23,4 @@ async def generate[ModelT: BaseModel](
         schema.__name__,
         len(prompt),
     )
-    payload = {
-        "model": effective_model,
-        "messages": [{"role": "user", "content": prompt}],
-        "stream": False,
-        "format": schema.model_json_schema(),
-        "options": {"temperature": 0, "num_ctx": _NUM_CTX},
-    }
-
-    async def _call() -> httpx.Response:
-        async with httpx.AsyncClient(timeout=600) as client:
-            resp = await client.post(url=f"{settings.ollama_base_url}/api/chat", json=payload)
-        resp.raise_for_status()
-        return resp
-
-    resp = await with_retry(_call, label=f"generate({schema.__name__})")
-    body = resp.json()
-    if body.get("done_reason") == "length":
-        raise TruncatedGeneration(
-            f"{effective_model} hit the {_NUM_CTX}-token ceiling "
-            f"({body.get('prompt_eval_count')} prompt + {body.get('eval_count')} output); "
-            "the answer is incomplete"
-        )
-    return schema.model_validate_json(body["message"]["content"])
+    return await get_provider().generate(prompt, schema, model=effective_model)

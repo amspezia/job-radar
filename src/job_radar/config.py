@@ -17,6 +17,13 @@ class Settings(BaseSettings):
     # A smaller model here is faster, not better — measure fit agreement against
     # the current model before adopting one.
     fit_model: str | None = None
+    # Selects the LLMProvider implementation (see adapters/providers.py).
+    # "ollama" is the only implementation today.
+    llm_provider: str = "ollama"
+    # Read but not yet used by a real provider — Phase E wires these into a
+    # second LLMProvider for the paid quality pass.
+    llm_api_key: str | None = None
+    llm_api_model: str | None = None
 
 
 settings = Settings()

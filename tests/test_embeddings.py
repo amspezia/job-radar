@@ -39,7 +39,7 @@ def _make_client(captured: dict):
 
 async def test_embed_returns_first_vector(monkeypatch: pytest.MonkeyPatch) -> None:
     captured: dict = {}
-    monkeypatch.setattr("job_radar.adapters.embeddings.httpx.AsyncClient", _make_client(captured))
+    monkeypatch.setattr("job_radar.adapters.providers.httpx.AsyncClient", _make_client(captured))
 
     vector = await embed("senior backend engineer", task="query")
 
@@ -48,7 +48,7 @@ async def test_embed_returns_first_vector(monkeypatch: pytest.MonkeyPatch) -> No
 
 async def test_embed_prepends_query_prefix(monkeypatch: pytest.MonkeyPatch) -> None:
     captured: dict = {}
-    monkeypatch.setattr("job_radar.adapters.embeddings.httpx.AsyncClient", _make_client(captured))
+    monkeypatch.setattr("job_radar.adapters.providers.httpx.AsyncClient", _make_client(captured))
 
     await embed("senior backend engineer", task="query")
 
@@ -57,7 +57,7 @@ async def test_embed_prepends_query_prefix(monkeypatch: pytest.MonkeyPatch) -> N
 
 async def test_embed_prepends_document_prefix(monkeypatch: pytest.MonkeyPatch) -> None:
     captured: dict = {}
-    monkeypatch.setattr("job_radar.adapters.embeddings.httpx.AsyncClient", _make_client(captured))
+    monkeypatch.setattr("job_radar.adapters.providers.httpx.AsyncClient", _make_client(captured))
 
     await embed("Backend Engineer\nBuild scalable APIs.", task="document")
 
@@ -69,7 +69,7 @@ async def test_embed_prepends_document_prefix(monkeypatch: pytest.MonkeyPatch) -
 
 async def test_embed_sets_num_ctx(monkeypatch: pytest.MonkeyPatch) -> None:
     captured: dict = {}
-    monkeypatch.setattr("job_radar.adapters.embeddings.httpx.AsyncClient", _make_client(captured))
+    monkeypatch.setattr("job_radar.adapters.providers.httpx.AsyncClient", _make_client(captured))
 
     await embed("text", task="document")
 
@@ -92,7 +92,7 @@ async def test_embed_retries_transient_failure_then_succeeds(
     def factory(*args: object, **kwargs: object) -> _FlakyClient:
         return _FlakyClient()
 
-    monkeypatch.setattr("job_radar.adapters.embeddings.httpx.AsyncClient", factory)
+    monkeypatch.setattr("job_radar.adapters.providers.httpx.AsyncClient", factory)
 
     async def _instant_sleep(_seconds: float) -> None:
         return None
