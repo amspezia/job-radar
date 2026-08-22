@@ -1,0 +1,80 @@
+[
+  {
+    "id": "744000144839749",
+    "name": "Senior Backend Engineer",
+    "uuid": "dbfb1352-60ea-4428-8807-a1ddef77ba02",
+    "refNumber": "REF3X",
+    "company": {"identifier": "AcmeLabs", "name": "Acme Labs"},
+    "releasedDate": "2026-04-20T11:24:43.000Z",
+    "location": {
+      "city": "Lisbon",
+      "region": "Lisboa",
+      "country": "pt",
+      "remote": true,
+      "hybrid": false,
+      "fullLocation": "Lisbon, Lisboa, Portugal"
+    },
+    "typeOfEmployment": {"id": "permanent", "label": "Full-time"},
+    "experienceLevel": {"id": "senior", "label": "Senior"},
+    "ref": "https://api.smartrecruiters.com/v1/companies/acmelabs/postings/744000144839749",
+    "postingUrl": "https://jobs.smartrecruiters.com/AcmeLabs/744000144839749-senior-backend-engineer",
+    "applyUrl": "https://jobs.smartrecruiters.com/AcmeLabs/744000144839749-senior-backend-engineer?oga=true",
+    "jobAd": {
+      "sections": {
+        "companyDescription": {"title": "Company Description", "text": "<p>We are Acme Labs.</p>"},
+        "jobDescription": {"title": "Job Description", "text": "<ul><li>Build <strong>backend</strong> services.</li></ul>"},
+        "qualifications": {"title": "Qualifications", "text": "<ul><li>5+ years Python.</li></ul>"},
+        "additionalInformation": {"title": "Additional Information", "text": "<p>Great benefits.</p>"}
+      }
+    },
+    "active": true,
+    "visibility": "PUBLIC"
+  },
+  {
+    "id": "744000144598664",
+    "name": "Office Manager",
+    "uuid": "aaaa1352-60ea-4428-8807-a1ddef77ba99",
+    "refNumber": "REF4Y",
+    "company": {"identifier": "AcmeLabs", "name": "Acme Labs"},
+    "releasedDate": "2026-03-01T09:00:00.000Z",
+    "location": {
+      "city": "Munich",
+      "region": "BY",
+      "country": "de",
+      "remote": false,
+      "hybrid": false,
+      "fullLocation": "Munich, BY, Germany"
+    },
+    "typeOfEmployment": {"id": "permanent", "label": "Part-time"},
+    "ref": "https://api.smartrecruiters.com/v1/companies/acmelabs/postings/744000144598664",
+    "postingUrl": "https://jobs.smartrecruiters.com/AcmeLabs/744000144598664-office-manager",
+    "jobAd": {
+      "sections": {
+        "jobDescription": {"title": "Job Description", "text": "<p>On-site role.</p>"},
+        "qualifications": {"title": "Qualifications", "text": ""}
+      }
+    },
+    "active": true,
+    "visibility": "PUBLIC"
+  },
+  {
+    "id": "744000144403189",
+    "name": "Data Engineer",
+    "uuid": "bbbb1352-60ea-4428-8807-a1ddef77bb11",
+    "refNumber": "REF5Z",
+    "company": {"identifier": "AcmeLabs", "name": "Acme Labs"},
+    "releasedDate": null,
+    "location": {"country": "us", "remote": true, "hybrid": false, "fullLocation": "United States"},
+    "ref": "https://api.smartrecruiters.com/v1/companies/acmelabs/postings/744000144403189",
+    "postingUrl": "https://jobs.smartrecruiters.com/AcmeLabs/744000144403189-data-engineer",
+    "jobAd": {
+      "sections": {
+        "jobDescription": {"title": "Job Description", "text": "<p>Own the <em>pipeline</em>.</p>"},
+        "qualifications": {"title": "Qualifications", "text": ""},
+        "videos": {"title": "Videos", "text": ""}
+      }
+    },
+    "active": true,
+    "visibility": "PUBLIC"
+  }
+]

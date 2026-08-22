@@ -1,0 +1,79 @@
+[
+  {
+    "title": "Senior Backend Engineer",
+    "shortcode": "8174486B78",
+    "code": "",
+    "employment_type": "Full-time",
+    "telecommuting": true,
+    "department": "Engineering",
+    "url": "https://apply.workable.com/j/8174486B78",
+    "shortlink": "https://apply.workable.com/j/8174486B78",
+    "application_url": "https://apply.workable.com/j/8174486B78/apply",
+    "published_on": "2026-05-05",
+    "created_at": "2026-05-05",
+    "country": "United States",
+    "city": "Los Angeles",
+    "state": "California",
+    "locations": [
+      {
+        "country": "United States",
+        "countryCode": "US",
+        "city": "Los Angeles",
+        "region": "California",
+        "hidden": false
+      }
+    ],
+    "description": "<p>Build <strong>backend</strong> services.</p>",
+    "_company": "Acme Labs"
+  },
+  {
+    "title": "Office Manager",
+    "shortcode": "9911223344",
+    "code": "",
+    "employment_type": "Part-time",
+    "telecommuting": false,
+    "department": "Operations",
+    "url": "https://apply.workable.com/j/9911223344",
+    "shortlink": "https://apply.workable.com/j/9911223344",
+    "application_url": "https://apply.workable.com/j/9911223344/apply",
+    "published_on": "2026-04-01",
+    "created_at": "2026-04-01",
+    "country": "Germany",
+    "city": "Munich",
+    "state": "Bavaria",
+    "locations": [
+      {
+        "country": "Germany",
+        "countryCode": "DE",
+        "city": "Munich",
+        "region": "Bavaria",
+        "hidden": false
+      }
+    ],
+    "description": "<p>On-site role.</p>",
+    "_company": "Acme Labs"
+  },
+  {
+    "title": "Site Reliability Engineer",
+    "shortcode": "5566778899",
+    "code": "",
+    "employment_type": "Full-time",
+    "telecommuting": true,
+    "department": "Engineering",
+    "url": "https://apply.workable.com/j/5566778899",
+    "shortlink": "https://apply.workable.com/j/5566778899",
+    "application_url": "https://apply.workable.com/j/5566778899/apply",
+    "published_on": null,
+    "created_at": "2026-06-02",
+    "country": "Brazil",
+    "city": "",
+    "state": "",
+    "locations": [
+      {"country": "Brazil", "countryCode": "BR", "city": "", "region": null, "hidden": true},
+      {"country": "Honduras", "countryCode": "HN", "city": "", "region": null, "hidden": true},
+      {"country": "Uruguay", "countryCode": "UY", "city": "", "region": null, "hidden": true}
+    ],
+    "description": "<p>Own the <em>platform</em>.</p>",
+    "_company": "Acme Labs"
+  }
+]
