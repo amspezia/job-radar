@@ -18,31 +18,63 @@ it's "safe by default, opt in to full payload capture behind an explicit debug f
 
 ## Files touched
 
-- `src/job_radar/adapters/generation.py` — wrap the existing `with_retry(_call, ...)`
-  call.
-- `src/job_radar/adapters/embeddings.py` — same shape, simpler (no schema/truncation).
+**Updated after the LLM-provider-abstraction refactor landed** (`src/job_radar/adapters/
+providers.py`) — this section originally pointed at `generation.py`/`embeddings.py` for
+the retry-wrapped call itself, which was correct before that refactor and is not
+anymore. Caught by inspecting current `embeddings.py` directly rather than trusting this
+doc: it's now an 8-line dispatcher with no `with_retry` in sight — that logic moved
+inside `OllamaProvider.generate()`/`.embed()`.
+
+This isn't just a path correction, it changes where the span gets created:
+
+- `src/job_radar/adapters/generation.py` / `embeddings.py` — **create the Langfuse
+  observation here**, wrapping the `get_provider().generate(...)` / `.embed(...)` call.
+  This is the true provider-agnostic seam now: every current and future `LLMProvider`
+  implementation flows through these two dispatchers, so instrumenting here means a
+  future Phase E provider gets identical tracing automatically, with zero code of its
+  own — the same reasoning that already justified putting retry logic behind one seam
+  instead of duplicating it per call site.
+- `src/job_radar/adapters/providers.py`'s `OllamaProvider` — **do not create a second,
+  nested span here.** Retry count is only knowable inside `OllamaProvider` (that's where
+  `with_retry`'s attempt loop actually runs), so it needs to reach the trace some way —
+  but the right mechanism is enriching the *current active* observation the dispatcher
+  already created (Langfuse's `update_current_generation()`/`update_current_span()`),
+  not opening a child span. A future provider that has no retry concept at all (e.g. an
+  SDK that retries internally) simply wouldn't call this enrichment step, and the base
+  tracing from the dispatcher still works unchanged.
 
 ## Steps
 
-1. Read `src/job_radar/adapters/generation.py` and `embeddings.py` as they exist today —
-   both already have the `with_retry`-wrapped `_call()` closure pattern from the earlier
-   retry work; the Langfuse observation wraps around that same call, doesn't replace it.
+1. Read `src/job_radar/adapters/generation.py`, `embeddings.py`, and
+   `adapters/providers.py` as they exist today — confirm for yourself where `with_retry`
+   actually lives now before writing any span code; don't take this doc's word for it,
+   the same way this correction started with someone checking the real file instead of
+   trusting the plan.
 2. Decide observation type: `generate()` calls are Langfuse **generations** (LLM calls
    specifically, get token/cost fields); `embed()` calls are **generations** too in
    Langfuse's model (embeddings are a generation type), or plain **spans** if you'd
    rather keep them out of the cost/token dashboards — decide based on whether you want
    embedding cost visible alongside generation cost (recommend: yes, same dashboard,
    consistent picture).
-3. Attributes to set on `generate()`'s observation — redacted by default per the table
-   below: `gen_ai.request.model`, schema name (`schema.__name__` — already available),
-   retry count (thread through from `with_retry`'s attempt loop or capture via a
-   log-count side channel), `gen_ai.usage.input_tokens`/`output_tokens` (from Ollama's
-   `prompt_eval_count`/`eval_count`, already read once for the `TruncatedGeneration`
-   check — reuse that same response parse, don't call Ollama twice).
-4. Attributes for `embed()`: model, task (`query`/`document`), retry count, token count
-   if Ollama's embed response exposes one (check the actual response shape — don't
-   assume it matches the chat endpoint's field names).
-5. Implement the redaction table from the design doc directly:
+3. Attributes to set on `generate()`'s observation, created in `generation.py` around the
+   `get_provider().generate(...)` call — redacted by default per the table below:
+   `gen_ai.request.model`, schema name (`schema.__name__` — already available),
+   `gen_ai.usage.input_tokens`/`output_tokens`. Token usage is the one attribute that
+   needs a small interface change to get cleanly: `LLMProvider.generate()` currently
+   returns only the parsed Pydantic model, not usage data, so either extend the Protocol
+   to return `(result, usage)` or have `OllamaProvider` call
+   `update_current_generation(usage_details=...)` itself from inside the call (reusing
+   the same "enrich, don't nest" mechanism as retry count) — pick one and apply it
+   consistently to both `generate()` and `embed()`, don't mix approaches between them.
+4. Retry count specifically: set via `OllamaProvider`'s own
+   `update_current_generation()`/`update_current_span()` call after `with_retry` returns,
+   per the "Files touched" section above — not passed back through the `LLMProvider`
+   Protocol's return type, which should stay provider-agnostic and not grow a
+   Ollama-specific "attempt count" field.
+5. Attributes for `embed()`: model, task (`query`/`document`), token count if Ollama's
+   embed response exposes one (check the actual response shape — don't assume it matches
+   the chat endpoint's field names).
+6. Implement the redaction table from the design doc directly:
 
    | Trace fully | Redact/exclude |
    |---|---|
@@ -54,12 +86,14 @@ it's "safe by default, opt in to full payload capture behind an explicit debug f
    schema name, byte length of the prompt) by default; add an explicit, off-by-default
    env flag (e.g. `LANGFUSE_CAPTURE_FULL_PAYLOAD=false`) for anyone who wants full
    prompt/response capture during local debugging, never as a shipped default.
-6. Run the existing test suites for both adapters (`tests/test_generation.py`,
-   `tests/test_embeddings.py`) — they already mock `httpx.AsyncClient`, so this is where
+7. Run the existing test suites for both adapters (`tests/test_generation.py`,
+   `tests/test_embeddings.py`) — note these currently mock
+   `job_radar.adapters.providers.httpx.AsyncClient` (moved there during the provider
+   refactor, see the review that caught this same staleness pattern), so this is where
    you'll find out whether the Langfuse wrapper interferes with that mocking. Extend them
    with a test asserting no raw prompt text reaches whatever object gets passed to the
    Langfuse client (mock the Langfuse client the same way `httpx` is already mocked).
-7. Run one real `job-radar-profile` and one real `job-radar-fit` against a couple of
+8. Run one real `job-radar-profile` and one real `job-radar-fit` against a couple of
    jobs; confirm traces appear in Langfuse Cloud with the expected attributes and, most
    importantly, manually inspect one trace's `input`/`output` fields in the UI to
    **visually confirm no CV text or PII is present** before considering this phase done.
@@ -98,6 +132,11 @@ it's "safe by default, opt in to full payload capture behind an explicit debug f
   and its tests (`tests/test_retry.py`) — not an external reference, but the exact shape
   the Langfuse wrapper needs to compose with; understand `with_retry`'s attempt-count
   bookkeeping before deciding how to surface it as a trace attribute.
+- Re-read [`src/job_radar/adapters/providers.py`](../../../src/job_radar/adapters/providers.py) —
+  the `LLMProvider` Protocol and `OllamaProvider` implementation this phase's span/
+  enrichment split (see "Files touched" above) is built directly on top of. This file
+  didn't exist when this doc was first written; it's the reason the doc needed the
+  correction at the top.
 
 ## Acceptance for this phase
 

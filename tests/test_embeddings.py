@@ -2,6 +2,7 @@ import httpx
 import pytest
 
 from job_radar.adapters.embeddings import embed
+from tests.conftest import FakeLangfuseClient
 
 
 class _FakeResponse:
@@ -28,13 +29,18 @@ class _FakeClient:
         return _FakeResponse()
 
 
-def _make_client(captured: dict):
+def _make_client(captured: dict, client_cls: type = _FakeClient):
     def factory(*args: object, **kwargs: object) -> _FakeClient:
-        client = _FakeClient()
+        client = client_cls()
         captured["client"] = client
         return client
 
     return factory
+
+
+# fake_langfuse fixture is defined in conftest.py (autouse=True there — every
+# test in the suite gets it automatically now, not just this file); imported
+# here only for the type hint on the tests below that inspect its calls.
 
 
 async def test_embed_returns_first_vector(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -103,3 +109,63 @@ async def test_embed_retries_transient_failure_then_succeeds(
 
     assert vector == [0.1, 0.2, 0.3]
     assert attempts == 2
+
+
+async def test_embed_creates_a_langfuse_embedding_observation(
+    monkeypatch: pytest.MonkeyPatch, fake_langfuse: FakeLangfuseClient
+) -> None:
+    monkeypatch.setattr("job_radar.adapters.providers.httpx.AsyncClient", _make_client({}))
+
+    await embed("senior backend engineer", task="query")
+
+    assert len(fake_langfuse.observations) == 1
+    obs = fake_langfuse.observations[0]
+    assert obs["as_type"] == "embedding"
+    assert obs["name"] == "embed"
+    assert obs["metadata"] == {"task": "query"}
+
+
+async def test_embed_redacts_input_by_default(
+    monkeypatch: pytest.MonkeyPatch, fake_langfuse: FakeLangfuseClient
+) -> None:
+    monkeypatch.setattr("job_radar.adapters.providers.httpx.AsyncClient", _make_client({}))
+
+    await embed("some CV text", task="document")
+
+    obs = fake_langfuse.observations[0]
+    assert "chars" in obs["input"]
+    assert "CV text" not in str(obs["input"])
+
+
+async def test_embed_output_reports_dims_not_the_vector(
+    monkeypatch: pytest.MonkeyPatch, fake_langfuse: FakeLangfuseClient
+) -> None:
+    monkeypatch.setattr("job_radar.adapters.providers.httpx.AsyncClient", _make_client({}))
+
+    await embed("text", task="document")
+
+    obs = fake_langfuse.observations[0]
+    assert obs["output_update"] == {"output": {"dims": 3}}
+
+
+async def test_embed_enriches_current_generation_with_usage_and_retry_count(
+    monkeypatch: pytest.MonkeyPatch, fake_langfuse: FakeLangfuseClient
+) -> None:
+    class _UsageResponse(_FakeResponse):
+        def json(self) -> dict:
+            return {**super().json(), "prompt_eval_count": 4}
+
+    class _UsageClient(_FakeClient):
+        async def post(self, url: str, json: dict) -> _FakeResponse:
+            self.posted = {"url": url, "json": json}
+            return _UsageResponse()
+
+    monkeypatch.setattr(
+        "job_radar.adapters.providers.httpx.AsyncClient", _make_client({}, _UsageClient)
+    )
+
+    await embed("text", task="document")
+
+    assert fake_langfuse.generation_updates == [
+        {"usage_details": {"input": 4}, "metadata": {"retry_attempts": 1}}
+    ]

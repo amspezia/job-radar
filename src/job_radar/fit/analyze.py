@@ -1,5 +1,7 @@
 import logging
 
+from langfuse import get_client
+
 from job_radar.adapters.generation import generate
 from job_radar.config import settings
 from job_radar.db.models import Job, Profile
@@ -120,26 +122,53 @@ async def analyze_fit(
     numeric score is computed deterministically by score_fit. `levels` overrides
     the profile's accepted seniority levels for this call; `model` overrides the
     generation model (defaults to the configured fit/generation model).
-    """
-    if not _has_sufficient_input(profile, posting):
-        logger.info("Skipping fit analysis for job %s: insufficient input", posting.id)
-        return _INSUFFICIENT_INPUT
 
-    logger.info("Analyzing fit for job %s", posting.id)
-    prompt = _build_prompt(profile, posting)
-    try:
-        judgment = await generate(prompt, FitJudgment, model=model or settings.fit_model)
-    except Exception:
-        # A malformed/truncated LLM response or a transient model error must not
-        # abort the whole batch — degrade this one job and keep scoring the rest.
-        logger.exception("Fit analysis failed for job %s", posting.id)
-        return _GENERATION_FAILED
-    assessment = score_fit(judgment, posting, profile, levels=levels)
-    logger.info(
-        "Fit analysis for job %s: score=%s verdict=%s gate_failed=%s",
-        posting.id,
-        assessment.score,
-        assessment.verdict,
-        assessment.gate_failed,
-    )
-    return assessment
+    Wrapped in its own span (as_type="span", not "generation" — this function
+    isn't itself an LLM call, generate() below creates its own nested generation
+    observation) so the trace records what a leaf-level generate.FitJudgment
+    observation alone can't: which job this was, and what it concluded. job_id/
+    job_title/company are public posting metadata; verdict/score/gate_failed are
+    explicitly "trace fully" per docs/plans/phase-c/02-core-instrumentation-and-
+    redaction.md's redaction table — none of this is profile/CV/PII content.
+    """
+    client = get_client()
+    with client.start_as_current_observation(
+        name="analyze_fit",
+        as_type="span",
+        metadata={
+            "job_id": str(posting.id),
+            "job_title": posting.title,
+            "company": posting.company,
+        },
+    ) as span:
+        if not _has_sufficient_input(profile, posting):
+            logger.info("Skipping fit analysis for job %s: insufficient input", posting.id)
+            span.update(output={"verdict": "none", "score": None, "reason": "insufficient_input"})
+            return _INSUFFICIENT_INPUT
+
+        logger.info("Analyzing fit for job %s", posting.id)
+        prompt = _build_prompt(profile, posting)
+        try:
+            judgment = await generate(prompt, FitJudgment, model=model or settings.fit_model)
+        except Exception:
+            # A malformed/truncated LLM response or a transient model error must not
+            # abort the whole batch — degrade this one job and keep scoring the rest.
+            logger.exception("Fit analysis failed for job %s", posting.id)
+            span.update(output={"verdict": "none", "score": None, "reason": "generation_failed"})
+            return _GENERATION_FAILED
+        assessment = score_fit(judgment, posting, profile, levels=levels)
+        logger.info(
+            "Fit analysis for job %s: score=%s verdict=%s gate_failed=%s",
+            posting.id,
+            assessment.score,
+            assessment.verdict,
+            assessment.gate_failed,
+        )
+        span.update(
+            output={
+                "verdict": assessment.verdict,
+                "score": assessment.score,
+                "gate_failed": assessment.gate_failed,
+            }
+        )
+        return assessment

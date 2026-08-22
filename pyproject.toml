@@ -30,11 +30,12 @@ dependencies = [
     "apscheduler>=3.11",
     "beautifulsoup4>=4.15",
     # Observability
-    "langfuse>=2.57",
+    "langfuse>=4.0",  # start_as_current_observation/update_current_generation (v4 API)
     "opentelemetry-sdk>=1.29",
     "opentelemetry-exporter-otlp>=1.29",
     # Profile / CV parsing (PDF text extraction)
     "pdfplumber>=0.11.10",
+    "python-dotenv>=1.2.2",
 ]
 
 [dependency-groups]

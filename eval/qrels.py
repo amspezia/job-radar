@@ -14,6 +14,7 @@ import asyncio
 from dataclasses import dataclass, field
 from uuid import UUID
 
+from langfuse import get_client
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -96,6 +97,23 @@ async def load_qrels(session: AsyncSession, profile_id: UUID) -> dict[UUID, int]
     return result
 
 
+async def _traced_arm(name: str, coro: object) -> list[tuple[UUID, float]]:
+    """Run one retrieval arm inside its own child span of the current `retrieve` span.
+
+    Deliberately duplicated from job_radar/retrieval/search.py::_traced_arm rather
+    than shared — see this module's own docstring on why build_run() calls
+    search_bm25/search_vector directly instead of reusing search(): sharing
+    instrumentation code here would quietly re-couple the two paths.
+    """
+    client = get_client()
+    with client.start_as_current_observation(name=f"arm.{name}", as_type="span") as span:
+        result = await coro  # type: ignore[misc]
+        span.update(
+            output={"candidates": len(result), "top_score": result[0][1] if result else None}
+        )
+        return result
+
+
 async def build_run(
     session: AsyncSession,
     profile: Profile,
@@ -117,37 +135,60 @@ async def build_run(
       - "cv"      skipped when profile.cv_embedding is None
     With no active arms the result is an empty dict (no corpus dump).
     """
-    # Apply the same hard filters as production search so the eval corpus matches
-    # what the system actually serves (geo, seniority, remote, salary floor).
-    _filter = build_profile_filter(profile)
+    client = get_client()
+    with client.start_as_current_observation(
+        name="retrieve", as_type="retriever", metadata={"config": config.__class__.__name__}
+    ) as retrieve_span:
+        # Apply the same hard filters as production search so the eval corpus matches
+        # what the system actually serves (geo, seniority, remote, salary floor).
+        _filter = build_profile_filter(profile)
 
-    # Determine which arms are active and build coroutines for each.
-    active_indices: list[int] = []
-    coros = []
-    bm25_pool = config.bm25_pool if config.bm25_pool is not None else config.pool
-    for idx, arm in enumerate(config.arms):
-        if arm == "lexical" and query.strip():
-            active_indices.append(idx)
-            coros.append(
-                search_bm25(session, query, bm25_pool, _filter, field_boosts=config.field_boosts)
-            )
-        elif arm == "hyde" and hyde_embedding is not None:
-            active_indices.append(idx)
-            coros.append(search_vector(session, hyde_embedding, config.pool, _filter))
-        elif arm == "cv" and profile.cv_embedding is not None:
-            active_indices.append(idx)
-            coros.append(search_vector(session, list(profile.cv_embedding), config.pool, _filter))
+        # Determine which arms are active and build coroutines for each.
+        active_indices: list[int] = []
+        coros = []
+        bm25_pool = config.bm25_pool if config.bm25_pool is not None else config.pool
+        for idx, arm in enumerate(config.arms):
+            if arm == "lexical" and query.strip():
+                active_indices.append(idx)
+                coros.append(
+                    _traced_arm(
+                        arm,
+                        search_bm25(
+                            session, query, bm25_pool, _filter, field_boosts=config.field_boosts
+                        ),
+                    )
+                )
+            elif arm == "hyde" and hyde_embedding is not None:
+                active_indices.append(idx)
+                coros.append(
+                    _traced_arm(arm, search_vector(session, hyde_embedding, config.pool, _filter))
+                )
+            elif arm == "cv" and profile.cv_embedding is not None:
+                active_indices.append(idx)
+                coros.append(
+                    _traced_arm(
+                        arm,
+                        search_vector(session, list(profile.cv_embedding), config.pool, _filter),
+                    )
+                )
 
-    if not coros:
-        return {}
+        if not coros:
+            retrieve_span.update(output={"result_count": 0})
+            return {}
 
-    arms: list[list[tuple[UUID, float]]] = list(await asyncio.gather(*coros))
+        arms: list[list[tuple[UUID, float]]] = list(await asyncio.gather(*coros))
 
-    # Slice weights to match only the arms that were active.  If weights is
-    # shorter than config.arms (misconfigured) fall back to equal weights.
-    weights: list[float] | None = None
-    if config.weights is not None and len(config.weights) == len(config.arms):
-        weights = [config.weights[i] for i in active_indices]
+        # Slice weights to match only the arms that were active.  If weights is
+        # shorter than config.arms (misconfigured) fall back to equal weights.
+        weights: list[float] | None = None
+        if config.weights is not None and len(config.weights) == len(config.arms):
+            weights = [config.weights[i] for i in active_indices]
 
-    fused = reciprocal_rank_fusion(arms, k=config.k, limit=config.limit, weights=weights)
-    return dict(fused)
+        with client.start_as_current_observation(
+            name="fuse", as_type="span", metadata={"weights": weights}
+        ) as fuse_span:
+            fused = reciprocal_rank_fusion(arms, k=config.k, limit=config.limit, weights=weights)
+            fuse_span.update(output={"result_count": len(fused)})
+
+        retrieve_span.update(output={"result_count": len(fused)})
+        return dict(fused)

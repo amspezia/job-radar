@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from job_radar.db.models import Job
 from job_radar.retrieval import search as search_mod
 from job_radar.retrieval.search import search
+from tests.conftest import FakeLangfuseClient
 
 
 def _job(**over: object) -> Job:
@@ -174,3 +175,32 @@ async def test_cv_embedding_arm_is_used_when_query_is_blank(
 
     assert [job.id for job in results] == [a.id]
     assert calls == [cv_vec]  # only the CV arm ran, with the profile embedding
+
+
+async def test_search_creates_retrieve_span_with_arm_and_fuse_children(
+    db_session: AsyncSession,
+    _cleanup_jobs: list[Job],
+    monkeypatch: pytest.MonkeyPatch,
+    fake_langfuse: FakeLangfuseClient,
+) -> None:
+    a = _job(title="Zzyqx A")
+    db_session.add(a)
+    await db_session.commit()
+    _cleanup_jobs.append(a)
+
+    async def fake_bm25(
+        session: object, query: object, limit: int, extra_filter: object = None, **_: object
+    ) -> list:
+        return [(a.id, 2.0)]
+
+    monkeypatch.setattr(search_mod, "search_bm25", fake_bm25)
+
+    await search(db_session, "zzyqx")
+
+    names = [obs["name"] for obs in fake_langfuse.observations]
+    assert names == ["retrieve", "arm.lexical", "fuse"]
+    assert fake_langfuse.observations[0]["as_type"] == "retriever"
+    assert fake_langfuse.observations[1]["output_update"] == {
+        "output": {"candidates": 1, "top_score": 2.0}
+    }
+    assert fake_langfuse.observations[2]["output_update"] == {"output": {"result_count": 1}}

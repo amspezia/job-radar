@@ -15,6 +15,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from eval import qrels as qrels_mod
 from eval.qrels import SearchConfig, build_run, load_qrels
 from job_radar.db.models import EvalLabel, Job, Profile
+from tests.conftest import FakeLangfuseClient
 
 
 def _job(**over: object) -> Job:
@@ -197,6 +198,39 @@ async def test_build_run_returns_scores_for_all_active_arms(
     assert job_b.id in run
     # Scores are positive RRF values.
     assert all(s > 0 for s in run.values())
+
+
+async def test_build_run_creates_retrieve_span_with_sliced_weights_in_fuse(
+    db_session: AsyncSession,
+    _db_objects: tuple,
+    monkeypatch: pytest.MonkeyPatch,
+    fake_langfuse: FakeLangfuseClient,
+) -> None:
+    profile, job_a, _ = _db_objects
+    profile.cv_embedding = None  # only lexical + hyde are active
+
+    async def fake_bm25(session, query, limit, extra_filter=None, *, field_boosts=None):
+        return [(job_a.id, 9.0)]
+
+    async def fake_vector(session, embedding, limit, extra_filter=None):
+        return [(job_a.id, 0.9)]
+
+    monkeypatch.setattr(qrels_mod, "search_bm25", fake_bm25)
+    monkeypatch.setattr(qrels_mod, "search_vector", fake_vector)
+
+    config = SearchConfig(
+        arms=["lexical", "hyde", "cv"], pool=10, limit=10, weights=[3.0, 2.0, 1.0]
+    )
+    await build_run(
+        db_session, profile, config, query="python engineer", hyde_embedding=[0.1] * 768
+    )
+
+    names = [obs["name"] for obs in fake_langfuse.observations]
+    assert names == ["retrieve", "arm.lexical", "arm.hyde", "fuse"]
+    assert fake_langfuse.observations[0]["as_type"] == "retriever"
+    # The "cv" arm never ran, so its weight must be dropped, not just zeroed.
+    fuse_obs = fake_langfuse.observations[-1]
+    assert fuse_obs["metadata"] == {"weights": [3.0, 2.0]}
 
 
 async def test_build_run_respects_pool_size(

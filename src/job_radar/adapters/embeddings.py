@@ -1,6 +1,10 @@
 from typing import Literal
 
+from langfuse import get_client
+
 from job_radar.adapters.providers import get_provider
+from job_radar.adapters.tracing import trace_input_text, trace_output_vector
+from job_radar.config import settings
 
 # nomic-embed-text was contrastively trained with task-instruction prefixes.
 # Omitting them places query and document vectors in a mismatched region of
@@ -23,4 +27,18 @@ async def embed(text: str, *, task: Literal["query", "document"]) -> list[float]
     Use task="document" for indexed text (job postings, CV).
     """
     prefixed = f"{_PREFIX[task]}: {text}"
-    return await get_provider().embed(prefixed)
+    # Same "generation"-level treatment as generate() (as_type="embedding" is
+    # Langfuse's dedicated type for this — still cost/token-tracked, not
+    # demoted to a plain span) and the same provider-agnostic seam: OllamaProvider
+    # may enrich the current observation with usage via update_current_generation().
+    client = get_client()
+    with client.start_as_current_observation(
+        name="embed",
+        as_type="embedding",
+        model=settings.embedding_model,
+        input=trace_input_text(prefixed),
+        metadata={"task": task},
+    ) as obs:
+        vector = await get_provider().embed(prefixed)
+        obs.update(output=trace_output_vector(vector))
+    return vector
