@@ -244,3 +244,28 @@ async def test_run_ingestion_skips_job_whose_embedding_call_fails(
 
     ok_result = await db_session.execute(select(Job).where(Job.url == ok_url))
     assert ok_result.scalar_one().title == "Stable Role"
+
+
+async def test_run_ingestion_skips_malformed_posting_without_aborting_batch(
+    db_session: AsyncSession, _cleanup_urls
+) -> None:
+    # Simulates a real incident: Arbeitnow serialized one posting's job_types
+    # field as a dict instead of a list, and adapter.map() raised KeyError for
+    # it — that must not abort mapping for the rest of the batch.
+    class _FlakyMapAdapter(_FakeAdapter):
+        def map(self, raw: dict) -> NormalizedJob:
+            if raw.get("_malformed"):
+                raise KeyError(0)
+            return super().map(raw)
+
+    ok_url = _url("map-ok")
+    _cleanup_urls.append(ok_url)
+
+    malformed_raw = {**_raw(url=_url("map-bad")), "_malformed": True}
+    ok_raw = _raw(url=ok_url, title="Stable Role")
+    adapter = _FlakyMapAdapter([malformed_raw, ok_raw])
+
+    await run_ingestion(adapter, db_session, ingested_via="scheduler")
+
+    ok_result = await db_session.execute(select(Job).where(Job.url == ok_url))
+    assert ok_result.scalar_one().title == "Stable Role"

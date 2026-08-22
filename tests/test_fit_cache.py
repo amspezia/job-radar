@@ -185,15 +185,24 @@ def _stub_pipeline(monkeypatch: pytest.MonkeyPatch):
     """Stub retrieval + LLM so the test exercises only the cache path.
 
     Returns the call counter for analyze_fit; the caller sets the job/profile.
+    Also stubs the provider: the pipeline pre-warms the model before analyzing,
+    which would otherwise be a real Ollama load from a test that has no business
+    talking to one.
     """
     calls: list[uuid.UUID] = []
+    warmed: list[str] = []
 
     async def _analyze(profile, posting, *, levels=None, model=None):
         calls.append(posting.id)
         return score_fit(_judgment(), posting, profile, levels=levels)
 
+    class _StubProvider:
+        async def warm(self, model: str) -> None:
+            warmed.append(model)
+
     monkeypatch.setattr(pipeline, "build_hyde_embedding", lambda *a, **k: _none())
     monkeypatch.setattr(pipeline, "analyze_fit", _analyze)
+    monkeypatch.setattr(pipeline, "get_provider", _StubProvider)
     return calls
 
 

@@ -3,11 +3,12 @@ import json
 import logging
 
 from pydantic import BaseModel, field_validator
-from sqlalchemy import select
+from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from job_radar.adapters.embeddings import embed
 from job_radar.adapters.generation import generate
+from job_radar.adapters.providers import get_provider
 from job_radar.config import settings
 from job_radar.db.models import Job, Profile
 from job_radar.fit import cache
@@ -19,10 +20,28 @@ from job_radar.retrieval.search import search
 
 logger = logging.getLogger(__name__)
 
-# Caps how many analyze_fit calls run at once. Matches Ollama's typical default
-# OLLAMA_NUM_PARALLEL; unbounded concurrency would just queue identically to
-# sequential (or exhaust GPU VRAM) instead of actually overlapping.
-_MAX_CONCURRENT_ANALYSES = 12
+# Caps how many analyze_fit calls run at once; keep equal to OLLAMA_NUM_PARALLEL,
+# since a semaphore wider than the server's slot count only moves the queue into
+# Ollama. Unbounded concurrency would queue identically to sequential (or exhaust
+# GPU VRAM) instead of actually overlapping.
+#
+# 8, not 12. Measured aggregate decode throughput on M5 Pro / qwen2.5-7B Q4_K_M
+# (2026-08-21) saturates well before 12: 4 slots 76.9 tok/s, 8 slots 92.2 tok/s,
+# 12 slots 95.2 tok/s — the last four slots buy 3%. They are not free: each slot
+# costs 238 MiB of KV cache (2,856 MiB at 12), and each one also *slows every
+# other stream*, since a saturated GPU divides the same throughput more ways
+# (8.8 tok/s per stream at 12 slots vs 14.4 at 8). That per-stream rate is what
+# the generate read timeout is measured against, so widening concurrency past
+# saturation converts a 3% throughput gain into a much larger tail-latency loss.
+_MAX_CONCURRENT_ANALYSES = 8
+
+_UNEXPECTED_ANALYSIS_FAILURE = FitAssessment(
+    score=None,
+    verdict="none",
+    gate_failed=False,
+    judgment=None,
+    summary="unexpected analysis failure",
+)
 
 
 class _HyDEPosting(BaseModel):
@@ -227,6 +246,14 @@ async def run_fit_pipeline(
     lexical_q = query or build_lexical_query(profile)
     hyde_embedding = await build_hyde_embedding(profile, session)
     profile_filter = build_profile_filter(profile, levels=levels, max_age_days=max_age_days)
+    # Synthetic eval postings (eval/inject_synthetic.py) live in the same `jobs`
+    # table and must never reach a real run. This can't live in build_profile_filter
+    # itself — eval/qrels.py::build_run shares that helper and needs synthetic jobs
+    # visible in the candidate pool to measure retrieval against the full universe.
+    production_filter = Job.source != "synthetic"
+    combined_filter = (
+        and_(profile_filter, production_filter) if profile_filter is not None else production_filter
+    )
     logger.info(
         "Searching: lexical=%r hyde=%s filtered=%s max_age_days=%s",
         lexical_q,
@@ -239,7 +266,7 @@ async def run_fit_pipeline(
         lexical_q,
         hyde_embedding=hyde_embedding,
         limit=limit,
-        extra_filter=profile_filter,
+        extra_filter=combined_filter,
         field_boosts=field_boosts,
         weights=[2.0, 1.0],
     )
@@ -250,19 +277,45 @@ async def run_fit_pipeline(
     pending = [job for job in jobs if job.id not in cached]
     logger.info("Fit cache: %d hits, %d to analyze", len(cached), len(pending))
 
+    if pending:
+        # Load the model before the burst, not during it. Ollama unloads after ~5
+        # minutes idle, and a cold load outlasts a generate call's read timeout — so
+        # all _MAX_CONCURRENT_ANALYSES requests would wait on the same load and time
+        # out together, exhausting their retries (measured: 2 of 6 jobs lost).
+        # Best-effort: if warming fails, the analyses below still carry their own
+        # retries, so a failure here is worth a log line and nothing more.
+        try:
+            await get_provider().warm(model)
+        except Exception as exc:
+            logger.warning("Could not pre-warm %s (%s); continuing", model, exc)
+
     semaphore = asyncio.Semaphore(_MAX_CONCURRENT_ANALYSES)
+    # Serializes cache.store's session.commit() calls: analyze_fit itself never
+    # touches `session`, so concurrent analyses are safe, but writing to a shared
+    # AsyncSession from multiple coroutines at once is not.
+    store_lock = asyncio.Lock()
 
     async def _bounded_analyze(job: Job) -> tuple[Job, FitAssessment]:
         async with semaphore:
-            return job, await analyze_fit(profile, job, levels=levels, model=model)
+            try:
+                assessment = await analyze_fit(profile, job, levels=levels, model=model)
+            except Exception:
+                # analyze_fit already turns generate()/httpx failures into a graceful
+                # _GENERATION_FAILED result internally; this is a backstop for anything
+                # outside that (e.g. score_fit) so one job's failure can never propagate
+                # through gather() and cancel or block every other job in the batch.
+                logger.exception("Unexpected error analyzing fit for job %s", job.id)
+                assessment = _UNEXPECTED_ANALYSIS_FAILURE
+
+        # Persisted per-job, not batched after gather(), so a cancelled run (e.g.
+        # Ctrl-C) keeps every judgment already produced instead of losing the whole
+        # in-progress batch and re-paying for it on the next run.
+        if assessment.judgment is not None:
+            async with store_lock:
+                await cache.store(session, profile.id, [(job, assessment.judgment)], model=model)
+        return job, assessment
 
     fresh = list(await asyncio.gather(*(_bounded_analyze(job) for job in pending)))
-    await cache.store(
-        session,
-        profile.id,
-        [(job, a.judgment) for job, a in fresh if a.judgment is not None],
-        model=model,
-    )
 
     # Cache hits are re-scored rather than restored: score_fit is pure and free,
     # and its output depends on `levels` and the scoring constants, neither of

@@ -22,5 +22,17 @@
     "job_types": [],
     "location": "",
     "created_at": 1782500000
+  },
+  {
+    "slug": "backend-engineer-london-324322",
+    "company_name": "Initech",
+    "title": "Backend Engineer",
+    "description": "<p>London-based backend role.</p>",
+    "remote": true,
+    "url": "https://www.arbeitnow.com/jobs/backend-engineer-london-324322",
+    "tags": ["backend"],
+    "job_types": {"1": "professional / experienced"},
+    "location": "London",
+    "created_at": 1782601500
   }
 ]

@@ -32,7 +32,6 @@ class ArbeitnowAdapter(SourceAdapter):
 
     def map(self, raw: dict) -> NormalizedJob:
         created = raw.get("created_at")
-        job_types = raw.get("job_types") or []
         return NormalizedJob(
             source=self.source,
             source_type=self.source_type,
@@ -45,7 +44,20 @@ class ArbeitnowAdapter(SourceAdapter):
             salary_max=None,
             currency=None,
             location=raw.get("location") or None,
-            job_type=job_types[0] if job_types else None,
+            job_type=_first_job_type(raw),
             remote=raw["remote"],
             published_at=datetime.fromtimestamp(created, tz=UTC) if created else None,
         )
+
+
+def _first_job_type(raw: dict) -> str | None:
+    """Arbeitnow's `job_types` is normally a JSON array (e.g. ["Full Time"]), but
+    for postings whose underlying array isn't sequentially indexed from 0, their
+    API serializes it as an object instead (e.g. {"1": "professional / experienced"})
+    — same data, different JSON shape depending on an implementation detail on
+    their end. Handle both rather than assuming list indexing always works.
+    """
+    job_types = raw.get("job_types") or []
+    if isinstance(job_types, dict):
+        return next(iter(job_types.values()), None)
+    return job_types[0] if job_types else None

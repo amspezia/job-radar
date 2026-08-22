@@ -1,7 +1,9 @@
+import asyncio
 import json
 from datetime import UTC, datetime
 from pathlib import Path
 
+import httpx
 import pytest
 
 from job_radar.adapters.sources.lever import LeverAdapter
@@ -77,3 +79,33 @@ def test_remote_jobs_keeps_only_remote_workplace_type() -> None:
 )
 def test_salary_keeps_only_annual(salary_range: dict | None, expected: tuple) -> None:
     assert LeverAdapter._salary(salary_range) == expected
+
+
+async def test_board_returns_only_remote_jobs_tagged_with_token() -> None:
+    class _Resp:
+        def raise_for_status(self) -> None:
+            return None
+
+        def json(self) -> list[dict]:
+            return [
+                {"id": "1", "workplaceType": "remote"},
+                {"id": "2", "workplaceType": "onsite"},
+            ]
+
+    class _Client:
+        async def get(self, url: str) -> _Resp:
+            return _Resp()
+
+    jobs = await LeverAdapter._board(_Client(), asyncio.Semaphore(1), "acme")
+
+    assert jobs == [{"id": "1", "workplaceType": "remote", "_token": "acme"}]
+
+
+async def test_board_returns_empty_list_on_http_error_without_raising() -> None:
+    class _Client:
+        async def get(self, url: str) -> object:
+            raise httpx.ConnectError("boom", request=httpx.Request("GET", url))
+
+    jobs = await LeverAdapter._board(_Client(), asyncio.Semaphore(1), "acme")
+
+    assert jobs == []

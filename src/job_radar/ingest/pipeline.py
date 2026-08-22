@@ -17,10 +17,21 @@ from job_radar.retrieval.seniority import normalize_level
 
 logger = logging.getLogger(__name__)
 
-# Caps concurrent LLM + embed calls per adapter run. Matches Ollama's default
-# OLLAMA_NUM_PARALLEL for GPU; on CPU Ollama still queues them so this just
-# ensures we don't spin up thousands of coroutines on large batches.
-_MAX_CONCURRENT_INGEST = 20
+# Caps concurrent LLM + embed calls per adapter run. Measured 2026-08-21 on
+# qwen2.5:3b (the extraction model) against this machine's Ollama: aggregate
+# throughput peaks at concurrency 8 (42.7 jobs/min) and *drops* at 12 (40.1)
+# and was worse still at the old value of 20, which just queued past Ollama's
+# own OLLAMA_NUM_PARALLEL=12 without adding throughput. Note this is specific
+# to the 3B extraction model — fit/pipeline.py's _MAX_CONCURRENT_ANALYSES
+# stays at 12 for the 7B fit model per docs/plans/FIT_THROUGHPUT_PLAN.md, and
+# OLLAMA_NUM_PARALLEL itself is left alone since fit already depends on 12.
+_MAX_CONCURRENT_INGEST = 8
+
+# Logged every N completions inside a source's extract+embed batch. Without
+# this, a long-running source (e.g. ~2,500 new Greenhouse postings) emits no
+# output between "Starting ingestion" and "Finished" and a healthy run has
+# already been mistaken for a hang and killed.
+_PROGRESS_LOG_EVERY = 25
 
 
 async def _prepare(
@@ -59,7 +70,26 @@ async def _prepare(
             return None
 
 
-async def run_ingestion(adapter: SourceAdapter, session: AsyncSession, ingested_via: str) -> None:
+def _map_posting(adapter: SourceAdapter, raw: dict) -> NormalizedJob | None:
+    """Map one raw posting, isolating adapter-specific parsing bugs to that
+    posting. Source APIs are untrusted input: a single unexpectedly-shaped
+    field (e.g. an array serialized as an object) must not abort the whole
+    source's batch the way a bare list comprehension over adapter.map() would.
+    """
+    try:
+        return adapter.map(raw)
+    except (KeyError, IndexError, TypeError, ValueError) as exc:
+        identifier = raw.get("url") or raw.get("slug") or raw.get("id") or "<unknown>"
+        logger.warning("Skipping malformed %s posting %s: %s", adapter.source, identifier, exc)
+        return None
+
+
+async def run_ingestion(
+    adapter: SourceAdapter,
+    session: AsyncSession,
+    ingested_via: str,
+    raw_postings: list[dict] | None = None,
+) -> None:
     """Fetch, dedupe, embed, and persist new postings from `adapter`.
 
     Two-phase: extract+embed runs concurrently across all new postings
@@ -67,9 +97,18 @@ async def run_ingestion(adapter: SourceAdapter, session: AsyncSession, ingested_
     the session is never touched from multiple coroutines. Each insert is its
     own savepoint so a constraint violation skips that posting without rolling
     back the rest.
+
+    `raw_postings` lets a caller (runner.py) supply results it already fetched
+    — e.g. while the previous adapter's LLM phase was running, since fetch()
+    never touches the session and is safe to overlap. Defaults to calling
+    adapter.fetch() here, unchanged from before, for any other caller.
     """
-    raw_postings = await adapter.fetch()
-    mapped_results = [adapter.map(raw) for raw in raw_postings]
+    if raw_postings is None:
+        raw_postings = await adapter.fetch()
+    logger.info("source=%s fetched %d raw postings", adapter.source, len(raw_postings))
+    mapped_results = [
+        job for raw in raw_postings if (job := _map_posting(adapter, raw)) is not None
+    ]
     hashed_results = {content_hash(r): r for r in mapped_results}
 
     # A posting is "already seen" if either its content hash or its URL is in the
@@ -102,18 +141,26 @@ async def run_ingestion(adapter: SourceAdapter, session: AsyncSession, ingested_
     }
 
     if not new_results:
+        logger.info("source=%s all postings already known; nothing new to prepare", adapter.source)
         return
 
     semaphore = asyncio.Semaphore(_MAX_CONCURRENT_INGEST)
-    outcomes: list[Job | None | BaseException] = list(
-        await asyncio.gather(
-            *(_prepare(r, h, ingested_via, semaphore) for h, r in new_results.items()),
-            return_exceptions=True,
-        )
-    )
+    total = len(new_results)
+    logger.info("source=%s %d new postings after dedup; preparing now", adapter.source, total)
+    tasks = [
+        asyncio.create_task(_prepare(r, h, ingested_via, semaphore)) for h, r in new_results.items()
+    ]
+    outcomes: list[Job | None | Exception] = []
+    for done, task in enumerate(asyncio.as_completed(tasks), start=1):
+        try:
+            outcomes.append(await task)
+        except Exception as exc:  # mirrors gather(..., return_exceptions=True)
+            outcomes.append(exc)
+        if done % _PROGRESS_LOG_EVERY == 0 or done == total:
+            logger.info("source=%s prepared %d/%d postings", adapter.source, done, total)
 
     for item in outcomes:
-        if isinstance(item, BaseException):
+        if isinstance(item, Exception):
             logger.warning("Unexpected error preparing posting: %s", item)
             continue
         if item is None:

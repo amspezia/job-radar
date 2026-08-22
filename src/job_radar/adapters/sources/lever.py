@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import re
 from datetime import UTC, datetime
@@ -14,6 +15,12 @@ _BOARD_URL = "https://api.lever.co/v0/postings/{token}?mode=json"
 _LINK_RE = re.compile(r"jobs\.lever\.co/([a-zA-Z0-9_-]+)")
 _TOKENS_CACHE = Path("data/lever_tokens.json")
 
+# See greenhouse.py's _BOARD_CONCURRENCY: each token is a distinct company's
+# board, not a shared rate-limited host, so this bounds connections/memory
+# rather than a server limit, and lets fetch overlap with the previous
+# adapter's LLM phase (see runner.py) instead of serializing behind it.
+_BOARD_CONCURRENCY = 20
+
 logger = logging.getLogger(__name__)
 
 
@@ -27,7 +34,6 @@ class LeverAdapter(SourceAdapter):
     source_type = "board"
 
     async def fetch(self) -> list[dict]:
-        jobs: list[dict] = []
         async with httpx.AsyncClient(timeout=30, headers={"User-Agent": USER_AGENT}) as client:
             tokens = await get_tokens(
                 client,
@@ -39,19 +45,33 @@ class LeverAdapter(SourceAdapter):
             if not tokens:
                 logger.warning("No Lever tokens available; skipping source.")
                 return []
-            for token in tokens:
-                try:
-                    resp = await client.get(_BOARD_URL.format(token=token))
-                    resp.raise_for_status()
-                except httpx.HTTPError as exc:
-                    logger.warning("Skipping Lever board '%s': %s", token, exc)
-                    continue
-                for posting in self._remote_jobs(resp.json()):
-                    # Lever postings carry no company name; the board token is
-                    # the company slug, so stash it for map() to derive one.
-                    posting["_token"] = token
-                    jobs.append(posting)
-        return jobs
+            semaphore = asyncio.Semaphore(_BOARD_CONCURRENCY)
+            boards = await asyncio.gather(
+                *(self._board(client, semaphore, token) for token in tokens)
+            )
+        return [job for board in boards for job in board]
+
+    @classmethod
+    async def _board(
+        cls, client: httpx.AsyncClient, semaphore: asyncio.Semaphore, token: str
+    ) -> list[dict]:
+        """Fetch and filter one company's board. [] on failure, isolating a
+        single dead board from the rest — a bare list comprehension over
+        every board's jobs would let one HTTP failure abort the whole fetch.
+        """
+        async with semaphore:
+            try:
+                resp = await client.get(_BOARD_URL.format(token=token))
+                resp.raise_for_status()
+            except httpx.HTTPError as exc:
+                logger.warning("Skipping Lever board '%s': %s", token, exc)
+                return []
+        postings = cls._remote_jobs(resp.json())
+        for posting in postings:
+            # Lever postings carry no company name; the board token is the
+            # company slug, so stash it for map() to derive one.
+            posting["_token"] = token
+        return postings
 
     @staticmethod
     def _remote_jobs(postings: list[dict]) -> list[dict]:

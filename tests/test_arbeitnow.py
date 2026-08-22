@@ -42,3 +42,12 @@ def test_map_non_remote_job_with_empty_fields(raw_jobs: list[dict]) -> None:
     assert job.remote is False
     assert job.location is None  # empty string -> None
     assert job.job_type is None  # empty job_types -> None
+
+
+def test_map_job_types_as_object_uses_first_value(raw_jobs: list[dict]) -> None:
+    # Arbeitnow serializes job_types as a JSON object instead of an array for
+    # some postings (non-sequential underlying array on their end) — this must
+    # not raise, and should extract the same kind of value a list would have.
+    job = ArbeitnowAdapter().map(raw_jobs[2])
+
+    assert job.job_type == "professional / experienced"
