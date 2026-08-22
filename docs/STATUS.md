@@ -1,6 +1,7 @@
 # Job Radar — Project Status & Agent Architecture Assessment
 
-> Snapshot as of **2026-08-15**. This document exists because the project's own history shows
+> Snapshot as of **2026-08-20** (updated from 2026-08-15 — see §1/§3/§4 for what changed). This
+> document exists because the project's own history shows
 > what happens without one: `docs/EVAL.md` (the newest tracked doc as of this writing) already
 > describes a search-config table one commit out of date with the code (§2.2 below). Treat this
 > as a living document, not another dated plan — update §1/§3 as code lands, and prefer editing
@@ -27,7 +28,7 @@
 | `application/` (Requirements/Drafting/Critic/Submission) | — | **Not started** |
 | `guardrails/` | — | **Not started** |
 | `app/` (FastAPI/MCP/web UI) | — | **Not started, deliberately deferred** (see §4 — not needed while driving everything via CLI) |
-| Observability (Langfuse/OTel) | Declared in `pyproject.toml`; **zero call sites** in the codebase | **Not started** |
+| Observability (Langfuse/OTel) | `generate()`/`embed()` wrapped as Langfuse generation/embedding observations (usage, retry count, redacted-by-default input/output); `analyze_fit` span with job/verdict/score; `retrieve`→`arm.*`→`fuse` retrieval spans (candidate counts, actual RRF weights); test suite fully isolated from real Langfuse via an autouse fixture | **C.1–C.3 done** (`docs/plans/phase-c/`); **C.4 (cost pricing) and C.5 (validation exercise) not started** |
 
 ### 1.2 CLI surface (`pyproject.toml [project.scripts]`)
 
@@ -37,11 +38,33 @@ today is driven through these — no server process required.
 
 ### 1.3 Uncommitted work in the tree right now
 
-`fit/cache.py`, an Alembic migration adding `fit_judgments_cache`, and touch-ups to
-`generation.py`, `config.py`, `db/models.py`, `fit/{analyze,cli,pipeline,schema}.py`,
-`retrieval/filters.py`, and their tests — this is the persistent-cache half of
-`docs/plans/FIT_THROUGHPUT_PLAN.md` (§3 of that doc), already working per the diff. Worth
-committing before starting new work so it isn't sitting in a half-finished state indefinitely.
+The 08-15 fit-cache work (§1.3 as it read then) is now committed. What's uncommitted as of
+08-20, all working and tested (290/291 passing — the one failure is the pre-existing golden-eval
+gate issue, see §4):
+
+- **Phase C.1–C.3 observability** (`adapters/{generation,embeddings,providers,tracing}.py`,
+  `fit/analyze.py`, `retrieval/search.py`, `eval/qrels.py`, `tests/conftest.py`'s autouse
+  Langfuse fixture) — see the updated observability row in §1.1.
+- **Two real bugs found and fixed during tonight's session**, unrelated to observability:
+  `adapters/sources/arbeitnow.py` crashed the whole source's ingestion batch on postings where
+  Arbeitnow serializes `job_types` as a JSON object instead of an array; `ingest/pipeline.py`'s
+  per-record mapping had no failure isolation, so one malformed posting aborted the entire
+  source. Both fixed with regression tests.
+- **Timeout/isolation fix in `adapters/providers.py` + `fit/pipeline.py`**: `generate()`'s HTTP
+  call used a flat 600s timeout covering connect/read/write/pool alike, so a single stuck Ollama
+  request could hold a concurrency-limiting semaphore slot (and silently stall the whole batch)
+  for up to ~20 minutes across retries, with zero intermediate logging — indistinguishable from a
+  real hang. Split into granular per-leg timeouts (connect/write/pool=10s, read=120s) so a genuine
+  hang fails fast; `fit/pipeline.py::_bounded_analyze` also now catches any unexpected
+  per-job exception so one job's failure can never cancel or block the rest of the batch via
+  `asyncio.gather`.
+- **A real, still-*unfixed*, bug found tonight**: `ingest/dedup.py::content_hash` keys identity
+  on `company + title + location`. Several remote-only aggregator sources (Mindrift, CapsLock,
+  Bjak, Bluelight Consulting) post the identical role once per eligible country, so each country
+  is treated as a distinct posting — up to **27 duplicate rows for one real job**, confirmed live
+  in the DB. This crowds the BM25 candidate pool and wastes fit-analysis LLM calls. Recommended
+  fix (exclude `location` from the hash when `job.remote is True`) is written up but not yet
+  applied — see §4.
 
 ---
 
@@ -141,7 +164,7 @@ Against `DESIGN.md` §17's three phases and `PHASE_1_DESIGN.md`'s nine Phase-1 m
 | M4 | LangGraph search/fit graph | **Not started — this is the current focus** |
 | M5 | Surfaces (MCP / FastAPI / web UI) | **Deliberately deferred** — not needed while CLI-driven |
 | M6 | Eval harness + CI gate | Done, and extended beyond the original plan (BPref added; synthetic pool-bias mitigation designed but not built) |
-| M7 | Observability + cost (OTel → Langfuse, PII redaction) | **Not started** — dependencies declared, zero instrumentation |
+| M7 | Observability + cost (OTel → Langfuse, PII redaction) | **In progress** — C.1–C.3 done (traces flowing for generation/embedding/retrieval, redaction-by-default, autouse test isolation); C.4 (cost pricing) + C.5 (validation exercise) remain |
 | M8 | Deployment + README | Not started |
 
 **Phase 2** (Requirements/Drafting/Critic agents, HITL, Submission Handler, guardrails) and
@@ -152,21 +175,38 @@ building Phase 2's real agents.
 
 ## 4. Next steps
 
-**Immediate:**
-1. Commit the in-flight fit-cache work (§1.3) rather than let it sit uncommitted.
-2. Correct `docs/EVAL.md`'s config table (§2.2 item 1–2).
+**Immediate — commit and clean up:**
+1. Commit tonight's uncommitted work (§1.3): Phase C.1–C.3 observability, the arbeitnow/pipeline
+   bug fixes, and the timeout/isolation fix. All tested and lint-clean.
+2. Correct `docs/EVAL.md`'s config table — **still not done**, carried over from 08-15 (still
+   documents the removed `vector_only` config and the wrong 5/2/1 BM25 boost default; live is
+   5/**3**/1, see `retrieval/bm25.py`).
+3. **Fix the `content_hash` location-dedup bug (§1.3)** — recommend doing this *before* the
+   ingestion expansion below, since more sources compounds the pollution rather than diluting it.
+4. Resolve the 134-`llm-fully-auto`/77-`human` mixed-state job labels left over from a cancelled
+   relabeling run — deferred earlier, still open, blocks trusting the eval gate's golden baseline
+   (`test_ndcg_meets_golden_threshold` currently fails against the real DB for this reason, not a
+   code regression).
 
-**Current focus — close out Phase 1 (M4 + M7), no `app/` needed:**
-3. Design + build a small LangGraph graph over the existing search+fit pipeline. Decided in this
+**New — ingestion expansion.** The corpus (11.4k rows, 6 sources) is too narrow to actually
+job-search against, per direct user feedback. Full research + phased design in
+`docs/plans/INGESTION_EXPANSION_DESIGN.md` (written 08-20, sites verified live). Headline: three
+new ATS adapters (Ashby, Workable, SmartRecruiters — ~700 companies, reuses the *existing*
+`discovery.py` mechanism, near-zero new code) are the highest-ROI next move, followed by two new
+aggregators (RemoteOK, The Muse — the latter alone has 100k+ postings). Workday and Adzuna are
+real but bigger/costlier phases. LinkedIn/Indeed explicitly ruled out — both prohibit scraping in
+their ToS.
+
+**Current focus — close out Phase 1 (M4 + rest of M7), no `app/` needed:**
+5. Design + build a small LangGraph graph over the existing search+fit pipeline. Decided in this
    conversation: linear `interpret → retrieve → fit → END`, no separate Supervisor node (nothing
    branches yet), a new `interpret` node (NL ask → structured `FitCriteria`, genuinely new
    capability) sitting in front of `retrieve`/`fit` nodes that are thin extractions of what
    `fit/pipeline.py::run_fit_pipeline` already does.
-4. Wire Langfuse/OTel tracing through the two existing LLM call sites (HyDE synthesis,
-   `analyze_fit`) before adding the interpret node's new call, to get a trace baseline on known
-   behavior first.
-5. New `job-radar-agent` CLI entrypoint running the graph.
-6. M8 (deployment/README) — low priority until there's a working agent graph worth demoing.
+6. C.4 (cost pricing in Langfuse) + C.5 (validation exercise reproducing a known bug through a
+   trace) to close out M7 — see `docs/plans/phase-c/{04-cost-tracking,05-validation-and-acceptance}.md`.
+7. New `job-radar-agent` CLI entrypoint running the graph.
+8. M8 (deployment/README) — low priority until there's a working agent graph worth demoing.
 
 **Later — Phase 2, once M4/M7 are solid:** design and build the real agents one at a time,
 following this project's own established pattern (a `*_DESIGN.md` exploring options, then a

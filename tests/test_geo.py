@@ -18,29 +18,28 @@ def test_matching_location_is_allowed() -> None:
 
 
 def test_location_present_but_non_matching_is_rejected_despite_prose() -> None:
-    # The leak this fixes: "global"/"worldwide" in marketing prose must NOT
-    # rescue a posting that states a non-allowed hiring location.
+    # "global"/"worldwide" in marketing prose must NOT rescue a posting that
+    # states a non-allowed hiring location.
     job = _job(location="United Kingdom", description="an open, global collaborative culture")
     assert region_allowed(job, _KEYWORDS) is False
 
 
-def test_null_location_falls_back_to_prose() -> None:
-    job = _job(location=None, description="We hire developers worldwide.")
-    assert region_allowed(job, _KEYWORDS) is True
+def test_null_location_is_allowed_by_default() -> None:
+    assert region_allowed(_job(location=None, description="Join our team."), _KEYWORDS) is True
 
 
-def test_null_location_without_signal_is_rejected() -> None:
-    assert region_allowed(_job(location=None, description="Join our team."), _KEYWORDS) is False
+def test_bare_remote_location_is_allowed_by_default() -> None:
+    # "Remote" alone is not evidence of being e.g. US-only -- unlike an
+    # explicit "Remote - United States", it carries no country signal at all.
+    assert region_allowed(_job(location="Remote"), _KEYWORDS) is True
+    assert region_allowed(_job(location="Fully Remote"), _KEYWORDS) is True
 
 
-def test_short_key_matches_location_only_not_prose() -> None:
+def test_short_key_matches_structured_location_only() -> None:
     # "br" must match the structured location but never free text (would hit
-    # "library", "abbreviation", ...).
+    # "library", "abbreviation", ...). Free text is never consulted now, since
+    # a missing/no-signal location already passes by default.
     assert region_allowed(_job(location="BR"), _KEYWORDS) is True
-    assert (
-        region_allowed(_job(location=None, description="our library of br tools"), _KEYWORDS)
-        is False
-    )
 
 
 def test_word_boundary_prevents_substring_match() -> None:

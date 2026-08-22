@@ -1,3 +1,4 @@
+import asyncio
 import html
 import logging
 import re
@@ -15,6 +16,20 @@ _BOARD_URL = "https://boards-api.greenhouse.io/v1/boards/{token}/jobs"
 _LINK_RE = re.compile(r"(?:boards|job-boards)\.greenhouse\.io/([a-zA-Z0-9_-]+)")
 _TOKENS_CACHE = Path("data/greenhouse_tokens.json")
 
+# Each token is a distinct company's board, not one rate-limited host, so this
+# is bounded for connection/memory hygiene rather than to respect a shared
+# server's limit — with 211 boards, fetching them one at a time serializes
+# pure network wait while the GPU (busy with the previous adapter's LLM phase)
+# sits idle, and vice versa.
+_BOARD_CONCURRENCY = 20
+
+# `location.name` is scoped to one representative country per requisition even
+# for companies that hire more broadly. Some boards additionally expose the
+# real eligible set as a custom metadata field (seen live on EOR-style
+# employers like "Remote") -- far more reliable than the free-text location,
+# so fold it in when present.
+_TARGET_METADATA_FIELDS = {"target countries for posting", "target region for posting"}
+
 logger = logging.getLogger(__name__)
 
 
@@ -28,7 +43,6 @@ class GreenHouseAdapter(SourceAdapter):
     source_type = "board"
 
     async def fetch(self) -> list[dict]:
-        jobs: list[dict] = []
         async with httpx.AsyncClient(timeout=30, headers={"User-Agent": USER_AGENT}) as client:
             tokens = await get_tokens(
                 client,
@@ -40,17 +54,28 @@ class GreenHouseAdapter(SourceAdapter):
             if not tokens:
                 logger.warning("No Greenhouse tokens available; skipping source.")
                 return []
-            for token in tokens:
-                try:
-                    resp = await client.get(
-                        _BOARD_URL.format(token=token), params={"content": "true"}
-                    )
-                    resp.raise_for_status()
-                except httpx.HTTPError as exc:
-                    logger.warning("Skipping Greenhouse board '%s': %s", token, exc)
-                    continue
-                jobs.extend(self._remote_jobs(resp.json()["jobs"]))
-        return jobs
+            semaphore = asyncio.Semaphore(_BOARD_CONCURRENCY)
+            boards = await asyncio.gather(
+                *(self._board(client, semaphore, token) for token in tokens)
+            )
+        return [job for board in boards for job in board]
+
+    @classmethod
+    async def _board(
+        cls, client: httpx.AsyncClient, semaphore: asyncio.Semaphore, token: str
+    ) -> list[dict]:
+        """Fetch and filter one company's board. [] on failure, isolating a
+        single dead board from the rest — a bare list comprehension over
+        every board's jobs would let one HTTP failure abort the whole fetch.
+        """
+        async with semaphore:
+            try:
+                resp = await client.get(_BOARD_URL.format(token=token), params={"content": "true"})
+                resp.raise_for_status()
+            except httpx.HTTPError as exc:
+                logger.warning("Skipping Greenhouse board '%s': %s", token, exc)
+                return []
+        return cls._remote_jobs(resp.json()["jobs"])
 
     @staticmethod
     def _remote_jobs(jobs: list[dict]) -> list[dict]:
@@ -59,6 +84,20 @@ class GreenHouseAdapter(SourceAdapter):
             for job in jobs
             if "remote" in ((job.get("location") or {}).get("name") or "").lower()
         ]
+
+    @staticmethod
+    def _location(raw: dict) -> str | None:
+        location = (raw.get("location") or {}).get("name")
+        targets: list[str] = []
+        for field in raw.get("metadata") or []:
+            if (field.get("name") or "").strip().lower() not in _TARGET_METADATA_FIELDS:
+                continue
+            values = field.get("value")
+            if isinstance(values, list):
+                targets.extend(str(v) for v in values if v)
+        if not targets:
+            return location
+        return ", ".join(filter(None, [location, *targets]))
 
     @staticmethod
     def _salary(content_html: str) -> ParsedSalary:
@@ -77,7 +116,7 @@ class GreenHouseAdapter(SourceAdapter):
         content = html.unescape(raw.get("content") or "")
         salary = self._salary(content)
         published = raw.get("first_published")
-        location = (raw.get("location") or {}).get("name")
+        location = self._location(raw)
         return NormalizedJob(
             source=self.source,
             source_type=self.source_type,

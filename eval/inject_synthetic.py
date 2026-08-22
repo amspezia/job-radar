@@ -22,7 +22,7 @@ import asyncio
 import logging
 from datetime import UTC, datetime
 
-from sqlalchemy import delete
+from sqlalchemy import delete, or_, select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -162,12 +162,26 @@ async def _inject_persona(session: AsyncSession, persona_id: str) -> int:
 
 async def _teardown(session: AsyncSession) -> None:
     ids = [personas_lib.profile_uuid(pid) for pid in personas_lib.persona_ids()]
+    synthetic_job_ids = select(Job.id).where(Job.source == _SOURCE)
     await session.execute(delete(EvalLabel).where(EvalLabel.profile_id.in_(ids)))
-    await session.execute(delete(FitJudgmentCache).where(FitJudgmentCache.profile_id.in_(ids)))
-    await session.execute(delete(Job).where(Job.source == _SOURCE))
-    await session.execute(delete(Profile).where(Profile.id.in_(ids)))
+    # Scoped by job_id as well as profile_id: a real (non-synthetic) profile can
+    # end up with cached judgments pointing at a synthetic job -- e.g. before
+    # run_fit_pipeline excluded source="synthetic" from production retrieval, any
+    # such job it scored got cached under the real profile's id, not a persona's.
+    # Deleting only by persona profile_id would leave that row FK-blocking the Job
+    # delete below.
+    await session.execute(
+        delete(FitJudgmentCache).where(
+            or_(
+                FitJudgmentCache.profile_id.in_(ids),
+                FitJudgmentCache.job_id.in_(synthetic_job_ids),
+            )
+        )
+    )
+    jobs_deleted = (await session.execute(delete(Job).where(Job.source == _SOURCE))).rowcount
+    profiles_deleted = (await session.execute(delete(Profile).where(Profile.id.in_(ids)))).rowcount
     await session.commit()
-    print(f"Removed synthetic data for {len(ids)} personas.")
+    print(f"Removed {jobs_deleted} synthetic jobs and {profiles_deleted} personas.")
 
 
 async def _run(teardown: bool) -> None:

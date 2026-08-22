@@ -16,5 +16,22 @@
     "first_published": "2026-04-10T09:00:00-04:00",
     "location": {"name": "Remote, Worldwide"},
     "content": "&lt;p&gt;Own the &lt;em&gt;roadmap&lt;/em&gt;.&lt;/p&gt;"
+  },
+  {
+    "id": 8503792004,
+    "absolute_url": "https://job-boards.greenhouse.io/acme/jobs/8503792004",
+    "title": "Senior Backend Engineer (Elixir)",
+    "company_name": "Acme",
+    "first_published": "2026-04-12T09:00:00-04:00",
+    "location": {"name": "Remote - Romania"},
+    "metadata": [
+      {"name": "Target region for posting", "value": ["EMEA"], "value_type": "multi_select"},
+      {
+        "name": "Target countries for posting",
+        "value": ["Brazil", "Poland", "Romania"],
+        "value_type": "multi_select"
+      }
+    ],
+    "content": "&lt;p&gt;Build backend services.&lt;/p&gt;"
   }
 ]

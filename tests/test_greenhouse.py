@@ -1,7 +1,9 @@
+import asyncio
 import json
 from datetime import datetime
 from pathlib import Path
 
+import httpx
 import pytest
 
 from job_radar.adapters.sources.greenhouse import GreenHouseAdapter
@@ -48,6 +50,18 @@ def test_map_job_without_pay_range_has_no_salary(raw_jobs: list[dict]) -> None:
     assert job.description == "Own the roadmap ."
 
 
+def test_map_job_folds_target_country_metadata_into_location(raw_jobs: list[dict]) -> None:
+    job = GreenHouseAdapter().map(raw_jobs[2])
+
+    assert job.location == "Remote - Romania, EMEA, Brazil, Poland, Romania"
+
+
+def test_map_job_without_metadata_keeps_bare_location(raw_jobs: list[dict]) -> None:
+    job = GreenHouseAdapter().map(raw_jobs[0])
+
+    assert job.location == "Remote, US"
+
+
 def test_remote_jobs_keeps_only_remote_locations() -> None:
     jobs = [
         {"location": {"name": "Remote, US"}},
@@ -57,3 +71,35 @@ def test_remote_jobs_keeps_only_remote_locations() -> None:
         {},  # no location key at all
     ]
     assert GreenHouseAdapter._remote_jobs(jobs) == [{"location": {"name": "Remote, US"}}]
+
+
+async def test_board_returns_only_remote_jobs() -> None:
+    class _Resp:
+        def raise_for_status(self) -> None:
+            return None
+
+        def json(self) -> dict:
+            return {
+                "jobs": [
+                    {"location": {"name": "Remote"}},
+                    {"location": {"name": "New York"}},
+                ]
+            }
+
+    class _Client:
+        async def get(self, url: str, params: dict | None = None) -> _Resp:
+            return _Resp()
+
+    jobs = await GreenHouseAdapter._board(_Client(), asyncio.Semaphore(1), "acme")
+
+    assert jobs == [{"location": {"name": "Remote"}}]
+
+
+async def test_board_returns_empty_list_on_http_error_without_raising() -> None:
+    class _Client:
+        async def get(self, url: str, params: dict | None = None) -> object:
+            raise httpx.ConnectError("boom", request=httpx.Request("GET", url))
+
+    jobs = await GreenHouseAdapter._board(_Client(), asyncio.Semaphore(1), "acme")
+
+    assert jobs == []
