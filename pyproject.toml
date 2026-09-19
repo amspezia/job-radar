@@ -47,6 +47,8 @@ dev = [
     "pre-commit>=4.0",
     # Eval harness: ranked-list evaluation + significance tests (M6).
     "ranx>=0.3",
+    # Embedding-eval harness: vector math, rankings and the paired bootstrap.
+    "numpy>=2.0",
 ]
 
 [project.scripts]
@@ -61,6 +63,8 @@ job-radar-eval-sweep = "eval.sweep:main"
 job-radar-eval-inject-synthetic = "eval.inject_synthetic:main"
 job-radar-eval-run-synthetic = "eval.run_synthetic:main"
 job-radar-eval-profile-parsing = "eval.eval_profile_parsing:main"
+job-radar-evals-db = "eval.evals_db.cli:main"
+job-radar-eval-embedding = "eval.embedding.cli:main"
 
 [build-system]
 requires = ["hatchling"]

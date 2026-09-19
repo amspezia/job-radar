@@ -119,3 +119,67 @@ eval-reset-labels:
     #!/usr/bin/env bash
     set -euo pipefail
     uv run python scripts/reset_eval_labels.py
+
+# ---------------------------------------------------------------------------
+# EVALS database — the separate database the embedding-eval harness owns
+# ---------------------------------------------------------------------------
+
+# Create EVALS_DATABASE_URL's database if absent, then migrate it to head
+evals-db-init:
+    uv run job-radar-evals-db init
+
+# Upgrade the EVALS database to head
+evals-db-migrate:
+    uv run job-radar-evals-db migrate
+
+# Current revision and row counts of the embedding_* tables
+evals-db-status:
+    uv run job-radar-evals-db status
+
+# ---------------------------------------------------------------------------
+# Embedding eval harness — topics, runs, judge and metrics
+# ---------------------------------------------------------------------------
+
+# Import a tier's pool and queries into the EVALS database (reads prod read-only)
+embedding-import *args:
+    uv run job-radar-eval-embedding import-topic {{args}}
+
+# Fill the vector cache for a topic without creating runs (uses eval Ollama on :11435)
+embedding-embed *args:
+    OLLAMA_BASE_URL={{_EVAL_OLLAMA_URL}} uv run job-radar-eval-embedding embed {{args}}
+
+# Embed, rank and store a full ranking per embedder (uses eval Ollama on :11435)
+embedding-run *args:
+    OLLAMA_BASE_URL={{_EVAL_OLLAMA_URL}} uv run job-radar-eval-embedding run {{args}}
+
+# Run the parity checks that prove the import reproduces production's dense arm
+embedding-verify *args:
+    uv run job-radar-eval-embedding verify {{args}}
+
+# Grade postings yourself, blind to every model score: the only gold labels
+embedding-label *args:
+    uv run job-radar-eval-embedding label-blind {{args}}
+
+# Grade a topic's pool with the LLM judge (uses eval Ollama on :11435)
+embedding-judge *args:
+    OLLAMA_BASE_URL={{_EVAL_OLLAMA_URL}} uv run job-radar-eval-embedding judge {{args}}
+
+# Score a judge run against your blind labels
+embedding-judge-calibrate *args:
+    uv run job-radar-eval-embedding judge-calibrate {{args}}
+
+# Metrics, bootstrap intervals and negative controls for a topic
+embedding-evaluate *args:
+    uv run job-radar-eval-embedding evaluate {{args}}
+
+# List the imported topics
+embedding-topics:
+    uv run job-radar-eval-embedding topics
+
+# Back up the human label rows as JSON
+embedding-labels-export *args:
+    uv run job-radar-eval-embedding labels-export {{args}}
+
+# Restore human label rows from a JSON backup
+embedding-labels-import *args:
+    uv run job-radar-eval-embedding labels-import {{args}}

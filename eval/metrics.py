@@ -69,6 +69,26 @@ def recall_at_k(
     return hits / total_relevant
 
 
+def average_precision(
+    ranking: list[UUID], labels: dict[UUID, int], rel_threshold: int = 2
+) -> float:
+    """AP: mean over all relevant docs (grade ≥ rel_threshold) of precision at their rank.
+
+    Denominator is the total relevant count in `labels`, so a relevant doc missing
+    from `ranking` contributes 0. Returns 0.0 when there are no relevant docs.
+    """
+    total_relevant = sum(1 for g in labels.values() if g >= rel_threshold)
+    if total_relevant == 0:
+        return 0.0
+    hits = 0
+    score = 0.0
+    for i, doc_id in enumerate(ranking, start=1):
+        if labels.get(doc_id, 0) >= rel_threshold:
+            hits += 1
+            score += hits / i
+    return score / total_relevant
+
+
 def bpref(ranking: list[UUID], labels: dict[UUID, int], rel_threshold: int = 2) -> float:
     """BPref: robust to incomplete judgments (Buckley & Voorhees 2004).
 
@@ -91,5 +111,7 @@ def bpref(ranking: list[UUID], labels: dict[UUID, int], rel_threshold: int = 2) 
         if doc_id in non_relevant:
             non_rel_seen += 1
         elif doc_id in relevant:
-            score += 1.0 - (non_rel_seen / norm if norm > 0 else 0.0)
+            # Only the first min(R, N) judged non-relevant docs count against a relevant one
+            # (Buckley & Voorhees): uncapped, a complete-label ranking can score below 0.
+            score += 1.0 - (min(non_rel_seen, norm) / norm if norm > 0 else 0.0)
     return score / R

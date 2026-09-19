@@ -1,0 +1,66 @@
+# The candidate embedders — the only place a candidate is defined.
+#
+# All six embed the same frozen production text, so the only variable is the
+# model (plus, for the d768 variant, its Matryoshka width). num_ctx is sent
+# identically to every candidate but does NOT equalize truncation: Ollama caps
+# nomic-embed-text and bge-m3 at 2,048 tokens whatever this says, while Qwen3
+# honors 8,192. Truncation is detected per document (truncate=false -> HTTP 400),
+# never inferred from num_ctx or the token count.
+
+[[embedder]]
+# Production today: every stored vector carries this prefix (F2).
+name = "nomic-v1.5"
+backend = "ollama"
+model = "nomic-embed-text"
+num_ctx = 8192
+doc_prefix = "search_document: "
+mrl = true
+incumbent = true
+
+[[embedder]]
+# Same model, HyDE text embedded as a query instead of a document — the one
+# thing production's own dense arm could change without a re-embed.
+name = "nomic-v1.5-hyde-query"
+backend = "ollama"
+model = "nomic-embed-text"
+num_ctx = 8192
+doc_prefix = "search_document: "
+hyde_prefix = "search_query: "
+mrl = true
+
+[[embedder]]
+name = "qwen3-0.6b-noinst"
+backend = "ollama"
+model = "qwen3-embedding:0.6b"
+num_ctx = 8192
+doc_prefix = ""
+mrl = true
+
+[[embedder]]
+# Qwen3-Embedding's official query template is "Instruct: {task}\nQuery:{query}" —
+# no space after "Query:" — with no prefix on documents.
+name = "qwen3-0.6b-instruct"
+backend = "ollama"
+model = "qwen3-embedding:0.6b"
+num_ctx = 8192
+doc_prefix = ""
+hyde_prefix = "Instruct: Given a job description, retrieve similar job postings\nQuery:"
+mrl = true
+
+[[embedder]]
+# 1024 -> 768: what does a quarter off the vector cost on this corpus?
+name = "qwen3-0.6b-instruct-d768"
+backend = "ollama"
+model = "qwen3-embedding:0.6b"
+num_ctx = 8192
+doc_prefix = ""
+hyde_prefix = "Instruct: Given a job description, retrieve similar job postings\nQuery:"
+mrl = true
+dim = 768
+
+[[embedder]]
+name = "bge-m3"
+backend = "ollama"
+model = "bge-m3"
+num_ctx = 8192
+doc_prefix = ""

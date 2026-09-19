@@ -38,6 +38,29 @@ just test        # uv run pytest
 uv run pre-commit run --all-files
 ```
 
+Embedding-model eval harness (runbook: `docs/EVAL.md`; needs `EVALS_DATABASE_URL`):
+
+```bash
+just evals-db-init                          # create + migrate the EVALS database (idempotent)
+just evals-db-migrate                       # alembic upgrade head on the EVALS database
+just evals-db-status                        # current revision + embedding_* row counts
+just embedding-import --tier A --name <t>   # read-only copy of the prod pool and HyDE texts (no labels)
+just embedding-embed --topic <t>            # fill the vector cache
+just embedding-run --topic <t> --embedder all --per-text   # exact-cosine rankings per candidate
+just embedding-verify --topic <t>           # parity checks against prod's dense arm
+just embedding-label --topic <t> --n 50                    # blind-label jobs yourself: the only gold
+just embedding-judge --topic <t> --model <m>               # Gemma silver labels for every job
+just embedding-judge-calibrate --topic <t> --judge-run <id>   # agreement with your blind labels (gate)
+just embedding-evaluate --topic <t> --view all --judge-run <id>   # metrics, intervals, controls
+just embedding-topics                       # list topics: pool size, tier, labels by source
+just embedding-labels-export --topic <t>    # your blind labels to JSON (backup)
+just embedding-labels-import --topic <t> --file <path>     # restore them
+```
+
+The existing test suite writes to `DATABASE_URL` when run locally (`just test` included), so run
+only the harness tests (`uv run pytest tests/test_evals_*.py tests/test_embedding_*.py`); they use
+throwaway `job_radar_evals_test_*` databases.
+
 CI (`.github/workflows/ci.yml`) runs `ruff check`, `ruff format --check`, `pytest`, and a
 gitleaks scan on every push to `main` and every PR. Keep every commit lint-clean and CI-green.
 
@@ -48,6 +71,11 @@ application, guardrails) · `eval/` labeled sets + metrics + golden queries · `
 scheduler · `docs/` design + diagrams. Subpackages land **with their features**, not as empty
 stubs up front.
 
+- `eval/evals_db/` — infrastructure for the separate EVALS database (settings, admin, read-only
+  prod reader); its migrations live in `alembic_evals/`.
+- `eval/embedding/` — the dense-only embedding-model comparison harness (tiers, embedders, judge,
+  scoring, `evaluate`); candidates are defined in `eval/embedders.toml`.
+
 ## Hygiene — load-bearing, this project's whole thesis is safety/observability
 
 - **Never commit** real secrets, `.env`, `.venv/`, data dumps, model weights (`*.gguf`/
@@ -55,6 +83,10 @@ stubs up front.
   repo. Profile data is runtime data in Postgres, never in git.
 - `.env` is gitignored; **`.env.example` is the committed contract** — every required var with
   a safe placeholder. gitleaks runs in pre-commit *and* CI as the backstop.
+- The embedding-eval harness only ever **reads** prod, through a read-only connection (this
+  guards against accidents, not a deliberate override). Its data lives in the separate EVALS
+  database and gitignored `data/`, and `cv_text` is scrubbed of PII (best effort) before it is
+  stored.
 - Don't fabricate metrics in the README — real numbers land when they exist.
 
 ## Keep it intentional — no boilerplate

@@ -12,6 +12,7 @@ from job_radar.adapters.embeddings import embed
 from job_radar.adapters.sources.base import NormalizedJob, SourceAdapter
 from job_radar.db.models import Job
 from job_radar.ingest.dedup import content_hash
+from job_radar.ingest.embed_text import build_embed_text
 from job_radar.ingest.extract import extract_fields
 from job_radar.retrieval.seniority import normalize_level
 
@@ -48,12 +49,7 @@ async def _prepare(
     async with semaphore:
         try:
             requirements, responsibilities = await extract_fields(r.description)
-            # Embed role-specific content only; fall back to full description
-            # when extraction produced nothing (LLM failure or very short posting).
-            if requirements or responsibilities:
-                embed_text = "\n".join(filter(None, [r.title, requirements, responsibilities]))
-            else:
-                embed_text = f"{r.title}\n{r.description}"
+            embed_text = build_embed_text(r.title, r.description, requirements, responsibilities)
             embedding = await embed(embed_text, task="document")
             return Job(
                 **asdict(r),

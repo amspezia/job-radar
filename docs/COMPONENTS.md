@@ -354,6 +354,70 @@ The largest subsystem by design-doc investment (see [STATUS.md](STATUS.md) §2 c
 **Depends on:** retrieval primitives directly, fit (for auto-prelabeling), `ranx` (soft
 dependency, degrades gracefully if not installed).
 
+### Embedding-model evaluation — `eval/embedding/`, `eval/evals_db/`, `eval/llm/`
+
+**Status:** Stage 1 built (Tier A, the real profile). Real-data acceptance and the full-pool
+judge run are operator steps — runbook and output guide in [EVAL.md](EVAL.md). Design:
+[plans/EMBEDDING_EVAL_DESIGN.md](plans/EMBEDDING_EVAL_DESIGN.md); build plan:
+[plans/EMBEDDING_EVAL_IMPLEMENTATION_PLAN.md](plans/EMBEDDING_EVAL_IMPLEMENTATION_PLAN.md).
+
+**Purpose:** answer the one question the system-level eval above can't — *which embedding model
+ranks this pool best?*
+
+**Entry points:** `job-radar-evals-db` (`init` / `migrate` / `status`), `job-radar-eval-embedding`
+(`import-topic`, `embed`, `run`, `verify`, `label-blind`, `judge`, `judge-calibrate`, `evaluate`,
+`topics`, `labels-export`, `labels-import`).
+
+**Boundaries:**
+
+- **Dense-only.** No BM25, no RRF; the profile filter, HyDE texts and production embed text are
+  frozen inputs, so the embedder is the only variable.
+- **Prod is read-only.** Data is copied one way through a `default_transaction_read_only`
+  connection whose setting is asserted on entry (accident-proof, not adversary-proof); prod row
+  counts and Alembic revision are printed before and after.
+  Only `evals_db/prod_reader.py`, `embedding/tiers/tier_a.py` and `embedding/parity.py` may import
+  `job_radar.*`, enforced by an AST test and a clean-interpreter subprocess test.
+- **Separate EVALS database** (`job_radar_evals`, `EVALS_DATABASE_URL`): `embedding_*` tables,
+  its own Alembic history, never the prod one.
+- **No CI evaluation.** Its tests run in CI on throwaway `job_radar_evals_test_*` databases; the
+  evaluation itself is manual and does not touch `just eval-run` or the golden gate.
+- Two prod-side changes only: `ingest/embed_text.py::build_embed_text` (extracted from
+  `ingest/pipeline.py`, behavior-preserving, so import and ingest build the same text) and
+  `average_precision` in `eval/metrics.py`.
+
+**Modules:**
+
+- **`eval/evals_db/`** — `settings.py` (rejects an EVALS URL naming the prod database), `base.py`
+  (`EvalsBase`, engine/session), `admin.py` (create/drop/migrate; drop refuses names without
+  `_test_`), `prod_reader.py` (read-only session, row counts), `cli.py`.
+  **`alembic_evals/`** — pgvector extension and the ten `embedding_*` tables.
+- **`eval/llm/ollama.py`** — the harness's own Ollama client (`embed`, `chat_json`, `tags`,
+  `version`, warm); no Langfuse or `job_radar` imports.
+- **`eval/embedding/`** — `models.py`; `labels.py` (sources `human_blind` > `constructed` >
+  `llm_judge`, resolved into the views `silver` / `human` / `effective`);
+  `tiers/` (`base.py`: tier-agnostic `persist_topic`; `tier_a.py`: builder, PII scrub of
+  `cv_text`); `embedders/` + `eval/embedders.toml`; `methods/dense.py`; `cache.py` (vectors per
+  embedder fingerprint); `ranking.py`; `runner.py`; `judge/` (Gemma judge, few-shot, calibration,
+  runner); `checks.py` + `parity.py`; `scoring.py`; `evaluate.py`; `label_blind.py` (the user's blind grading, the only gold); `labels_io.py`; `cli.py`.
+
+**Flow:** import a frozen topic (documents + HyDE texts; no labels, since the prod ones are LLM-made) → embed and rank per candidate
+→ verify parity with prod's dense arm → label every job with a locally run `Gemma3:12b` judge
+(a different family from the qwen2.5 HyDE generator), with few-shot exemplars from and
+calibrated against the user's ~50 blind labels → `evaluate` recomputes metrics from stored rankings and current labels, so new labels
+never require re-embedding. `label-blind` collects those first ~50 (pooled + random); more blind labeling is Stage 2.
+
+**Extension seams** — each is a small protocol or table with one implementation today:
+
+| To add… | Implement | Core change |
+|---|---|---|
+| A tier (Tier B, C) | `TopicBuilder.build() -> TopicPayload`; lazy branch in `cli.py` | None |
+| A ranking method | `RankingMethod` (`fingerprint`, `prepare`, `rank`, `stats`) | None |
+| An embedder | An `[[embedder]]` entry in `eval/embedders.toml` + `ollama pull` | None |
+| A non-Ollama embedder | `Embedder` implementation; branch in `build_embedder` | One branch |
+| A judge (paid API) | `Judge.grade(job) -> Judgment` | None |
+| A label source / metric | A constant in `labels.py` / an entry in the `scoring.py` metric table | None |
+| Another eval family | `<family>_*` tables + migration + a package under `eval/` | Import in `alembic_evals/env.py` |
+
 ---
 
 ## Cross-cutting pattern worth preserving

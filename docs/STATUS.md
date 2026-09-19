@@ -24,6 +24,7 @@
 | `fit/cache.py` | Persistent fit-judgment cache keyed on `(profile_id, job_id, content_hash, model, prompt_version)` | **Uncommitted**, working |
 | `quality/` | Per-source data-quality metrics (salary/location/HTML-leakage/short-description rates) for ingest health checks | Built |
 | `eval/` | TREC-style offline retrieval eval: nDCG@10 (primary), Recall@50, MRR, P@5/P@10, BPref; LLM-assisted labeling with human review; OAT parameter sweep; CI golden-config regression gate | Built |
+| `eval/embedding/` + `eval/evals_db/` + `eval/llm/` | Standalone embedding-model comparison harness (dense-only) on a **separate EVALS database** (`job_radar_evals`, `embedding_*` tables; prod is only read, through a read-only connection). Tier A (real profile, ~1.4k-job pool): import, embed with each candidate, rank, verify parity with prod, the user's ~50 blind labels (`label-blind`), full-pool Gemma silver labels calibrated against them, evaluate with bootstrap intervals and negative controls. More blind labeling, Tier B (personas) and cutover follow. Guide: `docs/EVAL.md`; design: `docs/plans/EMBEDDING_EVAL_DESIGN.md` | **Stage 1 built** — tests green; real-data acceptance and the full-pool judge run are operator steps |
 | `agents/` (LangGraph graph) | — | **Not started** |
 | `application/` (Requirements/Drafting/Critic/Submission) | — | **Not started** |
 | `guardrails/` | — | **Not started** |
@@ -33,7 +34,8 @@
 ### 1.2 CLI surface (`pyproject.toml [project.scripts]`)
 
 `job-radar-ingest`, `job-radar-scheduler`, `job-radar-assess` (quality), `job-radar-profile`,
-`job-radar-fit`, `job-radar-eval-label`, `job-radar-eval-run`, `job-radar-eval-sweep`. Everything
+`job-radar-fit`, `job-radar-eval-label`, `job-radar-eval-run`, `job-radar-eval-sweep`,
+`job-radar-eval-embedding`, `job-radar-evals-db`. Everything
 today is driven through these — no server process required.
 
 ### 1.3 Uncommitted work in the tree right now
@@ -196,6 +198,43 @@ new ATS adapters (Ashby, Workable, SmartRecruiters — ~700 companies, reuses th
 aggregators (RemoteOK, The Muse — the latter alone has 100k+ postings). Workday and Adzuna are
 real but bigger/costlier phases. LinkedIn/Indeed explicitly ruled out — both prohibit scraping in
 their ToS.
+
+**New — embedding-model evaluation (Stage 1 built, 2026-09-18).** Choosing between
+`nomic-embed-text` and `qwen3-embedding:0.6b` / `bge-m3` needs an eval that varies *only* the
+embedder, which the existing hybrid-system eval can't do (BM25 and fusion dilute the effect, the
+embedder is hard-wired, labels are anchored to the incumbent, and the golden metric is saturated).
+Design: `docs/plans/EMBEDDING_EVAL_DESIGN.md`; build plan:
+`docs/plans/EMBEDDING_EVAL_IMPLEMENTATION_PLAN.md`; runbook and how to read the output:
+`docs/EVAL.md`. Stage 1 is built and its tests are green; the real-data acceptance run and the
+full-pool judge run are operator steps. It only reads prod and does not gate CI. Label
+provenance (item 4 above): the 221 real-profile labels read `human` but were produced by the
+fit LLM (user statement 2026-09-19), so they are **not imported**; the only gold is ~50
+`human_blind` labels the user makes with `just embedding-label` (review finding R-M10).
+What the independent review found, all folded into the build:
+
+- **Recall@100 is ceiling-bound.** Roughly 430–660 of the 1,395 pool jobs are grade ≥ 2, so
+  Recall@100 is at most ≈ 0.15–0.23 for any embedder; the headline is nDCG@100 / P@100 / AP and Recall is
+  always printed with its ceiling.
+- **The raw partial `human` view is a coverage artifact.** With unjudged = 0, deliberately
+  degraded nomic variants outscored the incumbent (nDCG@100 0.261 vs 0.199); partial views now
+  report condensed metrics only, and negative controls are scored beside the candidates.
+- **Ollama's effective context is not `num_ctx`.** nomic and bge-m3 cap at 2,048 tokens whatever
+  it says, so `prompt_eval_count` can't detect truncation; the harness embeds with
+  `truncate=false`, retries truncated and stores a per-vector flag (1 pool document affected for
+  nomic and bge-m3, 0 for Qwen3).
+- **The Gemma judge is not yet calibrated.** A single-shot probe scored QWK 0.41 (45 jobs graded by the
+  LLM-made prod labels, not human; top grade compressed). The κ_w ≥ 0.6 gate is enforced: `evaluate` refuses judge-based
+  views, or stamps them `UNCALIBRATED`, without a passed calibration.
+- **Baseline suite: 322 passed, 1 pre-existing failure**
+  (`test_eval_gate.py::test_ndcg_meets_golden_threshold`), and the existing suite writes to
+  `DATABASE_URL` when run locally — new gates read "no new failures", and harness tests use
+  throwaway databases.
+
+Next: (1) blind-label ~50 jobs (`just embedding-label`: ~30 from the pooled disagreement region,
+~20 random); (2) iterate the judge prompt against those labels (4 few-shot exemplars, 46
+left to calibrate on, κ_w SE ≈ 0.1) until the calibration passes, freeze `PROMPT_VERSION`, then
+run the full pool (~1 h); (3) Stage 2: decision rule and judge-error sensitivity, then
+Tier B and the cutover check.
 
 **Current focus — close out Phase 1 (M4 + rest of M7), no `app/` needed:**
 5. Design + build a small LangGraph graph over the existing search+fit pipeline. Decided in this

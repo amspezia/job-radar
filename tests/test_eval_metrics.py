@@ -10,7 +10,7 @@ from uuid import UUID
 
 import pytest
 
-from eval.metrics import bpref, dcg, mrr, ndcg, precision_at_k, recall_at_k
+from eval.metrics import average_precision, bpref, dcg, mrr, ndcg, precision_at_k, recall_at_k
 
 # Stable readable ids.
 A, B, C, D = (UUID(int=i) for i in range(1, 5))
@@ -155,6 +155,52 @@ class TestRecallAtK:
         assert recall_at_k([A, B, C], labels, k=1) == pytest.approx(1.0 / 3)
 
 
+class TestAveragePrecision:
+    """AP at threshold=2: mean over all relevant docs of precision at that doc's rank."""
+
+    def test_perfect_ranking_scores_one(self) -> None:
+        # relevant={A, B}. A at rank 1: 1/1. B at rank 2: 2/2.
+        # AP = (1 + 1) / 2 = 1.0
+        labels = {A: 3, B: 2, C: 0}
+        assert average_precision([A, B, C], labels) == pytest.approx(1.0)
+
+    def test_interleaved_hand_computed(self) -> None:
+        # relevant={A, C, D}, B is judged non-relevant.
+        # A at rank 1: 1/1. C at rank 3: 2/3. D at rank 4: 3/4.
+        # AP = (1 + 2/3 + 3/4) / 3 = (29/12) / 3 = 29/36 ≈ 0.8056
+        labels = {A: 3, B: 0, C: 2, D: 2}
+        assert average_precision([A, B, C, D], labels) == pytest.approx(29 / 36)
+
+    def test_unlabeled_docs_count_as_non_relevant(self) -> None:
+        # E is unlabeled, so it takes rank 1 without scoring.
+        # relevant={A}: A at rank 2 -> 1/2. AP = 0.5 / 1 = 0.5
+        labels = {A: 3}
+        assert average_precision([UUID(int=5), A], labels) == pytest.approx(0.5)
+
+    def test_relevant_missing_from_ranking_contributes_zero(self) -> None:
+        # relevant={A, B}; B never appears. A at rank 2 (after C:0): 1/2.
+        # AP = (1/2 + 0) / 2 = 0.25 — the denominator is R=2, not the 1 retrieved.
+        labels = {A: 3, B: 2, C: 0}
+        assert average_precision([C, A], labels) == pytest.approx(0.25)
+
+    def test_rel_threshold_respected(self) -> None:
+        labels = {A: 1, B: 2}
+        # threshold=2: relevant={B}, B at rank 2 -> 1/2. AP = 0.5
+        assert average_precision([A, B], labels, rel_threshold=2) == pytest.approx(0.5)
+        # threshold=1: relevant={A, B}. A at rank 1: 1/1. B at rank 2: 2/2. AP = 1.0
+        assert average_precision([A, B], labels, rel_threshold=1) == pytest.approx(1.0)
+
+    def test_no_relevant_docs_returns_zero(self) -> None:
+        labels = {A: 0, B: 1}
+        assert average_precision([A, B], labels) == 0.0
+
+    def test_empty_labels_returns_zero(self) -> None:
+        assert average_precision([A, B], {}) == 0.0
+
+    def test_empty_ranking_returns_zero(self) -> None:
+        assert average_precision([], {A: 3}) == 0.0
+
+
 class TestBPref:
     """BPref: robust to incomplete judgments (Buckley & Voorhees 2004).
 
@@ -202,3 +248,11 @@ class TestBPref:
     def test_empty_ranking_scores_zero(self) -> None:
         labels = {A: 3, B: 0}
         assert bpref([], labels) == pytest.approx(0.0)
+
+
+def test_bpref_stays_within_0_and_1_when_non_relevant_docs_outnumber_relevant() -> None:
+    # R=1 relevant, N=3 non-relevant ranked ahead of it: uncapped this scored 1 - 3/1 = -2.
+    a, b, c, rel = (UUID(int=i) for i in range(1, 5))
+    labels = {a: 0, b: 0, c: 0, rel: 3}
+    assert bpref([a, b, c, rel], labels) == 0.0
+    assert bpref([rel, a, b, c], labels) == 1.0
